@@ -3,7 +3,7 @@
     allign with north
         and allign with measured star position
         first of all i need to estimate how many encoder pulses it takes to move 360
-        uploaded to git
+        uploaded to git star
  */
 #pragma region constructor_definitions
 bool simpletimer::timer(unsigned long _time)
