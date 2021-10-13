@@ -1,5 +1,5 @@
 #include "StarTrackV1.h"
-//13.10.2021 branch
+//13.10.2021 branch v1
 
 void setup()
 {
