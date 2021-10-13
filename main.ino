@@ -1,5 +1,5 @@
 #include "StarTrackV1.h"
-//13.10.2021
+//13.10.2021 version 1 all rights reserved Natan Lisowski
 void setup()
 {
 
