@@ -1,5 +1,5 @@
 #include "StarTrackV1.h"
-//13.10.2021 version 1 all rights reserved Natan Lisowski
+//all rights reserved by Natan Lisowski
 void setup()
 {
 
@@ -16,7 +16,7 @@ void loop()
     switch (mode)
     {
 
-    case getting_star_location:
+    case GETTING_STAR_LOCATION:
         readGPS();
         read_compass();
         updateAccel();
@@ -25,18 +25,24 @@ void loop()
         decodeIR();
 
         break;
-    case pointing_to_star:
+    case POINTING_TO_STAR:
         allign_with_star();
 
         break;
 
-    case settings:
+    case SETTINGS:
         //  print_debug_message(0, 0, 1);
         IRremote_callback(updateDisplay, one);
 
         break;
-    case init_procedure:
+    case INIT_PROCEDURE:
         boot_init_procedure();
+        break;
+    case SELECT_OFFSET:
+        offset_select();
+        break;
+    case OFFSET_EDIT:
+        input_offsets();
         break;
 
     default:

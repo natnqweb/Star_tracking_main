@@ -1,9 +1,16 @@
 #include "StarTrackV1.h"
-/* todo ::try to move motors to correct position
+/* todo ::1)try to move motors to correct position
     allign with north
         and allign with measured star position
         first of all i need to estimate how many encoder pulses it takes to move 360
-        uploaded to git star
+        2)get user input from ir remote 
+        - user need to input few things for example 
+        -right Ascension of star and declination of star 
+        - second thing is offsets for example magnetic declination ( only if we keep using mangetometer) currently im not convinced it will work
+
+
+        
+        
  */
 #pragma region constructor_definitions
 bool simpletimer::timer(unsigned long _time)
@@ -78,7 +85,7 @@ void allign_with_star()
             {
             }
 
-            mode = modes::getting_star_location;
+            mode = modes::GETTING_STAR_LOCATION;
         }
     }
 }
@@ -88,17 +95,20 @@ void read_compass()
     if (compass_timer.timer(refresh::compass_refresh_rate))
     {
 
-        float magnetic_x = 0;
-        float magnetic_y = 0;
-        for (int i = 0; i < constants::number_of_measurements; i++)
-        {
-            mag.getEvent(&compass_event);
-            magnetic_x += compass_event.magnetic.x;
-            magnetic_y += compass_event.magnetic.y;
-        }
-        magnetic_x /= constants::number_of_measurements;
-        magnetic_y /= constants::number_of_measurements;
-        float heading = atan2(magnetic_y, magnetic_x);
+        // float magnetic_x = 0;
+        // float magnetic_y = 0;
+        // for (int i = 0; i < constants::number_of_measurements; i++)
+        // {
+        // mag.getEvent(&compass_event);
+        // magnetic_x += compass_event.magnetic.x;
+        // magnetic_y += compass_event.magnetic.y;
+        // }
+        // magnetic_x /= constants::number_of_measurements;
+        //magnetic_y /= constants::number_of_measurements;
+        mag.getEvent(&compass_event);
+        //magnetic_x += compass_event.magnetic.x;
+        // magnetic_y += compass_event.magnetic.y;
+        float heading = atan2(compass_event.magnetic.x, compass_event.magnetic.y);
 
         if (heading < 0)
             heading += 2 * PI;
@@ -259,14 +269,14 @@ void calculate_starposition()
 
             sirius->azymuth = startracker.get_star_Azymuth();
             sirius->altitude = startracker.get_star_Altitude();
-            mode = pointing_to_star;
+            mode = POINTING_TO_STAR;
             ready_to_move = true;
         }
         else
         {
             GPS_status = false;
             ready_to_move = false;
-            mode = getting_star_location;
+            mode = GETTING_STAR_LOCATION;
         }
     }
 }
@@ -495,7 +505,7 @@ void boot_init_procedure()
         break;
     case EQ: // button on remote 'EQ' input magnetic variation
 
-        mode = settings;
+        mode = SETTINGS;
         break;
     case zero: // button on remote '0'
         break;
@@ -560,7 +570,7 @@ void boot_init_procedure()
             confirm = false;
             mess_row = 0;
             mess_col = 0;
-            mode = getting_star_location;
+            mode = GETTING_STAR_LOCATION;
             TFT_clear("|", boot_init_disp.column + 50, boot_init_disp.row + 12 * 2, boot_init_disp.textsize + 1);
         }
     }
@@ -760,7 +770,7 @@ void mode_selection() // currently useless may consider deleting this
     switch (decodeIRfun())
     {
     case one:
-        mode = init_procedure;
+        mode = INIT_PROCEDURE;
         break;
 
     case two:
@@ -793,7 +803,7 @@ void IRremote_callback(void_func fun, uint8_t _command) // currently not impleme
         fun();
     }
 }
-void edit_offsets() // todo: let user enter all offsets independently from this set in program
+void offset_select() // todo: let user enter all offsets independently from this set in program
 {
 
     displayconfig offsets_screen;
@@ -818,7 +828,7 @@ void edit_offsets() // todo: let user enter all offsets independently from this 
         clear("enter accel_offset", offsets_screen);
         offsets_screen.next_row(2);
         clear("enter azymuth offset", offsets_screen);
-        mode = getting_star_location;
+        mode = GETTING_STAR_LOCATION;
         //clear_all();
         break;
     case one:
@@ -867,7 +877,88 @@ void safety_motor_position_control() // turn off motor if laser is to far up or 
         motor2.turn_off();
     }
 }
+void input_offsets()
+{
 
+    switch (offset_edit_mode)
+    {
+
+    case offset_editing::MAGNETIC:
+        displayconfig edit_magnetic_var;
+        print("EDIT MAGNETIC DECLINATION", edit_magnetic_var);
+        edit_magnetic_var.next_row(2);
+        print("magnetic declination =", edit_magnetic_var);
+        edit_magnetic_var.next_column(25);
+        print(input_MAG_DEC, edit_magnetic_var);
+
+        switch (decodeIRfun())
+        {
+        case zero:
+
+            input_MAG_DEC += "0";
+            break;
+        case one:
+
+            input_MAG_DEC += "1";
+            break;
+        case two:
+
+            input_MAG_DEC += "2";
+            break;
+        case three:
+
+            input_MAG_DEC += "3";
+            break;
+        case four:
+
+            input_MAG_DEC += "4";
+            break;
+        case five:
+
+            input_MAG_DEC += "5";
+            break;
+        case six:
+
+            input_MAG_DEC += "6";
+            break;
+        case seven:
+
+            input_MAG_DEC += "7";
+            break;
+        case eight:
+
+            input_MAG_DEC += "8";
+            break;
+        case nine:
+
+            input_MAG_DEC += "9";
+            break;
+        case EQ:
+
+            input_MAG_DEC += ".";
+            break;
+        case play:
+
+            clear_all();
+
+            break;
+        }
+    case offset_editing::TIME:
+        displayconfig edit_time;
+
+        break;
+    case offset_editing::ACCELEROMETER:
+        displayconfig edit_accel_offset;
+
+        break;
+    case offset_editing::LOCATION:
+        displayconfig edit_location;
+
+        break;
+    default:
+        break;
+    }
+}
 #if DEBUG
 void print_debug_message(int col, int row, uint8_t size)
 {

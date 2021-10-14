@@ -36,6 +36,15 @@
 #define rtc_address 0x68
 #pragma endregion
 #pragma region enumerations
+enum class offset_editing
+{
+    NOT_SET = 0,
+    MAGNETIC = 1,
+    ACCELEROMETER = 2,
+    TIME = 3,
+    LOCATION = 4
+
+};
 enum pins : const uint8_t
 {
 
@@ -56,11 +65,14 @@ enum pins : const uint8_t
 };
 enum modes : uint8_t // program modes
 {
-    settings = 1,
-    main = 0,
-    getting_star_location = 2,
-    pointing_to_star = 3,
-    init_procedure = 4
+
+    SETTINGS = 1,
+    MAIN = 0,
+    GETTING_STAR_LOCATION = 2,
+    POINTING_TO_STAR = 3,
+    INIT_PROCEDURE = 4,
+    OFFSET_EDIT = 5,
+    SELECT_OFFSET = 6
 
 };
 enum remote_commands : unsigned char // all commands from ir remote
@@ -138,7 +150,7 @@ namespace offsets
 {
     const hrs timezone_offset = 2;     //UTC +2
     const degs magnetic_variation = 6; // 6 degrees due to magnetic declination
-    const degs azymuth_offset = -90;   // offset from uneven attachment
+    const degs azymuth_offset = -65;   // offset from uneven attachment
     //degs altitude_offset = 0;
     // degs motor_position_offset = 0;
 };
@@ -170,6 +182,8 @@ namespace constants //some usefull constants to for calibration and configuratio
 };
 #pragma endregion namespaces
 #pragma region variables
+String input_MAG_DEC;
+auto offset_edit_mode = offset_editing::NOT_SET;
 auto *ss = &Serial3;
 unsigned char pilot_commands[] = {plus, minus, play, EQ, zero, one, two, three, four, five, six, seven, eight, nine, no_command};
 bool calibration = false;
@@ -206,7 +220,7 @@ void TFT_clear(String strr, int column, int row, uint8_t textsize = 1);
 static void smartDelay(unsigned long ms = 0);
 void calculate_starposition();
 void submit_data();
-
+void input_offsets();
 void Az_engine(float &target);  // function take target to follow and getting it by reference . for azymuth motor
 void Alt_engine(float &target); // function take target to follow and getting it by reference . for altitude motor
 void boot_init_procedure();
@@ -221,6 +235,7 @@ void clear(String, displayconfig &);
 void compass_init();
 void new_starting_position();
 void safety_motor_position_control();
+void offset_select();
 #if DEBUG
 void print_debug_message(int col = 0, int row = 0, uint8_t size = 1);
 void debug_rtc();
