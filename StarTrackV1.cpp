@@ -556,18 +556,21 @@ void boot_init_procedure()
 
     static int mess_row = 0;
     static int mess_col = 0;
+    while (confirm)
+    {
+        read_compass();
+        updateAccel();
+        readGPS();
+        new_starting_position();
 
-    read_compass();
-    updateAccel();
-    readGPS();
-    new_starting_position();
+        motor1.Input = my_location.azymuth * 2.5;
+        delay(100);
 
-    motor1.Input = my_location.azymuth * 2.5;
-
-    confirm = false;
-    mess_row = 0;
-    mess_col = 0;
-    mode = modes::GETTING_STAR_LOCATION;
+        confirm = false;
+        mess_row = 0;
+        mess_col = 0;
+        mode = modes::GETTING_STAR_LOCATION;
+    }
 }
 void new_starting_position()
 {

@@ -1,5 +1,6 @@
 #include "StarTrackV1.h"
 //all rights reserved by Natan Lisowski
+#define test 1
 void setup()
 {
 
@@ -8,6 +9,8 @@ void setup()
     RTC_calibration();
     laser(off);
     LOG("program started");
+    if (test)
+        motor1.turn_on();
 }
 void loop()
 {
@@ -48,6 +51,11 @@ void loop()
     default:
 
         //debug_rtc();
+        while (test)
+        {
+            motor1.set_target(50);
+            motor1.start();
+        }
         boot_init_procedure();
 
         while (DEBUG)
