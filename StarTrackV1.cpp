@@ -198,10 +198,10 @@ void decodeIR()
     {
 
     case plus:
-        mode == 3 ? mode = 0 : mode += 1;
+        //  mode == 3 ? mode = 0 : mode += 1;
         break;
     case minus:
-        mode == 0 ? mode = 3 : mode -= 1;
+        //  mode == 0 ? mode = 3 : mode -= 1;
         break;
     case EQ:
         calibration = !calibration;
@@ -269,14 +269,14 @@ void calculate_starposition()
 
             sirius->azymuth = startracker.get_star_Azymuth();
             sirius->altitude = startracker.get_star_Altitude();
-            mode = POINTING_TO_STAR;
+            mode = modes::POINTING_TO_STAR;
             ready_to_move = true;
         }
         else
         {
             GPS_status = false;
             ready_to_move = false;
-            mode = GETTING_STAR_LOCATION;
+            mode = modes::GETTING_STAR_LOCATION;
         }
     }
 }
@@ -505,7 +505,7 @@ void boot_init_procedure()
         break;
     case EQ: // button on remote 'EQ' input magnetic variation
 
-        mode = SETTINGS;
+        mode = modes::SETTINGS;
         break;
     case zero: // button on remote '0'
         break;
@@ -570,7 +570,7 @@ void boot_init_procedure()
             confirm = false;
             mess_row = 0;
             mess_col = 0;
-            mode = GETTING_STAR_LOCATION;
+            mode = modes::GETTING_STAR_LOCATION;
             TFT_clear("|", boot_init_disp.column + 50, boot_init_disp.row + 12 * 2, boot_init_disp.textsize + 1);
         }
     }
@@ -770,7 +770,7 @@ void mode_selection() // currently useless may consider deleting this
     switch (decodeIRfun())
     {
     case one:
-        mode = INIT_PROCEDURE;
+        mode = modes::INIT_PROCEDURE;
         break;
 
     case two:
@@ -828,7 +828,7 @@ void offset_select() // todo: let user enter all offsets independently from this
         clear("enter accel_offset", offsets_screen);
         offsets_screen.next_row(2);
         clear("enter azymuth offset", offsets_screen);
-        mode = GETTING_STAR_LOCATION;
+        mode = modes::GETTING_STAR_LOCATION;
         //clear_all();
         break;
     case one:

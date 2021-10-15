@@ -16,6 +16,7 @@
 #include <Encoder_Motor_PID.h>
 #pragma endregion includes
 #pragma region definitions
+#pragma region macros_debg
 #define DEBUG false // enable or disable debug messages
 #ifndef DEBUG
 #define DEBUG false
@@ -29,14 +30,18 @@
 #endif
 #define ENABLE_LED_FEEDBACK 0          //feedback from IRDECODER 0 off 1on
 #define USE_DEFAULT_FEEDBACK_LED_PIN 1 //feedback from IRDECODER
-//i2c adresses
+#pragma endregion macros_debg
+#pragma region i2c_adress
 #define accel_address 0x69
 #define compass_adress 0x1E
 #define other_address 0x57 //was detected in scanning
 #define rtc_address 0x68
-#pragma endregion
+#pragma endregion i2c_adress
+
+#pragma endregion definitions
+
 #pragma region enumerations
-enum class offset_editing
+enum class offset_editing //enumeration for editing offset screen
 {
     NOT_SET = 0,
     MAGNETIC = 1,
@@ -63,8 +68,8 @@ enum pins : const uint8_t
     IN2_2 = 11  //B2-A
 
 };
-enum modes : uint8_t // program modes
-{
+enum class modes
+{ // program modes
 
     SETTINGS = 1,
     MAIN = 0,
@@ -184,11 +189,11 @@ namespace constants //some usefull constants to for calibration and configuratio
 #pragma region variables
 String input_MAG_DEC;
 auto offset_edit_mode = offset_editing::NOT_SET;
+auto mode = modes::MAIN;
 auto *ss = &Serial3;
 unsigned char pilot_commands[] = {plus, minus, play, EQ, zero, one, two, three, four, five, six, seven, eight, nine, no_command};
 bool calibration = false;
 float day, month, year, TIME, MIN, HOUR, SEKUNDA; //datetime
-uint8_t mode;
 bool ready_to_move = false;
 char printout1[4];                                                                                                                               //uint buffer
 String bufferstr, bufferstr2, bufferstr3, bufferstr4, bufferstr5, bufferstr6, bufferstr7, bufferstr8, bufferstr9, bufferstr10, bfstr11, bfstr12; //string buffer
