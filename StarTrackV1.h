@@ -153,9 +153,9 @@ struct displayconfig
 #pragma region namespaces
 namespace offsets
 {
-    const hrs timezone_offset = 2;     //UTC +2
-    const degs magnetic_variation = 6; // 6 degrees due to magnetic declination
-    const degs azymuth_offset = -65;   // offset from uneven attachment
+    hrs timezone_offset = 2;     //UTC +2
+    degs magnetic_variation = 6; // 6 degrees due to magnetic declination
+    degs azymuth_offset = -65;   // offset from uneven attachment
     //degs altitude_offset = 0;
     // degs motor_position_offset = 0;
 };
@@ -241,6 +241,7 @@ void compass_init();
 void new_starting_position();
 void safety_motor_position_control();
 void offset_select();
+void remote_input_handler(void_func, String &);
 #if DEBUG
 void print_debug_message(int col = 0, int row = 0, uint8_t size = 1);
 void debug_rtc();

@@ -6,8 +6,8 @@
         2)get user input from ir remote 
         - user need to input few things for example 
         -right Ascension of star and declination of star 
-        - second thing is offsets for example magnetic declination ( only if we keep using mangetometer) currently im not convinced it will work
-        3) add function to handle ir remote input 1 function that will replace all switch cases
+        - second thing is offsets for example magnetic declination ( only if we keep using magnetometer) currently im not convinced it will work
+        3) add function to handle ir remote input 1 function that will replace all switch cases -- cuurrently working on 
 
         
         
@@ -490,6 +490,7 @@ void boot_init_procedure()
     uint8_t decoded_procedure = decodeIRfun();
 
     bool confirm = false;
+    bool setmode = false;
     switch (decoded_procedure)
     {
 
@@ -505,14 +506,7 @@ void boot_init_procedure()
         break;
     case EQ: // button on remote 'EQ' input magnetic variation
 
-        mode = modes::SETTINGS;
-        break;
-    case zero: // button on remote '0'
-        break;
-    }
-    if (confirm)
-    {
-
+        mode = modes::SELECT_OFFSET;
         TFT_clear("instrukcja:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
         TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
         TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
@@ -524,8 +518,44 @@ void boot_init_procedure()
         TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
         TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
         TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-        TFT_dispStr("loading:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize + 1);
-        TFT_dispStr("|", boot_init_disp.column + 50, boot_init_disp.row + 12 * 2, boot_init_disp.textsize + 1);
+        setmode = true;
+        break;
+    case zero: // button on remote '0'
+        break;
+    }
+    if (confirm || setmode)
+    {
+        if (setmode)
+        {
+            TFT_clear("instrukcja:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
+            TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+            TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+            TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
+            TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+            TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+            TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+            TFT_clear("wartosc++", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+            TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
+            TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+            TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+        }
+        if (confirm)
+        {
+            TFT_clear("instrukcja:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
+            TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+            TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+            TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
+            TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+            TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+            TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+            TFT_clear("wartosc++", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+            TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
+            TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+            TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+            TFT_dispStr("loading:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize + 1);
+
+            TFT_dispStr("|", boot_init_disp.column + 50, boot_init_disp.row + 12 * 2, boot_init_disp.textsize + 1);
+        }
     }
     else
     {
@@ -840,6 +870,8 @@ void offset_select() // todo: let user enter all offsets independently from this
         clear("enter accel_offset", offsets_screen);
         offsets_screen.next_row(2);
         clear("enter azymuth offset", offsets_screen);
+        mode = modes::OFFSET_EDIT;
+        offset_edit_mode = offset_editing::MAGNETIC;
         //clear_all();
 
         break;
@@ -888,7 +920,7 @@ void input_offsets()
         print("EDIT MAGNETIC DECLINATION", edit_magnetic_var);
         edit_magnetic_var.next_row(2);
         print("magnetic declination =", edit_magnetic_var);
-        edit_magnetic_var.next_column(25);
+        edit_magnetic_var.next_row(2);
         print(input_MAG_DEC, edit_magnetic_var);
 
         switch (decodeIRfun())
@@ -939,7 +971,15 @@ void input_offsets()
             break;
         case play:
 
-            clear_all();
+            offset_edit_mode = offset_editing::TIME;
+            offsets::magnetic_variation = input_MAG_DEC.toFloat();
+            edit_magnetic_var.reset_cursor();
+            clear("EDIT MAGNETIC DECLINATION", edit_magnetic_var);
+            edit_magnetic_var.next_row(2);
+            clear("magnetic declination =", edit_magnetic_var);
+            edit_magnetic_var.next_row(2);
+            clear(input_MAG_DEC, edit_magnetic_var);
+            mode = modes::GETTING_STAR_LOCATION;
 
             break;
         }
@@ -956,6 +996,61 @@ void input_offsets()
 
         break;
     default:
+        break;
+    }
+}
+void remote_input_handler(void_func functionexit, String &result)
+{
+    switch (decodeIRfun())
+    {
+    case zero:
+
+        result += "0";
+        break;
+    case one:
+
+        result += "1";
+        break;
+    case two:
+
+        result += "2";
+        break;
+    case three:
+
+        result += "3";
+        break;
+    case four:
+
+        result += "4";
+        break;
+    case five:
+
+        result += "5";
+        break;
+    case six:
+
+        result += "6";
+        break;
+    case seven:
+
+        result += "7";
+        break;
+    case eight:
+
+        result += "8";
+        break;
+    case nine:
+
+        result += "9";
+        break;
+    case EQ:
+
+        result += ".";
+        break;
+    case play:
+
+        functionexit();
+
         break;
     }
 }
