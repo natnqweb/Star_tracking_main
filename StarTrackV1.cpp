@@ -525,37 +525,18 @@ void boot_init_procedure()
     }
     if (confirm || setmode)
     {
-        if (setmode)
-        {
-            TFT_clear("instrukcja:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
-            TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-            TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-            TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-            TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-            TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-            TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-            TFT_clear("wartosc++", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-            TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-            TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-            TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-        }
-        if (confirm)
-        {
-            TFT_clear("instrukcja:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
-            TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-            TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-            TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-            TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-            TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-            TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-            TFT_clear("wartosc++", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-            TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-            TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-            TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-            TFT_dispStr("loading:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize + 1);
 
-            TFT_dispStr("|", boot_init_disp.column + 50, boot_init_disp.row + 12 * 2, boot_init_disp.textsize + 1);
-        }
+        TFT_clear("instrukcja:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
+        TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+        TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+        TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
+        TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+        TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+        TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+        TFT_clear("wartosc++", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+        TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
+        TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+        TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
     }
     else
     {
@@ -576,34 +557,17 @@ void boot_init_procedure()
     static int mess_row = 0;
     static int mess_col = 0;
 
-    while (confirm)
-    {
-        read_compass();
-        updateAccel();
-        readGPS();
-        new_starting_position();
+    read_compass();
+    updateAccel();
+    readGPS();
+    new_starting_position();
 
-        if (loadingscreen.timer(refresh::loading_messenge_refresh))
-        {
-            TFT_dispStr(".", mess_col += 1, boot_init_disp.row + 12 * 2, boot_init_disp.textsize + 1);
-        }
-        motor1.Input = my_location.azymuth * 2.5;
-        if (mess_col == boot_init_disp.column + 50)
-        {
-            TFT_clear("loading:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize + 1);
+    motor1.Input = my_location.azymuth * 2.5;
 
-            for (int i = 0; i < mess_col + 1; i++)
-            {
-                TFT_clear(".", i, boot_init_disp.row + 12 * 2, boot_init_disp.textsize + 1);
-                delay(10);
-            }
-            confirm = false;
-            mess_row = 0;
-            mess_col = 0;
-            mode = modes::GETTING_STAR_LOCATION;
-            TFT_clear("|", boot_init_disp.column + 50, boot_init_disp.row + 12 * 2, boot_init_disp.textsize + 1);
-        }
-    }
+    confirm = false;
+    mess_row = 0;
+    mess_col = 0;
+    mode = modes::GETTING_STAR_LOCATION;
 }
 void new_starting_position()
 {
