@@ -7,7 +7,7 @@
         - user need to input few things for example 
         -right Ascension of star and declination of star 
         - second thing is offsets for example magnetic declination ( only if we keep using mangetometer) currently im not convinced it will work
-
+        3) add function to handle ir remote input 1 function that will replace all switch cases
 
         
         
