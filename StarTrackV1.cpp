@@ -50,8 +50,8 @@ simpletimer accel_timer;
 simpletimer starposition_timer;
 Adafruit_HX8357 TFTscreen = Adafruit_HX8357(cs, dc, rst);
 SkyMap startracker;
-Encoder_Motor_PID motor1(ENCA, ENCB, IN1, IN2);
-Encoder_Motor_PID motor2(ENCA2, ENCB2, IN1_2, IN2_2);
+motor motor1(ENCA, ENCB, IN1, IN2);
+motor motor2(ENCA2, ENCB2, IN1_2, IN2_2);
 simpletimer loadingscreen;
 
 Myposition my_location(50.03, 21.01);
@@ -470,7 +470,7 @@ void Az_engine(float &target) //need to be in some standalone function cuz it is
     motor1.set_target(target);
     motor1.start();
 
-    if (motor1.Input == target)
+    if (motor1.get_position() == target)
     {
         motor1.turn_off();
     }
@@ -563,7 +563,7 @@ void boot_init_procedure()
         readGPS();
         new_starting_position();
 
-        motor1.Input = my_location.azymuth * 2.5;
+        motor1.set_position(long(my_location.azymuth * 2.5));
         delay(100);
 
         confirm = false;
@@ -577,8 +577,8 @@ void new_starting_position()
     //todo : define this constatns for motors they may differ significantly
     starting_position_az = my_location.azymuth * constants::gear_constant;
     starting_position_alt = pointing_altitude * constants::gear_constant;
-    motor1.set_starting_position(long(starting_position_az));
-    motor2.set_starting_position(long(starting_position_alt));
+    motor1.set_position(long(starting_position_az));
+    motor2.set_position(long(starting_position_alt));
 }
 uint8_t decodeIRfun()
 {

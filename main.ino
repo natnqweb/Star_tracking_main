@@ -1,21 +1,25 @@
 #include "StarTrackV1.h"
 //all rights reserved by Natan Lisowski
-#define test 1
+
 void setup()
 {
 
     initialize_();
-    safety_motor_position_control();
+
     RTC_calibration();
     laser(off);
     LOG("program started");
-    if (test)
-        motor1.turn_on();
 }
 void loop()
 {
-    safety_motor_position_control();
+
+    if (!DEBUG)
+    {
+        safety_motor_position_control();
+    }
     RTC_calibration();
+    if (DEBUG)
+        motor1.turn_off();
     switch (mode)
     {
 
@@ -51,22 +55,26 @@ void loop()
     default:
 
         //debug_rtc();
-        while (test)
-        {
-            motor1.set_target(50);
-            motor1.start();
-        }
-        boot_init_procedure();
-
         while (DEBUG)
         {
 
-            // if (decodeIRfun() != no_command)
-            // {
-            //   LOG(decodeIRfun());
-            // }
-            updateAccel();
+            motor2.start();
+            motor2.set_target(50);
+            motor2.limit(76, 255);
+
+            LOG(motor2.get_position());
         }
+        boot_init_procedure();
+
+        //while (DEBUG)
+        // {
+
+        // if (decodeIRfun() != no_command)
+        // {
+        //   LOG(decodeIRfun());
+        // }
+        // updateAccel();
+        // }
 
         break;
     }

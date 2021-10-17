@@ -13,7 +13,8 @@
 #include <IRremote.h>
 #include <Adafruit_HMC5883_U.h>
 #include <SkyMap.h>
-#include <Encoder_Motor_PID.h>
+//#include <Encoder_Motor_PID.h> replaced by classic motor_pid
+#include <Motor_PID.h>
 #pragma endregion includes
 #pragma region definitions
 #pragma region macros_debg
@@ -180,9 +181,9 @@ namespace constants //some usefull constants to for calibration and configuratio
     const unsigned int GPSBaud = 9600;
     const unsigned long Serial_Baud = 115200;
     //const unsigned int HALFSTEPS = 4096; // Number of half-steps for a full rotation
-    const float kp = 1;
-    const float kd = 0.1;
-    const float ki = 0.02;
+    const float kp = 1.7;
+    const float kd = 0.018;
+    const float ki = 0.15;
 
 };
 #pragma endregion namespaces
