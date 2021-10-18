@@ -13,19 +13,12 @@ void setup()
 void loop()
 {
 
-    if (!DEBUG)
-    {
-        safety_motor_position_control();
-    }
-    RTC_calibration();
-    if (DEBUG)
-        motor1.turn_off();
     switch (mode)
     {
 
     case modes::GETTING_STAR_LOCATION:
         readGPS();
-        read_compass();
+        //read_compass();
         updateAccel();
         calculate_starposition();
         updateDisplay();
@@ -39,7 +32,6 @@ void loop()
 
     case modes::SETTINGS:
         //  print_debug_message(0, 0, 1);
-        IRremote_callback(updateDisplay, one);
 
         break;
     case modes::INIT_PROCEDURE:
@@ -54,28 +46,22 @@ void loop()
 
     default:
 
-        //debug_rtc();
-        while (DEBUG)
+        while (DEBUG) // loop for debbuging purposes
         {
-
-            motor2.start();
-            motor2.set_target(50);
-            motor2.limit(76, 255);
-
-            LOG(motor2.get_position());
+            //readGPS();
+            // read_compass();
+            // updateAccel();
+            //calculate_starposition();
+            //updateDisplay();
+            static String msss;
+            remote_input_handler_str(print_exiting, msss, play);
+            LOG(msss);
         }
-        boot_init_procedure();
 
-        //while (DEBUG)
-        // {
-
-        // if (decodeIRfun() != no_command)
-        // {
-        //   LOG(decodeIRfun());
-        // }
-        // updateAccel();
-        // }
-
+        mode = modes::INIT_PROCEDURE;
         break;
     }
+}
+void print_exiting()
+{
 }

@@ -42,6 +42,7 @@
 #pragma endregion definitions
 
 #pragma region enumerations
+
 enum class offset_editing //enumeration for editing offset screen
 {
     NOT_SET = 0,
@@ -163,18 +164,18 @@ namespace offsets
 
 namespace refresh // all timer refresh rates here
 {
-    const unsigned int gps_refresh_rate = 990;         //ms
+    const unsigned int gps_refresh_rate = 1;           //ms
     const unsigned int calculation_refresh_rate = 950; //ms
-    const unsigned int accel_refresh_rate = 50;        //now its only print refresh
+    const unsigned int accel_refresh_rate = 200;       //now its only print refresh
     const unsigned int compass_refresh_rate = 1000;    //ms
     const unsigned int ir_refresh_rate = 70;           //ms
-    const unsigned int TFT_refresh_rate = 200;         // frequency of reading the IR data in ms
+    const unsigned int TFT_refresh_rate = 1000;        // frequency of reading the IR data in ms
     const unsigned int loading_messenge_refresh = 200; // frequency of reading the IR data in ms
 };
 
 namespace constants //some usefull constants to for calibration and configuration
 {
-    const uint8_t number_of_measurements = 100;
+    const float number_of_measurements = 10;
     const double pi = 3.1415926536;
     const uint8_t motor_gear_ratio = 65;
     const uint8_t gear_constant = 5;
@@ -189,6 +190,7 @@ namespace constants //some usefull constants to for calibration and configuratio
 #pragma endregion namespaces
 #pragma region variables
 String input_MAG_DEC;
+bool setmode, confirm;
 auto offset_edit_mode = offset_editing::NOT_SET;
 auto mode = modes::MAIN;
 auto *ss = &Serial3;
@@ -203,12 +205,25 @@ bool laser_state;
 degs starting_position_az, starting_position_alt; // calibration starting point for encoder so you dont need to level it every time manually
 uint8_t decoded_command = 0x00U;
 bool GPS_status = false;
+float accelXsum = 0;
+float accelYsum = 0;
+float accelZsum = 0;
+bool entering_DEC = false, entering_RA = false;
+String input_RA, input_DEC;
 sensors_event_t a, g, temp;
+
 sensors_event_t compass_event;
 sensor_t compass_hmcl;
+displayconfig mainscreen;
+displayconfig boot_init_disp;
+displayconfig boot_disp;
+displayconfig edit_magnetic_var;
+displayconfig offsets_screen;
+
 #pragma endregion variables
 #pragma region custom_typedefs
 typedef void (*void_func)(void);
+typedef void (*exit_print)(String, displayconfig &);
 #pragma endregion custom_typedefs
 #pragma region function_prototypes
 void movemotors();
@@ -234,15 +249,21 @@ void allign_with_star();
 uint8_t decodeIRfun();
 bool check_if_calibrated();
 degs edit_Ra_Dec();
-void mode_selection();
-void IRremote_callback(void_func, uint8_t); //function will run only if specific command was detected
+//void mode_selection();
+//void IRremote_callback(void_func, uint8_t); //function will run only if specific command was detected
 void print(String, displayconfig &);
 void clear(String, displayconfig &);
 void compass_init();
 void new_starting_position();
 void safety_motor_position_control();
 void offset_select();
-void remote_input_handler(void_func, String &);
+void empty_function()
+{
+}
+
+void remote_input_handler_str(void_func, String &, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0);
+void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0);
+
 #if DEBUG
 void print_debug_message(int col = 0, int row = 0, uint8_t size = 1);
 void debug_rtc();
