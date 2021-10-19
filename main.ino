@@ -11,7 +11,7 @@ void setup()
     LOG("program started");
 }
 void loop()
-{
+{  RTC_calibration();
 
     switch (mode)
     {

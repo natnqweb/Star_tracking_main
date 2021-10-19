@@ -66,8 +66,8 @@ enum pins : const uint8_t
     ENCB2 = 34, // WHITE from polulu encoder
     IN1 = 8,    //A1-A
     IN2 = 9,    //B1-A
-    IN1_2 = 10, //A2-A
-    IN2_2 = 11  //B2-A
+    IN1_2 = 10, //A2-b
+    IN2_2 = 11  //B2-b
 
 };
 enum class modes
@@ -193,7 +193,6 @@ String input_MAG_DEC;
 bool setmode, confirm;
 auto offset_edit_mode = offset_editing::NOT_SET;
 auto mode = modes::MAIN;
-auto *ss = &Serial3;
 unsigned char pilot_commands[] = {plus, minus, play, EQ, zero, one, two, three, four, five, six, seven, eight, nine, no_command};
 bool calibration = false;
 float day, month, year, TIME, MIN, HOUR, SEKUNDA; //datetime

@@ -186,7 +186,7 @@ void initialize_()
     pinMode(Laser_pin, OUTPUT);
 
     rtc.begin();
-    ss->begin(constants::GPSBaud);
+    Serial3.begin(constants::GPSBaud);
 
     TFTscreen.begin();
     TFTscreen.fillScreen(HX8357_BLACK);
@@ -225,10 +225,10 @@ static void smartDelay(unsigned long ms)
     unsigned long start = millis();
     do
     {
-        while (ss->available())
+        while (Serial3.available())
         {
 
-            gps.encode(ss->read());
+            gps.encode(Serial3.read());
         }
     } while (millis() - start < ms);
 }
