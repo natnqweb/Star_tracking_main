@@ -11,14 +11,21 @@ void setup()
     LOG("program started");
 }
 void loop()
-{  RTC_calibration();
+{
+    RTC_calibration();
 
     switch (mode)
     {
+    case modes::edit_RA:
+        edit_ra();
+        break;
+    case modes::edit_dec:
+        edit_dec();
+        break;
 
     case modes::GETTING_STAR_LOCATION:
         readGPS();
-        //read_compass();
+        read_compass();
         updateAccel();
         calculate_starposition();
         updateDisplay();
@@ -31,7 +38,7 @@ void loop()
         break;
 
     case modes::SETTINGS:
-        //  print_debug_message(0, 0, 1);
+        edit_Ra_Dec();
 
         break;
     case modes::INIT_PROCEDURE:
@@ -48,14 +55,16 @@ void loop()
 
         while (DEBUG) // loop for debbuging purposes
         {
-            //readGPS();
-            // read_compass();
-            // updateAccel();
-            //calculate_starposition();
-            //updateDisplay();
-            static String msss;
-            remote_input_handler_str(print_exiting, msss, play);
-            LOG(msss);
+            RTC_calibration();
+            readGPS();
+            read_compass();
+            updateAccel();
+            calculate_starposition();
+            updateDisplay();
+            decodeIR();
+            //static String msss;
+            //remote_input_handler_str(print_exiting, msss, play);
+            //LOG(msss);
         }
 
         mode = modes::INIT_PROCEDURE;

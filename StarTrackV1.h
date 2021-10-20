@@ -52,6 +52,7 @@ enum class offset_editing //enumeration for editing offset screen
     LOCATION = 4
 
 };
+
 enum pins : const uint8_t
 {
 
@@ -79,7 +80,9 @@ enum class modes
     POINTING_TO_STAR = 3,
     INIT_PROCEDURE = 4,
     OFFSET_EDIT = 5,
-    SELECT_OFFSET = 6
+    SELECT_OFFSET = 6,
+    edit_RA = 7,
+    edit_dec = 8
 
 };
 enum remote_commands : unsigned char // all commands from ir remote
@@ -110,6 +113,11 @@ enum states : bool
 };
 #pragma endregion enumerations
 #pragma region structures
+struct buffers
+{
+    String buff;
+    String disp;
+};
 struct Myposition //struct to store location specific information
 {
     float latitude;
@@ -189,6 +197,7 @@ namespace constants //some usefull constants to for calibration and configuratio
 };
 #pragma endregion namespaces
 #pragma region variables
+buffers ra_buff, dec_buff;
 String input_MAG_DEC;
 bool setmode, confirm;
 auto offset_edit_mode = offset_editing::NOT_SET;
@@ -237,7 +246,7 @@ void updateDisplay();
 void laser(bool on_off);
 void TFT_dispStr(String str, int column, int row, uint8_t textsize = 1);
 void TFT_clear(String strr, int column, int row, uint8_t textsize = 1);
-static void smartDelay(unsigned long ms = 0);
+//static void smartDelay(unsigned long ms = 0);
 void calculate_starposition();
 void submit_data();
 void input_offsets();
@@ -247,7 +256,7 @@ void boot_init_procedure();
 void allign_with_star();
 uint8_t decodeIRfun();
 bool check_if_calibrated();
-degs edit_Ra_Dec();
+void edit_Ra_Dec();
 //void mode_selection();
 //void IRremote_callback(void_func, uint8_t); //function will run only if specific command was detected
 void print(String, displayconfig &);
@@ -259,7 +268,8 @@ void offset_select();
 void empty_function()
 {
 }
-
+void edit_dec();
+void edit_ra();
 void remote_input_handler_str(void_func, String &, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0);
 void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0);
 

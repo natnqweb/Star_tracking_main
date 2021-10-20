@@ -136,7 +136,7 @@ void RTC_calibration()
     if (calibration)
     {
 
-        smartDelay(1000);
+        readGPS();
 
         // The following lines can be uncommented to set the date and time
         rtc.setDOW(SUNDAY);                                                                            // Set Day-of-Week to SUNDAY or whatever day of week it is
@@ -220,22 +220,17 @@ void decodeIR()
         break;
     }
 }
-static void smartDelay(unsigned long ms)
-{
-    unsigned long start = millis();
-    do
-    {
-        while (Serial3.available())
-        {
-
-            gps.encode(Serial3.read());
-        }
-    } while (millis() - start < ms);
-}
+//void smartDelay()// no delays!
+//{
+//}
 
 void readGPS()
 {
-    smartDelay(refresh::gps_refresh_rate);
+    while (Serial3.available())
+    {
+
+        gps.encode(Serial3.read());
+    }
 }
 
 void calculate_starposition()
@@ -353,6 +348,32 @@ void updateDisplay()
             clear(bfstr12, mainscreen);
             bfstr12 = az_ang;
             print(az_ang, mainscreen);
+        }
+        mainscreen.reset_cursor();
+        mainscreen.next_row(4);
+        mainscreen.next_column(23);
+        print("Rekt.", mainscreen);
+        mainscreen.next_column(18);
+        ra_buff.disp = (String)star.right_ascension;
+
+        if (!ra_buff.disp.equals(ra_buff.buff))
+        {
+            clear(ra_buff.buff, mainscreen);
+            ra_buff.buff = ra_buff.disp;
+            print(ra_buff.disp, mainscreen);
+        }
+        mainscreen.reset_cursor();
+        mainscreen.next_row(6);
+        mainscreen.next_column(23);
+        print("Deklinacja.", mainscreen);
+        mainscreen.next_column(18);
+        dec_buff.disp = (String)star.declination;
+
+        if (!dec_buff.disp.equals(dec_buff.buff))
+        {
+            clear(dec_buff.buff, mainscreen);
+            dec_buff.buff = dec_buff.disp;
+            print(dec_buff.disp, mainscreen);
         }
         mainscreen.reset_cursor();
 
@@ -511,13 +532,29 @@ void set_true_confirm()
 {
     confirm = true;
 }
+void boot_init_exit_func2()
+{
+    mode = modes::SETTINGS;
+    TFT_clear("instrukcja:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
+    TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+    TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+    TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
+    TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+    TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+    TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+    TFT_clear("wartosc++", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+    TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
+    TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+    TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+    setmode = true;
+}
 void boot_init_procedure()
 {
     boot_init_disp.reset_cursor();
 
     confirm = false;
     setmode = false;
-    remote_input_handler_selector(set_true_confirm, play, boot_init_exit_func1, EQ);
+    remote_input_handler_selector(set_true_confirm, play, boot_init_exit_func1, EQ, boot_init_exit_func2, zero);
     if (confirm || setmode)
     {
 
@@ -604,19 +641,23 @@ uint8_t decodeIRfun()
 #pragma region editing_ra_dec
 void entering_dec_exit_handle()
 {
-    star.right_ascension = input_DEC.toFloat();
+
+    star.declination = input_DEC.toFloat();
     TFT_clear("enter Star Dec", boot_disp.column, boot_disp.row, boot_disp.textsize);
     TFT_clear(input_DEC, boot_disp.column, boot_disp.row + 30, boot_disp.textsize);
-    entering_DEC = false;
+    entering_DEC = true;
+    entering_RA ? mode = modes::GETTING_STAR_LOCATION : mode = modes::edit_RA;
 }
 void entering_ra_exit_handle()
 {
+
     star.right_ascension = input_RA.toFloat();
     TFT_clear("enter Star RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
     TFT_clear(input_RA, boot_disp.column, boot_disp.row + 30, boot_disp.textsize);
-    entering_RA = false;
+    entering_RA = true;
+    entering_DEC ? mode = modes::GETTING_STAR_LOCATION : mode = modes::edit_dec;
 }
-degs edit_Ra_Dec() // todo : make interface for entering Ra and Dec after booting
+void edit_Ra_Dec() // todo : make interface for entering Ra and Dec after booting
 {
     boot_disp.reset_cursor();
 
@@ -624,34 +665,34 @@ degs edit_Ra_Dec() // todo : make interface for entering Ra and Dec after bootin
     TFT_dispStr("2- DEC", boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
     TFT_dispStr("play- finish", boot_disp.column, 40, boot_disp.textsize);
 
-    if (decoded_command == one)
+    if (decodeIRfun() == one)
     {
-        TFT_clear("1-RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
-        TFT_clear("2-DEC", boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
-        TFT_clear("play-finish", boot_disp.column, boot_disp.row + 40, boot_disp.textsize);
-        TFT_dispStr("enter Star RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
-        entering_RA = true;
+        TFT_clear("1- RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
+        TFT_clear("2- DEC", boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
+        TFT_clear("play- finish", boot_disp.column, boot_disp.row + 40, boot_disp.textsize);
 
-        while (entering_RA)
-        {
-
-            remote_input_handler_str(entering_ra_exit_handle, input_RA, play);
-            TFT_dispStr(input_RA, boot_disp.column, boot_disp.row + 30, boot_disp.textsize);
-        }
+        mode = modes::edit_RA;
     }
-    else if (decoded_command == two)
+    else if (decodeIRfun() == two)
     {
-        TFT_clear("1-RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
-        TFT_clear("2-DEC", boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
-        TFT_dispStr("enter Star DEC", boot_disp.column, boot_disp.row, boot_disp.textsize);
-        entering_DEC = true;
+        TFT_clear("1- RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
+        TFT_clear("2- DEC", boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
+        TFT_clear("play- finish", boot_disp.column, boot_disp.row + 40, boot_disp.textsize);
 
-        while (entering_DEC)
-        {
-            remote_input_handler_str(entering_dec_exit_handle, input_DEC, play);
-            TFT_dispStr(input_DEC, boot_disp.column, boot_disp.row + 30, boot_disp.textsize);
-        }
+        mode = modes::edit_dec;
     }
+}
+void edit_ra()
+{
+    TFT_dispStr("enter Star RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
+    remote_input_handler_str(entering_ra_exit_handle, input_RA, play);
+    TFT_dispStr(input_RA, boot_disp.column, boot_disp.row + 30, boot_disp.textsize);
+}
+void edit_dec()
+{
+    TFT_dispStr("enter Star Dec", boot_disp.column, boot_disp.row, boot_disp.textsize);
+    remote_input_handler_str(entering_dec_exit_handle, input_DEC, play);
+    TFT_dispStr(input_DEC, boot_disp.column, boot_disp.row + 30, boot_disp.textsize);
 }
 #pragma endregion editing_ra_dec
 bool check_if_calibrated() // run before calculating to ensure that its worth wasting time for calculations
@@ -784,6 +825,7 @@ void offset_disp_exit_procedure()
     clear(input_MAG_DEC, edit_magnetic_var);
     mode = modes::GETTING_STAR_LOCATION;
 }
+#pragma region Remote_control_functions
 void remote_input_handler_str(void_func exitprint, String &result, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3)
 {
     switch (decodeIRfun())
@@ -1023,6 +1065,7 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
         break;
     }
 }
+#pragma endregion Remote_control_functions
 #if DEBUG
 void print_debug_message(int col, int row, uint8_t size)
 {
