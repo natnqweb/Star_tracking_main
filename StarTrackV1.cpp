@@ -1,14 +1,27 @@
 #include "StarTrackV1.h"
-/* todo ::1)try to move motors to correct position
-    allign with north
+/* todo ::
+        1)try to move motors to correct position
+        allign with north
         and allign with measured star position
         first of all i need to estimate how many encoder pulses it takes to move 360
         2)get user input from ir remote  //currently working on
-        - user need to input few things for example 
-        -right Ascension of star and declination of star 
+        - user need to input few things for example // done partialy
+        -right Ascension of star and declination of star // done
         - second thing is offsets for example magnetic declination ( only if we keep using magnetometer) currently im not convinced it will work
         3) add function to handle ir remote input 1 function that will replace all switch cases -- cuurrently working on ---- done! 
             done  18/10/2021
+
+        current work progress: currently we have user input specificly we get some offsets and user now can input star Ra and Declination values from
+        he cab take them from skymap cli app that is avaliable on github natnqweb 
+        work on day : 22.10.2021 :
+            working on adding debug modes for motors to estimate number of pulses for 360 degrees turn and then calculating gear ratio to adjust
+            "allign " with accel and magnetometer
+            deleted sirius pointer and replaced it with struct star that was unnecessary pointer
+            finally detected parameters for both motors and inserted them into code 
+
+
+
+
         
         
  */
@@ -43,7 +56,7 @@ Star::Star(degs azymuth, degs altitude, degs right_ascension, degs declination)
 TinyGPSPlus gps;
 Time t;
 DS3231 rtc(SDA, SCL);
-Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(1132);
+Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(1132); //added custon id  1132
 Adafruit_MPU6050 mpu;
 simpletimer displaytimer;
 simpletimer compass_timer;
@@ -55,9 +68,9 @@ motor motor1(ENCA, ENCB, IN1, IN2);
 motor motor2(ENCA2, ENCB2, IN1_2, IN2_2);
 simpletimer loadingscreen;
 
-Myposition my_location(50.03, 21.01);
-Star star(0, 0, 101.52, -16.7424);
-Star *sirius = &star;
+Myposition my_location(50.03, 21.01); //location for tarnów
+Star star(0, 0, 101.52, -16.7424);    //Sirius ra and dec at start
+
 #pragma endregion constructors
 #pragma region functions
 void laser(bool on_off)
@@ -67,13 +80,13 @@ void laser(bool on_off)
 }
 void allign_with_star()
 {
-    if (ready_to_move == true && sirius->azymuth != my_location.azymuth)
+    if (ready_to_move == true && star.azymuth != my_location.azymuth)
     {
-        float dAzymuth = abs(my_location.azymuth - sirius->azymuth);
+        float dAzymuth = abs(my_location.azymuth - star.azymuth);
         LOG("dAzymuth");
         LOG(dAzymuth);
-        dAzymuth *= constants::gear_constant; //numcer of pulses to move
-                                              // dAzymuth *= constants::gear_constant
+        dAzymuth *= constants::motor1_gear_ratio; //numcer of pulses to move
+                                                  // dAzymuth *= constants::motor1_gear_ratio
         //todo move to the star position
         // if (ready_to_move)
         // {
@@ -183,6 +196,8 @@ void initialize_()
     start_debuging(constants::Serial_Baud);
     motor1.init(constants::kp, constants::ki, constants::kd);
     motor2.init(constants::kp, constants::ki, constants::kd);
+    motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
+    motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
     pinMode(Laser_pin, OUTPUT);
 
     rtc.begin();
@@ -214,9 +229,8 @@ void decodeIR()
         break;
     case zero:
 
-        static bool laser_mode = false;
-        laser_mode ? laser(on) : laser(off);
         laser_mode = !laser_mode;
+        laser_mode ? laser(on) : laser(off);
         break;
     }
 }
@@ -252,23 +266,23 @@ void calculate_starposition()
                                         MIN,
                                         SEKUNDA,
                                         offsets::timezone_offset);
-        // sirius->right_ascension = 101.52;
-        // sirius->declination = -16.7424;
+        // star.right_ascension = 101.52;
+        // star.declination = -16.7424;
         if (my_location.latitude != 0 && my_location.longitude != 0)
         {
 
             startracker.update(my_location.latitude,
                                my_location.longitude,
-                               sirius->declination,
-                               sirius->right_ascension,
+                               star.declination,
+                               star.right_ascension,
                                year,
                                month,
                                day,
                                TIME);
             GPS_status = true;
 
-            sirius->azymuth = startracker.get_star_Azymuth();
-            sirius->altitude = startracker.get_star_Altitude();
+            star.azymuth = startracker.get_star_Azymuth();
+            star.altitude = startracker.get_star_Altitude();
             mode = modes::POINTING_TO_STAR;
             ready_to_move = true;
         }
@@ -330,51 +344,57 @@ void updateDisplay()
         mainscreen.next_column(23);
         print("laser angle", mainscreen);
         mainscreen.next_column(18);
-        String l_ang = String(pointing_altitude);
+        laser_angle_buff.disp = String(pointing_altitude);
+        dynamic_print(mainscreen, laser_angle_buff);
+        /*        String l_ang = String(pointing_altitude);
         if (!l_ang.equals(bfstr11))
         {
             clear(bfstr11, mainscreen);
             bfstr11 = l_ang;
             print(l_ang, mainscreen);
-        }
+        } */
         mainscreen.reset_cursor();
         mainscreen.next_row(2);
         mainscreen.next_column(23);
         print("Az_angle", mainscreen);
         mainscreen.next_column(18);
-        String az_ang = String(my_location.azymuth);
+        az_buff.disp = String(my_location.azymuth);
+        dynamic_print(mainscreen, az_buff);
+        /*  String az_ang = String(my_location.azymuth);
         if (!az_ang.equals(bfstr12))
         {
             clear(bfstr12, mainscreen);
             bfstr12 = az_ang;
             print(az_ang, mainscreen);
-        }
+        } */
         mainscreen.reset_cursor();
         mainscreen.next_row(4);
         mainscreen.next_column(23);
         print("Rekt.", mainscreen);
         mainscreen.next_column(18);
         ra_buff.disp = (String)star.right_ascension;
-
-        if (!ra_buff.disp.equals(ra_buff.buff))
+        dynamic_print(mainscreen, ra_buff);
+        /*         if (!ra_buff.disp.equals(ra_buff.buff))
         {
             clear(ra_buff.buff, mainscreen);
             ra_buff.buff = ra_buff.disp;
             print(ra_buff.disp, mainscreen);
-        }
+        } */
+
         mainscreen.reset_cursor();
         mainscreen.next_row(6);
         mainscreen.next_column(23);
         print("Deklinacja.", mainscreen);
         mainscreen.next_column(18);
         dec_buff.disp = (String)star.declination;
+        dynamic_print(mainscreen, dec_buff);
 
-        if (!dec_buff.disp.equals(dec_buff.buff))
+        /*     if (!dec_buff.disp.equals(dec_buff.buff))
         {
             clear(dec_buff.buff, mainscreen);
             dec_buff.buff = dec_buff.disp;
             print(dec_buff.disp, mainscreen);
-        }
+        } */
         mainscreen.reset_cursor();
 
         //other method of printing to tft
@@ -395,14 +415,14 @@ void updateDisplay()
                 bufferstr3 = val3;
                 TFT_dispStr(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
             }
-            String val4 = String(sirius->azymuth);
+            String val4 = String(star.azymuth);
             if (!val4.equals(bufferstr4))
             {
                 TFT_clear(bufferstr4, 8 * 7 * 2, mainscreen.row + 36 * 2, mainscreen.textsize);
                 bufferstr4 = val4;
                 TFT_dispStr(bufferstr4, 8 * 7 * 2, mainscreen.row + 36 * 2, mainscreen.textsize);
             }
-            String val5 = String(sirius->altitude);
+            String val5 = String(star.altitude);
             if (!val5.equals(bufferstr5))
             {
                 TFT_clear(bufferstr5, 8 * 7 * 2, mainscreen.row + 48 * 2, mainscreen.textsize);
@@ -494,22 +514,12 @@ void TFT_clear(String strr, int column, int row, uint8_t textsize)
 void Az_engine(float &target) //need to be in some standalone function cuz it is not attached to pin interuppt
 {
 
-    target = long(target);
     motor1.set_target(target);
     motor1.start();
-
-    if (motor1.get_position() == target)
-    {
-        motor1.turn_off();
-    }
-    else
-    {
-        motor1.turn_on();
-    }
 }
 void Alt_engine(float &target)
 {
-    target = long(target);
+    target = round(target);
 }
 #pragma region init_procedure
 void boot_init_exit_func1()
@@ -593,9 +603,8 @@ void boot_init_procedure()
         read_compass();
         updateAccel();
         readGPS();
+        delay(100);
         new_starting_position();
-
-        motor1.set_position(long(my_location.azymuth * 2.5));
         delay(100);
 
         confirm = false;
@@ -608,10 +617,10 @@ void boot_init_procedure()
 void new_starting_position()
 {
     //todo : define this constatns for motors they may differ significantly
-    starting_position_az = my_location.azymuth * constants::gear_constant;
-    starting_position_alt = pointing_altitude * constants::gear_constant;
-    motor1.set_position(long(starting_position_az));
-    motor2.set_position(long(starting_position_alt));
+    starting_position_az = my_location.azymuth * constants::motor1_gear_ratio;
+    starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
+    motor1.set_position(starting_position_az);
+    motor2.set_position(starting_position_alt);
 }
 uint8_t decodeIRfun()
 {
@@ -761,6 +770,7 @@ void offset_select() // todo: let user enter all offsets independently from this
 }
 
 #pragma endregion offset_selectscrn
+#pragma region display_functions
 void clear(String sentence, displayconfig &cnfg)
 {
     TFT_clear(sentence, cnfg.column, cnfg.row, cnfg.textsize);
@@ -769,11 +779,21 @@ void print(String sentence, displayconfig &cnfg)
 {
     TFT_dispStr(sentence, cnfg.column, cnfg.row, cnfg.textsize);
 }
+void dynamic_print(displayconfig &cnfg, buffers &buffs)
+{
+    if (!buffs.disp.equals(buffs.buff))
+    {
+        clear(buffs.buff, cnfg);
+        buffs.buff = buffs.disp;
+        print(buffs.buff, cnfg);
+    }
+}
 void clear_all()
 {
     TFTscreen.fillScreen(HX8357_BLACK);
 }
 
+#pragma endregion display_function
 void safety_motor_position_control() // turn off motor if laser is to far up or down
 {
     if (pointing_altitude > 90 || pointing_altitude < -10)
@@ -1070,6 +1090,40 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
 void print_debug_message(int col, int row, uint8_t size)
 {
     TFT_dispStr("debug", col, row, size);
+}
+void debug_motors()
+{
+
+    /*   motor2.set_target(710);
+    motor2.limit(120, 255);
+    motor2.start(); */
+    motor1.set_target(-900);
+    motor1.limit(0, 120);
+    motor1.start();
+    /* MOTOR1
+    during debugging i found settings for second motor witch are 
+    same kp kd and ki as motor2 and limitits upper 120 lower 0 
+    exactly 900 impulses per 360 degrees
+    0.4 degrees per pulse
+    */
+
+    /* MOTOR2
+    setting chosen during debuging for upper laser motor 
+    is 
+    kp 10 
+    kd 0.1 
+    ki 0.01
+    limit lower :120 upper :255
+    710-impulses for 90 degrees 
+    that gives 2840 impulses per 360 degrees
+    that gives 0.127degrees per pulse
+    */
+
+    //debug_motor_display.reset_cursor();
+    // print("position:", debug_motor_display);
+    // debug_motor_display.next_column(15);
+    // debugbuffer.disp = String(motor2.get_position());
+    // dynamic_print(debug_motor_display, debugbuffer);
 }
 void debug_rtc()
 {

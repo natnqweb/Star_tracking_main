@@ -52,25 +52,22 @@ void loop()
         break;
 
     default:
-
+#if DEBUG
         while (DEBUG) // loop for debbuging purposes
         {
-            RTC_calibration();
-            readGPS();
-            read_compass();
-            updateAccel();
-            calculate_starposition();
-            updateDisplay();
-            decodeIR();
-            //static String msss;
-            //remote_input_handler_str(print_exiting, msss, play);
+            //RTC_calibration();
+            //readGPS();
+            //read_compass();
+            // updateAccel();
+            // calculate_starposition();
+            // updateDisplay();
+            // decodeIR();
             //LOG(msss);
+            debug_motors();
         }
+#endif
 
         mode = modes::INIT_PROCEDURE;
         break;
     }
-}
-void print_exiting()
-{
 }

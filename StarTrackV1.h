@@ -17,8 +17,13 @@
 #include <Motor_PID.h>
 #pragma endregion includes
 #pragma region definitions
+#define right 1
+#define left -1
+#define up 1
+#define down -1
 #pragma region macros_debg
-#define DEBUG false // enable or disable debug messages
+
+#define DEBUG true // enable or disable debug messages
 #ifndef DEBUG
 #define DEBUG false
 #endif
@@ -185,20 +190,24 @@ namespace constants //some usefull constants to for calibration and configuratio
 {
     const float number_of_measurements = 10;
     const double pi = 3.1415926536;
-    const uint8_t motor_gear_ratio = 65;
-    const uint8_t gear_constant = 5;
+    const float motor2_gear_ratio = 7.874;
+    const float motor1_gear_ratio = 2.5;
     const unsigned int GPSBaud = 9600;
     const unsigned long Serial_Baud = 115200;
     //const unsigned int HALFSTEPS = 4096; // Number of half-steps for a full rotation
-    const float kp = 1.7;
-    const float kd = 0.018;
-    const float ki = 0.15;
-
+    const float kp = 10;
+    const float kd = 0.1;
+    const float ki = 0.01;
+    const int motor1_lower_limit = 0;
+    const int motor1_upper_limit = 120;
+    const int motor2_lower_limit = 120;
+    const int motor2_upper_limit = 255;
 };
 #pragma endregion namespaces
 #pragma region variables
-buffers ra_buff, dec_buff;
+buffers ra_buff, dec_buff, az_buff, laser_angle_buff;
 String input_MAG_DEC;
+bool laser_mode = false;
 bool setmode, confirm;
 auto offset_edit_mode = offset_editing::NOT_SET;
 auto mode = modes::MAIN;
@@ -246,9 +255,9 @@ void updateDisplay();
 void laser(bool on_off);
 void TFT_dispStr(String str, int column, int row, uint8_t textsize = 1);
 void TFT_clear(String strr, int column, int row, uint8_t textsize = 1);
-//static void smartDelay(unsigned long ms = 0);
+//main function that preforms astronomy calculations based on current time and location
 void calculate_starposition();
-void submit_data();
+
 void input_offsets();
 void Az_engine(float &target);  // function take target to follow and getting it by reference . for azymuth motor
 void Alt_engine(float &target); // function take target to follow and getting it by reference . for altitude motor
@@ -257,9 +266,9 @@ void allign_with_star();
 uint8_t decodeIRfun();
 bool check_if_calibrated();
 void edit_Ra_Dec();
-//void mode_selection();
-//void IRremote_callback(void_func, uint8_t); //function will run only if specific command was detected
-void print(String, displayconfig &);
+// when value changes refresh display clear previous displayed value and print new one
+void dynamic_print(displayconfig &, buffers &);
+void print(String, displayconfig &); //this custom function for printing it takes dislayconfig as a parameter to control where the disp cursor is
 void clear(String, displayconfig &);
 void compass_init();
 void new_starting_position();
@@ -270,12 +279,17 @@ void empty_function()
 }
 void edit_dec();
 void edit_ra();
+// this functions saves in string every clicked button and performs exitfnct when irremote input matches expected command can take up to 3 functions
 void remote_input_handler_str(void_func, String &, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0);
+// function that takes void functions as parameters and performs whats inside them only if ir reemote decodes given command can take up to 3 functions
 void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0);
-
+//code specific for debuging purposes only if debug not true this code is not visible for compiler
 #if DEBUG
 void print_debug_message(int col = 0, int row = 0, uint8_t size = 1);
 void debug_rtc();
+void debug_motors();
+displayconfig debug_motor_display;
+buffers debugbuffer;
 #endif
 #pragma endregion function_prototypes
 #endif
