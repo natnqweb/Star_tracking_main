@@ -16,6 +16,13 @@ void loop()
 
     switch (mode)
     {
+    case modes::EDIT_LAT:
+        edit_lat();
+
+        break;
+    case modes::EDIT_LONG:
+        edit_long();
+        break;
     case modes::edit_RA:
         edit_ra();
         break;

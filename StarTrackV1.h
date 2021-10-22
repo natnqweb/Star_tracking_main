@@ -23,7 +23,7 @@
 #define down -1
 #pragma region macros_debg
 
-#define DEBUG true // enable or disable debug messages
+#define DEBUG false // enable or disable debug messages
 #ifndef DEBUG
 #define DEBUG false
 #endif
@@ -87,7 +87,9 @@ enum class modes
     OFFSET_EDIT = 5,
     SELECT_OFFSET = 6,
     edit_RA = 7,
-    edit_dec = 8
+    edit_dec = 8,
+    EDIT_LAT = 9,
+    EDIT_LONG = 10
 
 };
 enum remote_commands : unsigned char // all commands from ir remote
@@ -225,8 +227,8 @@ bool GPS_status = false;
 float accelXsum = 0;
 float accelYsum = 0;
 float accelZsum = 0;
-bool entering_DEC = false, entering_RA = false;
-String input_RA, input_DEC;
+bool entering_DEC = false, entering_RA = false, automatic_mode = true;
+String input_RA, input_DEC, input_LAT, input_LONG;
 sensors_event_t a, g, temp;
 
 sensors_event_t compass_event;
@@ -236,7 +238,7 @@ displayconfig boot_init_disp;
 displayconfig boot_disp;
 displayconfig edit_magnetic_var;
 displayconfig offsets_screen;
-
+displayconfig lat_long_disp;
 #pragma endregion variables
 #pragma region custom_typedefs
 typedef void (*void_func)(void);
@@ -279,10 +281,12 @@ void empty_function()
 }
 void edit_dec();
 void edit_ra();
+void edit_lat();
+void edit_long();
 // this functions saves in string every clicked button and performs exitfnct when irremote input matches expected command can take up to 3 functions
-void remote_input_handler_str(void_func, String &, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0);
+void remote_input_handler_str(void_func, String &, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0);
 // function that takes void functions as parameters and performs whats inside them only if ir reemote decodes given command can take up to 3 functions
-void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0);
+void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0);
 //code specific for debuging purposes only if debug not true this code is not visible for compiler
 #if DEBUG
 void print_debug_message(int col = 0, int row = 0, uint8_t size = 1);

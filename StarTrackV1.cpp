@@ -18,6 +18,7 @@
             "allign " with accel and magnetometer
             deleted sirius pointer and replaced it with struct star that was unnecessary pointer
             finally detected parameters for both motors and inserted them into code 
+            also added manual latitude and longitude input by user
 
 
 
@@ -80,7 +81,7 @@ void laser(bool on_off)
 }
 void allign_with_star()
 {
-    if (ready_to_move == true && star.azymuth != my_location.azymuth)
+    if (ready_to_move == true && (motor1.target_reached() == false || motor2.target_reached() == false))
     {
         float dAzymuth = abs(my_location.azymuth - star.azymuth);
         LOG("dAzymuth");
@@ -152,7 +153,7 @@ void RTC_calibration()
         readGPS();
 
         // The following lines can be uncommented to set the date and time
-        rtc.setDOW(SUNDAY);                                                                            // Set Day-of-Week to SUNDAY or whatever day of week it is
+        rtc.setDOW(SATURDAY);                                                                          // Set Day-of-Week to SUNDAY or whatever day of week it is
         rtc.setTime(gps.time.hour() + offsets::timezone_offset, gps.time.minute(), gps.time.second()); // Set the time to 12:00:00 (24hr format)
         rtc.setDate(gps.date.day(), gps.date.month(), gps.date.year());                                // Set the date to January 1st, 2014
     }                                                                                                  // Initialize the rtc object
@@ -240,6 +241,9 @@ void decodeIR()
 
 void readGPS()
 {
+
+    /* code */
+
     while (Serial3.available())
     {
 
@@ -255,8 +259,12 @@ void calculate_starposition()
         day = (float)t.date;
         month = (float)t.mon;
         year = (float)t.year;
-        my_location.latitude = gps.location.lat();
-        my_location.longitude = gps.location.lng();
+        if (automatic_mode)
+        {
+            my_location.latitude = gps.location.lat();
+            my_location.longitude = gps.location.lng();
+        }
+
         LOG(my_location.longitude);
 
         MIN = (float)t.min;
@@ -532,7 +540,7 @@ void boot_init_exit_func1()
     TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
     TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
     TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-    TFT_clear("wartosc++", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+    TFT_clear("twoja lok.", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
     TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
     TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
     TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
@@ -552,7 +560,23 @@ void boot_init_exit_func2()
     TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
     TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
     TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-    TFT_clear("wartosc++", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+    TFT_clear("twoja lok.", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+    TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
+    TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+    TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+    setmode = true;
+}
+void boot_init_exit_func3()
+{
+    mode = modes::EDIT_LAT;
+    TFT_clear("instrukcja:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
+    TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+    TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+    TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
+    TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+    TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+    TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+    TFT_clear("twoja lok.", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
     TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
     TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
     TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
@@ -564,7 +588,7 @@ void boot_init_procedure()
 
     confirm = false;
     setmode = false;
-    remote_input_handler_selector(set_true_confirm, play, boot_init_exit_func1, EQ, boot_init_exit_func2, zero);
+    remote_input_handler_selector(set_true_confirm, play, boot_init_exit_func1, EQ, boot_init_exit_func2, zero, boot_init_exit_func3, plus);
     if (confirm || setmode)
     {
 
@@ -575,7 +599,7 @@ void boot_init_procedure()
         TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
         TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
         TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-        TFT_clear("wartosc++", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+        TFT_clear("twoja lok.", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
         TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
         TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
         TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
@@ -590,7 +614,7 @@ void boot_init_procedure()
         TFT_dispStr("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
         TFT_dispStr("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
         TFT_dispStr("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-        TFT_dispStr("wartosc++", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+        TFT_dispStr("twoja lok.", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
         TFT_dispStr("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
         TFT_dispStr("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
         TFT_dispStr("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
@@ -845,8 +869,46 @@ void offset_disp_exit_procedure()
     clear(input_MAG_DEC, edit_magnetic_var);
     mode = modes::GETTING_STAR_LOCATION;
 }
+#pragma region edit_lat_long_functions
+void exit_lat()
+{
+    clear("wprowadz szerokosc geog.", lat_long_disp);
+    lat_long_disp.next_row(3);
+    clear(input_LAT, lat_long_disp);
+    my_location.latitude = input_LAT.toFloat();
+    lat_long_disp.reset_cursor();
+    mode = modes::EDIT_LONG;
+}
+void exit_long()
+{
+    clear("wprowadz dlugosc geog.", lat_long_disp);
+    lat_long_disp.next_row(3);
+    clear(input_LONG, lat_long_disp);
+    my_location.longitude = input_LONG.toFloat();
+
+    automatic_mode = false;
+    mode = modes::INIT_PROCEDURE;
+}
+void edit_lat()
+{
+
+    print("wprowadz szerokosc geog.", lat_long_disp);
+    lat_long_disp.next_row(3);
+    print(input_LAT, lat_long_disp);
+    lat_long_disp.reset_cursor();
+    remote_input_handler_str(exit_lat, input_LAT, play);
+}
+void edit_long()
+{
+    print("wprowadz dlugosc geog.", lat_long_disp);
+    lat_long_disp.next_row(3);
+    print(input_LONG, lat_long_disp);
+    lat_long_disp.reset_cursor();
+    remote_input_handler_str(exit_long, input_LONG, play);
+}
+#pragma endregion edit_lat_long_functions
 #pragma region Remote_control_functions
-void remote_input_handler_str(void_func exitprint, String &result, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3)
+void remote_input_handler_str(void_func exitprint, String &result, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4)
 {
     switch (decodeIRfun())
     {
@@ -859,6 +921,8 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
             exitprint2();
         else if (number3 == zero)
             exitprint3();
+        else if (number4 == zero)
+            exitprint4();
         break;
     case one:
 
@@ -869,6 +933,8 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
             exitprint2();
         else if (number3 == one)
             exitprint3();
+        else if (number4 == one)
+            exitprint4();
         break;
     case two:
 
@@ -879,6 +945,8 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
             exitprint2();
         else if (number3 == two)
             exitprint3();
+        else if (number4 == two)
+            exitprint4();
         break;
     case three:
 
@@ -889,6 +957,8 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
             exitprint2();
         else if (number3 == three)
             exitprint3();
+        else if (number4 == three)
+            exitprint4();
         break;
     case four:
 
@@ -899,6 +969,8 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
             exitprint2();
         else if (number3 == four)
             exitprint3();
+        else if (number4 == four)
+            exitprint4();
         break;
     case five:
 
@@ -909,6 +981,8 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
             exitprint2();
         else if (number3 == five)
             exitprint3();
+        else if (number4 == five)
+            exitprint4();
         break;
     case six:
 
@@ -919,6 +993,8 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
             exitprint2();
         else if (number3 == six)
             exitprint3();
+        else if (number4 == six)
+            exitprint4();
         break;
     case seven:
 
@@ -929,6 +1005,8 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
             exitprint2();
         else if (number3 == seven)
             exitprint3();
+        else if (number4 == seven)
+            exitprint4();
         break;
     case eight:
 
@@ -939,6 +1017,8 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
             exitprint2();
         else if (number3 == eight)
             exitprint3();
+        else if (number4 == eight)
+            exitprint4();
         break;
     case nine:
 
@@ -949,6 +1029,8 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
             exitprint2();
         else if (number3 == nine)
             exitprint3();
+        else if (number4 == nine)
+            exitprint4();
         break;
     case EQ:
 
@@ -959,6 +1041,8 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
             exitprint2();
         else if (number3 == EQ)
             exitprint3();
+        else if (number4 == EQ)
+            exitprint4();
         break;
     case play:
         if (number == play)
@@ -967,11 +1051,24 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
             exitprint2();
         else if (number3 == play)
             exitprint3();
+        else if (number4 == play)
+            exitprint4();
+
+        break;
+    case plus:
+        if (number == plus)
+            exitprint();
+        else if (number2 == plus)
+            exitprint2();
+        else if (number3 == plus)
+            exitprint3();
+        else if (number4 == plus)
+            exitprint4();
 
         break;
     }
 }
-void remote_input_handler_selector(void_func exitprint, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3)
+void remote_input_handler_selector(void_func exitprint, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4)
 {
     switch (decodeIRfun())
     {
@@ -983,6 +1080,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint2();
         else if (number3 == zero)
             exitprint3();
+        else if (number4 == zero)
+            exitprint4();
         break;
     case one:
 
@@ -992,6 +1091,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint2();
         else if (number3 == one)
             exitprint3();
+        else if (number4 == one)
+            exitprint4();
         break;
     case two:
 
@@ -1001,6 +1102,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint2();
         else if (number3 == two)
             exitprint3();
+        else if (number4 == two)
+            exitprint4();
         break;
     case three:
 
@@ -1010,6 +1113,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint2();
         else if (number3 == three)
             exitprint3();
+        else if (number4 == three)
+            exitprint4();
         break;
     case four:
 
@@ -1019,6 +1124,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint2();
         else if (number3 == four)
             exitprint3();
+        else if (number4 == four)
+            exitprint4();
         break;
     case five:
 
@@ -1028,6 +1135,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint2();
         else if (number3 == five)
             exitprint3();
+        else if (number4 == five)
+            exitprint4();
         break;
     case six:
 
@@ -1037,6 +1146,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint2();
         else if (number3 == six)
             exitprint3();
+        else if (number4 == six)
+            exitprint4();
         break;
     case seven:
 
@@ -1046,6 +1157,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint2();
         else if (number3 == seven)
             exitprint3();
+        else if (number4 == seven)
+            exitprint4();
         break;
     case eight:
 
@@ -1055,6 +1168,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint2();
         else if (number3 == eight)
             exitprint3();
+        else if (number4 == eight)
+            exitprint4();
         break;
     case nine:
 
@@ -1064,6 +1179,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint2();
         else if (number3 == nine)
             exitprint3();
+        else if (number4 == nine)
+            exitprint4();
         break;
     case EQ:
 
@@ -1073,6 +1190,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint2();
         else if (number3 == EQ)
             exitprint3();
+        else if (number4 == EQ)
+            exitprint4();
         break;
     case play:
         if (number == play)
@@ -1081,6 +1200,19 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint2();
         else if (number3 == play)
             exitprint3();
+        else if (number4 == play)
+            exitprint4();
+
+        break;
+    case plus:
+        if (number == plus)
+            exitprint();
+        else if (number2 == plus)
+            exitprint2();
+        else if (number3 == plus)
+            exitprint3();
+        else if (number4 == plus)
+            exitprint4();
 
         break;
     }
