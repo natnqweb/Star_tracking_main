@@ -21,6 +21,7 @@
             also added manual latitude and longitude input by user
             23.10.2021 :
             added language support english and polish currently are supported
+            added exit from displayfunction and clear screen and empty buffer to structure to free existing buffer
 
 
 
