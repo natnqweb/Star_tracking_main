@@ -3,6 +3,7 @@
 #define StarTrackV1_h
 #pragma region includes
 #include <Arduino.h>
+#include "language.h"
 #include <DS3231.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_HX8357.h>
@@ -21,6 +22,7 @@
 #define left -1
 #define up 1
 #define down -1
+#define EMPTYSTRING ""
 #pragma region macros_debg
 
 #define DEBUG false // enable or disable debug messages
@@ -124,6 +126,10 @@ struct buffers
 {
     String buff;
     String disp;
+    void clear_buffer()
+    {
+        buff = EMPTYSTRING;
+    }
 };
 struct Myposition //struct to store location specific information
 {
@@ -228,7 +234,7 @@ float accelXsum = 0;
 float accelYsum = 0;
 float accelZsum = 0;
 bool entering_DEC = false, entering_RA = false, automatic_mode = true;
-String input_RA, input_DEC, input_LAT, input_LONG;
+String input_RA, input_DEC, input_lat, input_long;
 sensors_event_t a, g, temp;
 
 sensors_event_t compass_event;
@@ -254,6 +260,7 @@ void RTC_calibration();
 void readGPS();
 void updateAccel();
 void updateDisplay();
+void clearDisplay();
 void laser(bool on_off);
 void TFT_dispStr(String str, int column, int row, uint8_t textsize = 1);
 void TFT_clear(String strr, int column, int row, uint8_t textsize = 1);

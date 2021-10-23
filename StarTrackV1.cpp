@@ -19,6 +19,8 @@
             deleted sirius pointer and replaced it with struct star that was unnecessary pointer
             finally detected parameters for both motors and inserted them into code 
             also added manual latitude and longitude input by user
+            23.10.2021 :
+            added language support english and polish currently are supported
 
 
 
@@ -220,7 +222,8 @@ void decodeIR()
     {
 
     case plus:
-        //  mode == 3 ? mode = 0 : mode += 1;
+        clearDisplay();
+        mode = modes::INIT_PROCEDURE;
         break;
     case minus:
         //  mode == 0 ? mode = 3 : mode -= 1;
@@ -331,26 +334,90 @@ void updateAccel()
         LOG(pointing_altitude);
     }
 }
+void clearDisplay()
+{
+    mainscreen.reset_cursor();
+    TFT_clear(un_long, mainscreen.column, mainscreen.row, mainscreen.textsize);
+    TFT_clear(un_lat, mainscreen.column, mainscreen.row + 12 * 2, mainscreen.textsize);
+    TFT_clear(un_second, mainscreen.column, mainscreen.row + 24 * 2, mainscreen.textsize);
+    TFT_clear(un_azymuth, mainscreen.column, mainscreen.row + 36 * 2, mainscreen.textsize);
+    TFT_clear(un_altitude, mainscreen.column, mainscreen.row + 48 * 2, mainscreen.textsize);
+    TFT_clear(un_year, mainscreen.column, mainscreen.row + 60 * 2, mainscreen.textsize);
+    TFT_clear(un_month, mainscreen.column, mainscreen.row + 72 * 2, mainscreen.textsize);
+    TFT_clear(un_day, mainscreen.column, mainscreen.row + 84 * 2, mainscreen.textsize);
+    TFT_clear(un_time_utc, mainscreen.column, mainscreen.row + 96 * 2, mainscreen.textsize);
+    TFT_clear(un_calibration, mainscreen.column, mainscreen.row + 108 * 2, mainscreen.textsize);
+    mainscreen.next_column(23);
+    clear(un_laser_angle, mainscreen);
+    mainscreen.next_column(18);
 
+    clear(laser_angle_buff.disp, mainscreen);
+    laser_angle_buff.clear_buffer();
+    mainscreen.reset_cursor();
+    mainscreen.next_row(2);
+    mainscreen.next_column(23);
+    clear(un_azymuth, mainscreen);
+    mainscreen.next_column(18);
+    clear(az_buff.disp, mainscreen);
+    az_buff.clear_buffer();
+    mainscreen.reset_cursor();
+    mainscreen.next_row(4);
+    mainscreen.next_column(23);
+    clear(un_right_ascension, mainscreen);
+    mainscreen.next_column(18);
+    clear(ra_buff.disp, mainscreen);
+    ra_buff.clear_buffer();
+    mainscreen.reset_cursor();
+    mainscreen.next_row(6);
+    mainscreen.next_column(23);
+    clear(un_declination, mainscreen);
+    mainscreen.next_column(18);
+    clear(dec_buff.disp, mainscreen);
+    dec_buff.clear_buffer();
+    mainscreen.reset_cursor();
+    TFT_clear(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
+
+    TFT_clear(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
+    TFT_clear(bufferstr4, 8 * 7 * 2, mainscreen.row + 36 * 2, mainscreen.textsize);
+    TFT_clear(bufferstr5, 8 * 7 * 2, mainscreen.row + 48 * 2, mainscreen.textsize);
+
+    TFT_clear(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
+    TFT_clear(bufferstr2, mainscreen.column + (8 * 6) * 2, mainscreen.row + 24 * 2, mainscreen.textsize);
+    TFT_clear(bufferstr6, 8 * 7 * 2, mainscreen.row + 60 * 2, mainscreen.textsize);
+    TFT_clear(bufferstr7, 8 * 7 * 2, mainscreen.row + 72 * 2, mainscreen.textsize);
+    TFT_clear(bufferstr8, 8 * 7 * 2, mainscreen.row + 84 * 2, mainscreen.textsize);
+    TFT_clear(bufferstr9, 8 * 7 * 2, mainscreen.row + 96 * 2, mainscreen.textsize);
+    TFT_clear(bufferstr10, 8 * 10 * 2, mainscreen.row + 108 * 2, mainscreen.textsize);
+    bufferstr = EMPTYSTRING;
+    bufferstr3 = EMPTYSTRING;
+    bufferstr4 = EMPTYSTRING;
+    bufferstr5 = EMPTYSTRING;
+    bufferstr2 = EMPTYSTRING;
+    bufferstr6 = EMPTYSTRING;
+    bufferstr7 = EMPTYSTRING;
+    bufferstr8 = EMPTYSTRING;
+    bufferstr9 = EMPTYSTRING;
+    bufferstr10 = EMPTYSTRING;
+}
 void updateDisplay()
 {
     if (displaytimer.timer(refresh::TFT_refresh_rate))
     {
         LOG("display updated");
         mainscreen.reset_cursor();
-        TFT_dispStr("long:", mainscreen.column, mainscreen.row, mainscreen.textsize);
-        TFT_dispStr("lat:", mainscreen.column, mainscreen.row + 12 * 2, mainscreen.textsize);
-        TFT_dispStr("seconds", mainscreen.column, mainscreen.row + 24 * 2, mainscreen.textsize);
-        TFT_dispStr("azymuth:", mainscreen.column, mainscreen.row + 36 * 2, mainscreen.textsize);
-        TFT_dispStr("altitude:", mainscreen.column, mainscreen.row + 48 * 2, mainscreen.textsize);
-        TFT_dispStr("year:", mainscreen.column, mainscreen.row + 60 * 2, mainscreen.textsize);
-        TFT_dispStr("month:", mainscreen.column, mainscreen.row + 72 * 2, mainscreen.textsize);
-        TFT_dispStr("day:", mainscreen.column, mainscreen.row + 84 * 2, mainscreen.textsize);
-        TFT_dispStr("time:", mainscreen.column, mainscreen.row + 96 * 2, mainscreen.textsize);
-        TFT_dispStr("calibration:", mainscreen.column, mainscreen.row + 108 * 2, mainscreen.textsize);
+        TFT_dispStr(un_long, mainscreen.column, mainscreen.row, mainscreen.textsize);
+        TFT_dispStr(un_lat, mainscreen.column, mainscreen.row + 12 * 2, mainscreen.textsize);
+        TFT_dispStr(un_second, mainscreen.column, mainscreen.row + 24 * 2, mainscreen.textsize);
+        TFT_dispStr(un_azymuth, mainscreen.column, mainscreen.row + 36 * 2, mainscreen.textsize);
+        TFT_dispStr(un_altitude, mainscreen.column, mainscreen.row + 48 * 2, mainscreen.textsize);
+        TFT_dispStr(un_year, mainscreen.column, mainscreen.row + 60 * 2, mainscreen.textsize);
+        TFT_dispStr(un_month, mainscreen.column, mainscreen.row + 72 * 2, mainscreen.textsize);
+        TFT_dispStr(un_day, mainscreen.column, mainscreen.row + 84 * 2, mainscreen.textsize);
+        TFT_dispStr(un_time_utc, mainscreen.column, mainscreen.row + 96 * 2, mainscreen.textsize);
+        TFT_dispStr(un_calibration, mainscreen.column, mainscreen.row + 108 * 2, mainscreen.textsize);
         //other method
         mainscreen.next_column(23);
-        print("laser angle", mainscreen);
+        print(un_laser_angle, mainscreen);
         mainscreen.next_column(18);
         laser_angle_buff.disp = String(pointing_altitude);
         dynamic_print(mainscreen, laser_angle_buff);
@@ -364,7 +431,7 @@ void updateDisplay()
         mainscreen.reset_cursor();
         mainscreen.next_row(2);
         mainscreen.next_column(23);
-        print("Az_angle", mainscreen);
+        print(un_azymuth, mainscreen);
         mainscreen.next_column(18);
         az_buff.disp = String(my_location.azymuth);
         dynamic_print(mainscreen, az_buff);
@@ -378,7 +445,7 @@ void updateDisplay()
         mainscreen.reset_cursor();
         mainscreen.next_row(4);
         mainscreen.next_column(23);
-        print("Rekt.", mainscreen);
+        print(un_right_ascension, mainscreen);
         mainscreen.next_column(18);
         ra_buff.disp = (String)star.right_ascension;
         dynamic_print(mainscreen, ra_buff);
@@ -392,7 +459,7 @@ void updateDisplay()
         mainscreen.reset_cursor();
         mainscreen.next_row(6);
         mainscreen.next_column(23);
-        print("Deklinacja.", mainscreen);
+        print(un_declination, mainscreen);
         mainscreen.next_column(18);
         dec_buff.disp = (String)star.declination;
         dynamic_print(mainscreen, dec_buff);
@@ -533,17 +600,17 @@ void Alt_engine(float &target)
 void boot_init_exit_func1()
 {
     mode = modes::SELECT_OFFSET;
-    TFT_clear("instrukcja:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
+    TFT_clear(un_instruction, boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
     TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
     TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
     TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
     TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
     TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-    TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-    TFT_clear("twoja lok.", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+    TFT_clear(un_set_mag_declination, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+    TFT_clear(un_your_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
     TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-    TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-    TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+    TFT_clear(un_submit_continue, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+    TFT_clear(un_star_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
     setmode = true;
 }
 void set_true_confirm()
@@ -553,33 +620,33 @@ void set_true_confirm()
 void boot_init_exit_func2()
 {
     mode = modes::SETTINGS;
-    TFT_clear("instrukcja:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
+    TFT_clear(un_instruction, boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
     TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
     TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
     TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
     TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
     TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-    TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-    TFT_clear("twoja lok.", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+    TFT_clear(un_set_mag_declination, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+    TFT_clear(un_your_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
     TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-    TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-    TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+    TFT_clear(un_submit_continue, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+    TFT_clear(un_star_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
     setmode = true;
 }
 void boot_init_exit_func3()
 {
     mode = modes::EDIT_LAT;
-    TFT_clear("instrukcja:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
+    TFT_clear(un_instruction, boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
     TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
     TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
     TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
     TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
     TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-    TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-    TFT_clear("twoja lok.", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+    TFT_clear(un_set_mag_declination, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+    TFT_clear(un_your_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
     TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-    TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-    TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+    TFT_clear(un_submit_continue, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+    TFT_clear(un_star_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
     setmode = true;
 }
 void boot_init_procedure()
@@ -592,32 +659,32 @@ void boot_init_procedure()
     if (confirm || setmode)
     {
 
-        TFT_clear("instrukcja:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
+        TFT_clear(un_instruction, boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
         TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
         TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
         TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
         TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
         TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-        TFT_clear("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-        TFT_clear("twoja lok.", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+        TFT_clear(un_set_mag_declination, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+        TFT_clear(un_your_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
         TFT_clear("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-        TFT_clear("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-        TFT_clear("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+        TFT_clear(un_submit_continue, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+        TFT_clear(un_star_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
     }
     else
     {
 
-        TFT_dispStr("instrukcja:", boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
+        TFT_dispStr(un_instruction, boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
         TFT_dispStr("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
         TFT_dispStr("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
         TFT_dispStr("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
         TFT_dispStr("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
         TFT_dispStr("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-        TFT_dispStr("Ustw.mag.deklinacje", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-        TFT_dispStr("twoja lok.", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
+        TFT_dispStr(un_set_mag_declination, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
+        TFT_dispStr(un_your_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
         TFT_dispStr("wartosc--", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-        TFT_dispStr("potwierdz/kontynuuj", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-        TFT_dispStr("wsp. gwiazdy", boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+        TFT_dispStr(un_submit_continue, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
+        TFT_dispStr(un_star_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
     }
 
     static int mess_row = 0;
@@ -675,57 +742,68 @@ uint8_t decodeIRfun()
 void entering_dec_exit_handle()
 {
 
+    TFT_clear(un_enter_star_dec, boot_disp.column, boot_disp.row, boot_disp.textsize);
+    boot_disp.row += 30;
+    TFT_clear(input_DEC, boot_disp.column, boot_disp.row, boot_disp.textsize);
+    boot_disp.reset_cursor();
     star.declination = input_DEC.toFloat();
-    TFT_clear("enter Star Dec", boot_disp.column, boot_disp.row, boot_disp.textsize);
-    TFT_clear(input_DEC, boot_disp.column, boot_disp.row + 30, boot_disp.textsize);
     entering_DEC = true;
-    entering_RA ? mode = modes::GETTING_STAR_LOCATION : mode = modes::edit_RA;
+    entering_RA ? mode = modes::INIT_PROCEDURE : mode = modes::edit_RA;
 }
 void entering_ra_exit_handle()
 {
 
+    TFT_clear(un_enter_star_ra, boot_disp.column, boot_disp.row, boot_disp.textsize);
+    boot_disp.row += 30;
+    TFT_clear(input_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
+    boot_disp.reset_cursor();
     star.right_ascension = input_RA.toFloat();
-    TFT_clear("enter Star RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
-    TFT_clear(input_RA, boot_disp.column, boot_disp.row + 30, boot_disp.textsize);
     entering_RA = true;
-    entering_DEC ? mode = modes::GETTING_STAR_LOCATION : mode = modes::edit_dec;
+    entering_DEC ? mode = modes::INIT_PROCEDURE : mode = modes::edit_dec;
 }
 void edit_Ra_Dec() // todo : make interface for entering Ra and Dec after booting
 {
     boot_disp.reset_cursor();
 
-    TFT_dispStr("1- RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
-    TFT_dispStr("2- DEC", boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
-    TFT_dispStr("play- finish", boot_disp.column, 40, boot_disp.textsize);
+    TFT_dispStr(un_setting_1_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
+    TFT_dispStr(un_setting_2_DEC, boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
+    TFT_dispStr(un_setting_play, boot_disp.column, 40, boot_disp.textsize);
 
     if (decodeIRfun() == one)
     {
-        TFT_clear("1- RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
-        TFT_clear("2- DEC", boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
-        TFT_clear("play- finish", boot_disp.column, boot_disp.row + 40, boot_disp.textsize);
+        TFT_clear(un_setting_1_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
+        TFT_clear(un_setting_2_DEC, boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
+        TFT_clear(un_setting_play, boot_disp.column, boot_disp.row + 40, boot_disp.textsize);
 
         mode = modes::edit_RA;
     }
     else if (decodeIRfun() == two)
     {
-        TFT_clear("1- RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
-        TFT_clear("2- DEC", boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
-        TFT_clear("play- finish", boot_disp.column, boot_disp.row + 40, boot_disp.textsize);
+        TFT_clear(un_setting_1_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
+        TFT_clear(un_setting_2_DEC, boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
+        TFT_clear(un_setting_play, boot_disp.column, boot_disp.row + 40, boot_disp.textsize);
 
         mode = modes::edit_dec;
     }
 }
 void edit_ra()
 {
-    TFT_dispStr("enter Star RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
+    TFT_dispStr(un_enter_star_ra, boot_disp.column, boot_disp.row, boot_disp.textsize);
+
+    boot_disp.row += 30;
+    TFT_dispStr(input_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
+    boot_disp.reset_cursor();
     remote_input_handler_str(entering_ra_exit_handle, input_RA, play);
-    TFT_dispStr(input_RA, boot_disp.column, boot_disp.row + 30, boot_disp.textsize);
+    boot_disp.reset_cursor();
 }
 void edit_dec()
 {
-    TFT_dispStr("enter Star Dec", boot_disp.column, boot_disp.row, boot_disp.textsize);
+    TFT_dispStr(un_enter_star_dec, boot_disp.column, boot_disp.row, boot_disp.textsize);
+    boot_disp.row += 30;
+    TFT_dispStr(input_DEC, boot_disp.column, boot_disp.row, boot_disp.textsize);
+    boot_disp.reset_cursor();
     remote_input_handler_str(entering_dec_exit_handle, input_DEC, play);
-    TFT_dispStr(input_DEC, boot_disp.column, boot_disp.row + 30, boot_disp.textsize);
+    boot_disp.reset_cursor();
 }
 #pragma endregion editing_ra_dec
 bool check_if_calibrated() // run before calculating to ensure that its worth wasting time for calculations
@@ -748,9 +826,9 @@ void offset_select_remote_exit_play()
     clear("2-", offsets_screen);
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
-    clear("enter accel_offset", offsets_screen);
+    clear(un_enter_accel_offset, offsets_screen);
     offsets_screen.next_row(2);
-    clear("enter azymuth offset", offsets_screen);
+    clear(un_enter_az_offset, offsets_screen);
     mode = modes::GETTING_STAR_LOCATION;
 }
 void offset_select_remote_exit_one()
@@ -760,9 +838,9 @@ void offset_select_remote_exit_one()
     clear("2-", offsets_screen);
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
-    clear("enter accel_offset", offsets_screen);
+    clear(un_enter_accel_offset, offsets_screen);
     offsets_screen.next_row(2);
-    clear("enter azymuth offset", offsets_screen);
+    clear(un_enter_az_offset, offsets_screen);
     mode = modes::OFFSET_EDIT;
     offset_edit_mode = offset_editing::MAGNETIC;
 }
@@ -773,9 +851,9 @@ void offset_select_remote_exit_two()
     clear("2-", offsets_screen);
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
-    clear("enter accel_offset", offsets_screen);
+    clear(un_enter_accel_offset, offsets_screen);
     offsets_screen.next_row(2);
-    clear("enter azymuth offset", offsets_screen);
+    clear(un_enter_az_offset, offsets_screen);
 }
 
 void offset_select() // todo: let user enter all offsets independently from this set in program
@@ -786,9 +864,9 @@ void offset_select() // todo: let user enter all offsets independently from this
     print("2-", offsets_screen);
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
-    print("enter accel_offset", offsets_screen);
+    print(un_enter_accel_offset, offsets_screen);
     offsets_screen.next_row(2);
-    print("enter azymuth offset", offsets_screen);
+    print(un_enter_az_offset, offsets_screen);
     offsets_screen.reset_cursor();
     remote_input_handler_selector(offset_select_remote_exit_one, one, offset_select_remote_exit_one, two, offset_select_remote_exit_play, play);
 }
@@ -834,9 +912,9 @@ void input_offsets()
     case offset_editing::MAGNETIC:
         edit_magnetic_var.reset_cursor();
 
-        print("EDIT MAGNETIC DECLINATION", edit_magnetic_var);
+        print(un_set_mag_declination, edit_magnetic_var);
         edit_magnetic_var.next_row(2);
-        print("magnetic declination =", edit_magnetic_var);
+        print(un_magnetic_declination, edit_magnetic_var);
         edit_magnetic_var.next_row(2);
         print(input_MAG_DEC, edit_magnetic_var);
 
@@ -862,9 +940,9 @@ void offset_disp_exit_procedure()
     offset_edit_mode = offset_editing::TIME;
     offsets::magnetic_variation = input_MAG_DEC.toFloat();
     edit_magnetic_var.reset_cursor();
-    clear("EDIT MAGNETIC DECLINATION", edit_magnetic_var);
+    clear(un_set_mag_declination, edit_magnetic_var);
     edit_magnetic_var.next_row(2);
-    clear("magnetic declination =", edit_magnetic_var);
+    clear(un_magnetic_declination, edit_magnetic_var);
     edit_magnetic_var.next_row(2);
     clear(input_MAG_DEC, edit_magnetic_var);
     mode = modes::GETTING_STAR_LOCATION;
@@ -872,19 +950,19 @@ void offset_disp_exit_procedure()
 #pragma region edit_lat_long_functions
 void exit_lat()
 {
-    clear("wprowadz szerokosc geog.", lat_long_disp);
+    clear(un_enter_latitude, lat_long_disp);
     lat_long_disp.next_row(3);
-    clear(input_LAT, lat_long_disp);
-    my_location.latitude = input_LAT.toFloat();
+    clear(input_lat, lat_long_disp);
+    my_location.latitude = input_lat.toFloat();
     lat_long_disp.reset_cursor();
     mode = modes::EDIT_LONG;
 }
 void exit_long()
 {
-    clear("wprowadz dlugosc geog.", lat_long_disp);
+    clear(un_enter_longitude, lat_long_disp);
     lat_long_disp.next_row(3);
-    clear(input_LONG, lat_long_disp);
-    my_location.longitude = input_LONG.toFloat();
+    clear(input_long, lat_long_disp);
+    my_location.longitude = input_long.toFloat();
 
     automatic_mode = false;
     mode = modes::INIT_PROCEDURE;
@@ -892,19 +970,19 @@ void exit_long()
 void edit_lat()
 {
 
-    print("wprowadz szerokosc geog.", lat_long_disp);
+    print(un_enter_latitude, lat_long_disp);
     lat_long_disp.next_row(3);
-    print(input_LAT, lat_long_disp);
+    print(input_lat, lat_long_disp);
     lat_long_disp.reset_cursor();
-    remote_input_handler_str(exit_lat, input_LAT, play);
+    remote_input_handler_str(exit_lat, input_lat, play);
 }
 void edit_long()
 {
-    print("wprowadz dlugosc geog.", lat_long_disp);
+    print(un_enter_longitude, lat_long_disp);
     lat_long_disp.next_row(3);
-    print(input_LONG, lat_long_disp);
+    print(input_long, lat_long_disp);
     lat_long_disp.reset_cursor();
-    remote_input_handler_str(exit_long, input_LONG, play);
+    remote_input_handler_str(exit_long, input_long, play);
 }
 #pragma endregion edit_lat_long_functions
 #pragma region Remote_control_functions
