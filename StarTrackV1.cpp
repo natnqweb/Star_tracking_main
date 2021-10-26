@@ -22,6 +22,9 @@
             23.10.2021 :
             added language support english and polish currently are supported
             added exit from displayfunction and clear screen and empty buffer to structure to free existing buffer
+            26.10.2021 :
+             addded notification about star visibility to  displayupdate mainsreen
+             also updated skymap with new function called IsVisible() that retruns ture if start is visible at positive value altitude
 
 
 
@@ -118,20 +121,21 @@ void read_compass()
     if (compass_timer.timer(refresh::compass_refresh_rate))
     {
 
-        // float magnetic_x = 0;
-        // float magnetic_y = 0;
-        // for (int i = 0; i < constants::number_of_measurements; i++)
-        // {
-        // mag.getEvent(&compass_event);
-        // magnetic_x += compass_event.magnetic.x;
-        // magnetic_y += compass_event.magnetic.y;
-        // }
-        // magnetic_x /= constants::number_of_measurements;
-        //magnetic_y /= constants::number_of_measurements;
-        mag.getEvent(&compass_event);
+        float magnetic_x = 0;
+        float magnetic_y = 0;
+        for (int i = 0; i < constants::number_of_measurements; i++)
+        {
+            mag.getEvent(&compass_event);
+            magnetic_x += compass_event.magnetic.x;
+            magnetic_y += compass_event.magnetic.y;
+        }
+        magnetic_x /= constants::number_of_measurements;
+        magnetic_y /= constants::number_of_measurements;
+
         //magnetic_x += compass_event.magnetic.x;
         // magnetic_y += compass_event.magnetic.y;
-        float heading = atan2(compass_event.magnetic.x, compass_event.magnetic.y);
+        float heading = atan2(magnetic_y, magnetic_x);
+        heading += startracker.deg2rad(offsets::magnetic_variation);
 
         if (heading < 0)
             heading += 2 * PI;
@@ -140,8 +144,22 @@ void read_compass()
         if (heading > 2 * PI)
             heading -= 2 * PI;
         // Convert radians to degrees for readability.
+
         degs headingDegrees = heading * 180 / M_PI;
-        headingDegrees += offsets::azymuth_offset + offsets::magnetic_variation;
+        headingDegrees += offsets::azymuth_offset;
+        // headingDegrees += offsets::azymuth_offset + offsets::magnetic_variation;
+        if (headingDegrees > 360)
+        {
+            headingDegrees -= 360;
+        }
+        else if (headingDegrees < 0)
+        {
+            headingDegrees += 360;
+        }
+        else if (headingDegrees == 360)
+        {
+            headingDegrees = 0;
+        }
 
         LOG("Heading (degrees): ");
         LOG(headingDegrees);
@@ -156,7 +174,7 @@ void RTC_calibration()
         readGPS();
 
         // The following lines can be uncommented to set the date and time
-        rtc.setDOW(SATURDAY);                                                                          // Set Day-of-Week to SUNDAY or whatever day of week it is
+        rtc.setDOW(MONDAY);                                                                            // Set Day-of-Week to SUNDAY or whatever day of week it is
         rtc.setTime(gps.time.hour() + offsets::timezone_offset, gps.time.minute(), gps.time.second()); // Set the time to 12:00:00 (24hr format)
         rtc.setDate(gps.date.day(), gps.date.month(), gps.date.year());                                // Set the date to January 1st, 2014
     }                                                                                                  // Initialize the rtc object
@@ -313,18 +331,18 @@ void updateAccel()
     if (accel_timer.timer(refresh::accel_refresh_rate))
     {
 
-        // for (int i = 0; i < constants::number_of_measurements; i++)
-        // {
+        for (int i = 0; i < constants::number_of_measurements; i++)
+        {
 
-        mpu.getEvent(&a, &g, &temp);
+            mpu.getEvent(&a, &g, &temp);
 
-        accelXsum = a.orientation.x;
-        accelYsum = a.orientation.y;
-        accelZsum = a.orientation.z;
-        // }
-        // accelXsum /= constants::number_of_measurements;
-        //accelYsum /= constants::number_of_measurements;
-        // accelZsum /= constants::number_of_measurements;
+            accelXsum += a.orientation.x;
+            accelYsum += a.orientation.y;
+            accelZsum += a.orientation.z;
+        }
+        accelXsum /= constants::number_of_measurements;
+        accelYsum /= constants::number_of_measurements;
+        accelZsum /= constants::number_of_measurements;
 
         // Calculate of roll and pitch in deg
         pointing_altitude = atan2(accelXsum, sqrt(square(accelYsum) + square(accelZsum))) / (constants::pi / 180);
@@ -399,6 +417,13 @@ void clearDisplay()
     bufferstr8 = EMPTYSTRING;
     bufferstr9 = EMPTYSTRING;
     bufferstr10 = EMPTYSTRING;
+    mainscreen.next_row(8);
+    mainscreen.next_column(23);
+    clear(un_star_visibility, mainscreen);
+    mainscreen.next_row(2);
+    clear(visibility_buffer.disp, mainscreen);
+    visibility_buffer.clear_buffer();
+    mainscreen.reset_cursor();
 }
 void updateDisplay()
 {
@@ -477,6 +502,14 @@ void updateDisplay()
 
         if (GPS_status)
         {
+            mainscreen.next_row(8);
+            mainscreen.next_column(23);
+            print(un_star_visibility, mainscreen);
+            mainscreen.next_row(2);
+            startracker.IsVisible() ? visibility_buffer.disp = un_visible : visibility_buffer.disp = un_unvisible;
+            dynamic_print(mainscreen, visibility_buffer);
+            mainscreen.reset_cursor();
+
             String val1 = String(my_location.longitude);
             if (!val1.equals(bufferstr))
             {
@@ -794,16 +827,17 @@ void edit_ra()
     boot_disp.row += 30;
     TFT_dispStr(input_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
-    remote_input_handler_str(entering_ra_exit_handle, input_RA, play);
+    remote_input_handler_str(entering_ra_exit_handle, input_RA, play, deleteallinput);
     boot_disp.reset_cursor();
 }
 void edit_dec()
 {
     TFT_dispStr(un_enter_star_dec, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.row += 30;
+    deleteallinput = boot_disp;
     TFT_dispStr(input_DEC, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
-    remote_input_handler_str(entering_dec_exit_handle, input_DEC, play);
+    remote_input_handler_str(entering_dec_exit_handle, input_DEC, play, deleteallinput);
     boot_disp.reset_cursor();
 }
 #pragma endregion editing_ra_dec
@@ -917,9 +951,10 @@ void input_offsets()
         edit_magnetic_var.next_row(2);
         print(un_magnetic_declination, edit_magnetic_var);
         edit_magnetic_var.next_row(2);
+        deleteallinput = edit_magnetic_var;
         print(input_MAG_DEC, edit_magnetic_var);
 
-        remote_input_handler_str(offset_disp_exit_procedure, input_MAG_DEC, play);
+        remote_input_handler_str(offset_disp_exit_procedure, input_MAG_DEC, play, deleteallinput);
     case offset_editing::TIME:
         displayconfig edit_time;
 
@@ -973,21 +1008,24 @@ void edit_lat()
 
     print(un_enter_latitude, lat_long_disp);
     lat_long_disp.next_row(3);
+    deleteallinput = lat_long_disp;
     print(input_lat, lat_long_disp);
     lat_long_disp.reset_cursor();
-    remote_input_handler_str(exit_lat, input_lat, play);
+    remote_input_handler_str(exit_lat, input_lat, play, deleteallinput);
 }
 void edit_long()
 {
+
     print(un_enter_longitude, lat_long_disp);
     lat_long_disp.next_row(3);
+    deleteallinput = lat_long_disp;
     print(input_long, lat_long_disp);
     lat_long_disp.reset_cursor();
-    remote_input_handler_str(exit_long, input_long, play);
+    remote_input_handler_str(exit_long, input_long, play, deleteallinput);
 }
 #pragma endregion edit_lat_long_functions
 #pragma region Remote_control_functions
-void remote_input_handler_str(void_func exitprint, String &result, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4)
+void remote_input_handler_str(void_func exitprint, String &result, uint8_t number, displayconfig &cnfg, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4)
 {
     switch (decodeIRfun())
     {
@@ -1135,6 +1173,8 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
 
         break;
     case plus:
+        clear(result, cnfg);
+        result = EMPTYSTRING;
         if (number == plus)
             exitprint();
         else if (number2 == plus)
@@ -1142,6 +1182,18 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
         else if (number3 == plus)
             exitprint3();
         else if (number4 == plus)
+            exitprint4();
+
+        break;
+    case minus:
+        result += "-";
+        if (number == minus)
+            exitprint();
+        else if (number2 == minus)
+            exitprint2();
+        else if (number3 == minus)
+            exitprint3();
+        else if (number4 == minus)
             exitprint4();
 
         break;
@@ -1291,6 +1343,17 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
         else if (number3 == plus)
             exitprint3();
         else if (number4 == plus)
+            exitprint4();
+
+        break;
+    case minus:
+        if (number == minus)
+            exitprint();
+        else if (number2 == minus)
+            exitprint2();
+        else if (number3 == minus)
+            exitprint3();
+        else if (number4 == minus)
             exitprint4();
 
         break;

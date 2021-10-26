@@ -176,9 +176,9 @@ struct displayconfig
 #pragma region namespaces
 namespace offsets
 {
-    hrs timezone_offset = 2;     //UTC +2
-    degs magnetic_variation = 6; // 6 degrees due to magnetic declination
-    degs azymuth_offset = -65;   // offset from uneven attachment
+    hrs timezone_offset = 2;        //UTC +2
+    degs magnetic_variation = -6.5; // 7 degrees due to magnetic declination
+    degs azymuth_offset = 0;        // offset from uneven attachment
     //degs altitude_offset = 0;
     // degs motor_position_offset = 0;
 };
@@ -196,7 +196,7 @@ namespace refresh // all timer refresh rates here
 
 namespace constants //some usefull constants to for calibration and configuration
 {
-    const float number_of_measurements = 10;
+    const float number_of_measurements = 100;
     const double pi = 3.1415926536;
     const float motor2_gear_ratio = 7.874;
     const float motor1_gear_ratio = 2.5;
@@ -213,7 +213,7 @@ namespace constants //some usefull constants to for calibration and configuratio
 };
 #pragma endregion namespaces
 #pragma region variables
-buffers ra_buff, dec_buff, az_buff, laser_angle_buff;
+buffers ra_buff, dec_buff, az_buff, laser_angle_buff, visibility_buffer;
 String input_MAG_DEC;
 bool laser_mode = false;
 bool setmode, confirm;
@@ -245,6 +245,8 @@ displayconfig boot_disp;
 displayconfig edit_magnetic_var;
 displayconfig offsets_screen;
 displayconfig lat_long_disp;
+displayconfig deleteallinput;
+displayconfig star_visibility_disp;
 #pragma endregion variables
 #pragma region custom_typedefs
 typedef void (*void_func)(void);
@@ -291,7 +293,7 @@ void edit_ra();
 void edit_lat();
 void edit_long();
 // this functions saves in string every clicked button and performs exitfnct when irremote input matches expected command can take up to 3 functions
-void remote_input_handler_str(void_func, String &, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0);
+void remote_input_handler_str(void_func, String &, uint8_t, displayconfig &, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0);
 // function that takes void functions as parameters and performs whats inside them only if ir reemote decodes given command can take up to 3 functions
 void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0);
 //code specific for debuging purposes only if debug not true this code is not visible for compiler

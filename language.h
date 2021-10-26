@@ -33,6 +33,9 @@
 #define un_enter_longitude "wprowadz dlugosc geograficzna"
 #define un_enter_accel_offset "wprowadz offset akcelerometru"
 #define un_enter_az_offset "wprowadz offset azymutu"
+#define un_star_visibility "widocznosc gwiazdy:"
+#define un_visible "widoczna"
+#define un_unvisible "nie widoczna"
 #endif
 #pragma endregion polish
 #pragma region english
@@ -67,6 +70,9 @@
 #define un_enter_accel_offset "enter accel offset"
 #define un_enter_az_offset "enter azymuth offset"
 #define un_magnetic_declination "magnetic declination"
+#define un_star_visibility "star visibility" : "
+#define un_visible "visible"
+#define un_unvisible "not visible"
 #endif
 
 #pragma endregion english
