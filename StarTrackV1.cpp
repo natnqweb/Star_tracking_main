@@ -258,10 +258,10 @@ void decodeIR()
         laser_mode = !laser_mode;
         laser_mode ? laser(on) : laser(off);
         break;
-    case one:
+    case two:
         clearDisplay();
         reset_ready_to_move_markers();
-        mode = modes::GETTING_STAR_LOCATION;
+        mode = modes::INIT_PROCEDURE;
 
         break;
     }
@@ -520,6 +520,7 @@ void updateDisplay()
         motor2_ang_buff.disp = (String)(motor2.get_position() / constants::motor2_gear_ratio);
         dynamic_print(mainscreen, motor2_ang_buff); //row 35 column 10
         mainscreen.reset_cursor();                  //row 0 column 0
+
         //other method of printing to tft
 
         if (GPS_status)
@@ -975,8 +976,7 @@ bool reset_ready_to_move_markers()
 {
     alt_motor_target_reached = false;
     az_motor_target_reached = false;
-    safety_motor_position_control();
-    motor1.turn_on();
+
     motor1.target_reached(true);
     motor1.target_reached(true);
 }
@@ -1006,26 +1006,30 @@ bool reached_target_function(motor &engine)
 void Az_engine(float &target) //need to be in some standalone function cuz it is not attached to pin interuppt
 {
     motor1.set_target(target);
-    while (!reached_target_function(motor1))
+    if (!az_motor_target_reached)
     {
-
         motor1.start();
+        if (motor1.target_reached())
+        {
+            az_motor_target_reached = true;
+            alt_motor_target_reached ? mode = modes::DISPLAY_RESULTS : mode = modes::MOVEMOTOR2;
+        }
     }
-
-    az_motor_target_reached = true;
-    alt_motor_target_reached ? mode = modes::INIT_PROCEDURE : mode = modes::MOVEMOTOR2;
 }
 void Alt_engine(float &target)
 {
 
     motor2.set_target(target);
 
-    while (!reached_target_function(motor2))
+    if (!alt_motor_target_reached)
     {
         motor2.start();
+        if (motor2.target_reached())
+        {
+            alt_motor_target_reached = true;
+            az_motor_target_reached ? mode = modes::DISPLAY_RESULTS : mode = modes::MOVEMOTOR1;
+        }
     }
-    alt_motor_target_reached = true;
-    az_motor_target_reached ? mode = modes::INIT_PROCEDURE : mode = modes::MOVEMOTOR1;
 }
 
 #pragma endregion motor_control_functions

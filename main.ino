@@ -12,7 +12,9 @@ void setup()
 }
 void loop()
 {
+#if DEBUG
     RTC_calibration();
+#endif
 
     switch (mode)
     {
@@ -20,16 +22,18 @@ void loop()
         position_calibration_display();
         break;
     case modes::DISPLAY_RESULTS:
-        updateDisplay();
         decodeIR();
+        updateDisplay();
+
         updateAccel();
-        calculate_starposition();
 
         break;
     case modes::MOVEMOTOR1:
+        decodeIR();
         Az_engine(azymuth_target);
         break;
     case modes::MOVEMOTOR2:
+        decodeIR();
         Alt_engine(altitude_target);
         break;
     case modes::EDIT_LAT:
@@ -47,12 +51,12 @@ void loop()
         break;
 
     case modes::GETTING_STAR_LOCATION:
+        decodeIR();
         readGPS();
         read_compass();
         updateAccel();
         calculate_starposition();
         updateDisplay();
-        decodeIR();
 
         break;
     case modes::POINTING_TO_STAR:
