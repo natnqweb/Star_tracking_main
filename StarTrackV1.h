@@ -91,7 +91,11 @@ enum class modes
     edit_RA = 7,
     edit_dec = 8,
     EDIT_LAT = 9,
-    EDIT_LONG = 10
+    EDIT_LONG = 10,
+    MOVEMOTOR1 = 11,
+    MOVEMOTOR2 = 12,
+    DISPLAY_RESULTS = 13,
+    CALIBRATE_POSITION = 14
 
 };
 enum remote_commands : unsigned char // all commands from ir remote
@@ -171,6 +175,12 @@ struct displayconfig
         this->column = 0;
         this->row = 0;
     }
+    void set_cursor(int row, int column, uint8_t pixels = 8)
+    {
+        reset_cursor();
+        this->row += (pixels * row);
+        this->column += (pixels * column);
+    }
 };
 #pragma endregion structures
 #pragma region namespaces
@@ -213,7 +223,7 @@ namespace constants //some usefull constants to for calibration and configuratio
 };
 #pragma endregion namespaces
 #pragma region variables
-buffers ra_buff, dec_buff, az_buff, laser_angle_buff, visibility_buffer;
+buffers ra_buff, dec_buff, az_buff, laser_angle_buff, visibility_buffer, motor1_ang_buff, motor2_ang_buff;
 String input_MAG_DEC;
 bool laser_mode = false;
 bool setmode, confirm;
@@ -235,8 +245,9 @@ float accelYsum = 0;
 float accelZsum = 0;
 bool entering_DEC = false, entering_RA = false, automatic_mode = true;
 String input_RA, input_DEC, input_lat, input_long;
+float azymuth_target = 0, altitude_target = 0;
 sensors_event_t a, g, temp;
-
+bool az_motor_target_reached = false, alt_motor_target_reached = false;
 sensors_event_t compass_event;
 sensor_t compass_hmcl;
 displayconfig mainscreen;
@@ -247,6 +258,8 @@ displayconfig offsets_screen;
 displayconfig lat_long_disp;
 displayconfig deleteallinput;
 displayconfig star_visibility_disp;
+displayconfig calibration_disp;
+bool manual_calibration = false;
 #pragma endregion variables
 #pragma region custom_typedefs
 typedef void (*void_func)(void);
@@ -268,7 +281,7 @@ void TFT_dispStr(String str, int column, int row, uint8_t textsize = 1);
 void TFT_clear(String strr, int column, int row, uint8_t textsize = 1);
 //main function that preforms astronomy calculations based on current time and location
 void calculate_starposition();
-
+void check_gps_accel_compass();
 void input_offsets();
 void Az_engine(float &target);  // function take target to follow and getting it by reference . for azymuth motor
 void Alt_engine(float &target); // function take target to follow and getting it by reference . for altitude motor
@@ -295,8 +308,15 @@ void edit_long();
 // this functions saves in string every clicked button and performs exitfnct when irremote input matches expected command can take up to 3 functions
 void remote_input_handler_str(void_func, String &, uint8_t, displayconfig &, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0);
 // function that takes void functions as parameters and performs whats inside them only if ir reemote decodes given command can take up to 3 functions
-void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0);
+void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0, void_func exitprint5 = empty_function, uint8_t number5 = 0);
 //code specific for debuging purposes only if debug not true this code is not visible for compiler
+
+// // true if target  position is reached and false if not
+bool reached_target_function(motor &);
+bool all_motors_ready_to_move();
+bool reset_ready_to_move_markers();
+void position_calibration_display();
+bool check_if_pointing_at_north();
 #if DEBUG
 void print_debug_message(int col = 0, int row = 0, uint8_t size = 1);
 void debug_rtc();

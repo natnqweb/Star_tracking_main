@@ -36,6 +36,12 @@
 #define un_star_visibility "widocznosc gwiazdy:"
 #define un_visible "widoczna"
 #define un_unvisible "nie widoczna"
+#define un_motor1 "silnik 1"
+#define un_motor2 "silnik 2"
+#define un_degree "kat"
+#define un_device_position_calibration "kalibracja pozycji urzadzenia"
+#define un_pointing_at_north "gotowe, wskazujesz polnoc"
+#define un_not_pointing_at_north "nie wskazujesz polnocy"
 #endif
 #pragma endregion polish
 #pragma region english
@@ -73,6 +79,12 @@
 #define un_star_visibility "star visibility" : "
 #define un_visible "visible"
 #define un_unvisible "not visible"
+#define un_motor1 "motor 1"
+#define un_motor2 "motor 2"
+#define un_degree "degree"
+#define un_device_position_calibration "device position calibration"
+#define un_pointing_at_north "ready, poining at north"
+#define un_not_pointing_at_north "not pointing at north"
 #endif
 
 #pragma endregion english

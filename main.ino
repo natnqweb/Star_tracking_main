@@ -16,6 +16,22 @@ void loop()
 
     switch (mode)
     {
+    case modes::CALIBRATE_POSITION:
+        position_calibration_display();
+        break;
+    case modes::DISPLAY_RESULTS:
+        updateDisplay();
+        decodeIR();
+        updateAccel();
+        calculate_starposition();
+
+        break;
+    case modes::MOVEMOTOR1:
+        Az_engine(azymuth_target);
+        break;
+    case modes::MOVEMOTOR2:
+        Alt_engine(altitude_target);
+        break;
     case modes::EDIT_LAT:
         edit_lat();
 
