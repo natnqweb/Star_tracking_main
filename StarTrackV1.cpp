@@ -36,18 +36,7 @@
         
  */
 #pragma region constructor_definitions
-bool simpletimer::timer(unsigned long _time)
-{
-    if (micros() - before >= _time * 1000)
-    {
-        before = micros();
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
+
 Myposition::Myposition(degs latitude, degs longitude, degs azymuth)
 {
     this->latitude = latitude;
@@ -68,15 +57,11 @@ Time t;
 DS3231 rtc(SDA, SCL);
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(1132); //added custon id  1132
 Adafruit_MPU6050 mpu;
-simpletimer displaytimer;
-simpletimer compass_timer;
-simpletimer accel_timer;
-simpletimer starposition_timer;
+
 Adafruit_HX8357 TFTscreen = Adafruit_HX8357(cs, dc, rst);
 SkyMap startracker;
 motor motor1(ENCA, ENCB, IN1, IN2);
 motor motor2(ENCA2, ENCB2, IN1_2, IN2_2);
-simpletimer loadingscreen;
 
 Myposition my_location(50.03, 21.01); //location for tarnów
 Star star(0, 0, 101.52, -16.7424);    //Sirius ra and dec at start
@@ -121,53 +106,53 @@ void allign_with_star()
 void read_compass()
 {
 
-    if (compass_timer.timer(refresh::compass_refresh_rate))
+    // if (compass_timer.timer(refresh::compass_refresh_rate))
+    // {
+
+    float magnetic_x = 0;
+    float magnetic_y = 0;
+    for (int i = 0; i < constants::number_of_measurements; i++)
     {
-
-        float magnetic_x = 0;
-        float magnetic_y = 0;
-        for (int i = 0; i < constants::number_of_measurements; i++)
-        {
-            mag.getEvent(&compass_event);
-            magnetic_x += compass_event.magnetic.x;
-            magnetic_y += compass_event.magnetic.y;
-        }
-        magnetic_x /= constants::number_of_measurements;
-        magnetic_y /= constants::number_of_measurements;
-
-        //magnetic_x += compass_event.magnetic.x;
-        // magnetic_y += compass_event.magnetic.y;
-        float heading = atan2(magnetic_y, magnetic_x);
-        heading += startracker.deg2rad(offsets::magnetic_variation);
-
-        if (heading < 0)
-            heading += 2 * PI;
-
-        // Check for wrap due to addition of declination.
-        if (heading > 2 * PI)
-            heading -= 2 * PI;
-        // Convert radians to degrees for readability.
-
-        degs headingDegrees = heading * 180 / M_PI;
-        headingDegrees += offsets::azymuth_offset;
-        // headingDegrees += offsets::azymuth_offset + offsets::magnetic_variation;
-        if (headingDegrees > 360)
-        {
-            headingDegrees -= 360;
-        }
-        else if (headingDegrees < 0)
-        {
-            headingDegrees += 360;
-        }
-        else if (headingDegrees == 360)
-        {
-            headingDegrees = 0;
-        }
-
-        LOG("Heading (degrees): ");
-        LOG(headingDegrees);
-        my_location.azymuth = headingDegrees;
+        mag.getEvent(&compass_event);
+        magnetic_x += compass_event.magnetic.x;
+        magnetic_y += compass_event.magnetic.y;
     }
+    magnetic_x /= constants::number_of_measurements;
+    magnetic_y /= constants::number_of_measurements;
+
+    //magnetic_x += compass_event.magnetic.x;
+    // magnetic_y += compass_event.magnetic.y;
+    float heading = atan2(magnetic_y, magnetic_x);
+    heading += startracker.deg2rad(offsets::magnetic_variation);
+
+    if (heading < 0)
+        heading += 2 * PI;
+
+    // Check for wrap due to addition of declination.
+    if (heading > 2 * PI)
+        heading -= 2 * PI;
+    // Convert radians to degrees for readability.
+
+    degs headingDegrees = heading * 180 / M_PI;
+    headingDegrees += offsets::azymuth_offset;
+    // headingDegrees += offsets::azymuth_offset + offsets::magnetic_variation;
+    if (headingDegrees > 360)
+    {
+        headingDegrees -= 360;
+    }
+    else if (headingDegrees < 0)
+    {
+        headingDegrees += 360;
+    }
+    else if (headingDegrees == 360)
+    {
+        headingDegrees = 0;
+    }
+
+    LOG("Heading (degrees): ");
+    LOG(headingDegrees);
+    my_location.azymuth = headingDegrees;
+    //  }
 }
 void RTC_calibration()
 {
@@ -237,14 +222,33 @@ void initialize_()
     init_accel();
 }
 
+void switch_laser()
+{
+    laser_mode = !laser_mode;
+    laser_mode ? laser(on) : laser(off);
+}
+void reset_all_go_to_main()
+{
+    clearDisplay();
+    clear_all_buffers();
+    reset_ready_to_move_markers();
+    mode = modes::INIT_PROCEDURE;
+}
+void go_to_main()
+{
+    clearDisplay();
+    clear_all_buffers();
+    mode = modes::INIT_PROCEDURE;
+}
 void decodeIR()
 {
-
-    switch (decodeIRfun())
+    remote_input_handler_selector(go_to_main, plus, reset_all_go_to_main, minus, switch_laser, zero);
+    /*  switch (decodeIRfun())
     {
 
     case plus:
         clearDisplay();
+        clear_all_buffers();
         mode = modes::INIT_PROCEDURE;
         break;
     case minus:
@@ -260,11 +264,15 @@ void decodeIR()
         break;
     case two:
         clearDisplay();
+        clear_all_buffers();
         reset_ready_to_move_markers();
         mode = modes::INIT_PROCEDURE;
 
         break;
-    }
+    default:
+
+        break;
+    } */
 }
 //void smartDelay()// no delays!
 //{
@@ -284,89 +292,90 @@ void readGPS()
 
 void calculate_starposition()
 {
-    if (starposition_timer.timer(refresh::calculation_refresh_rate))
+
+    t = rtc.getTime();
+    day = (float)t.date;
+    month = (float)t.mon;
+    year = (float)t.year;
+    if (automatic_mode)
     {
-        t = rtc.getTime();
-        day = (float)t.date;
-        month = (float)t.mon;
-        year = (float)t.year;
-        if (automatic_mode)
+        my_location.latitude = gps.location.lat();
+        my_location.longitude = gps.location.lng();
+    }
+
+    LOG(my_location.longitude);
+
+    MIN = (float)t.min;
+    HOUR = (float)t.hour;
+    SEKUNDA = (float)t.sec;
+    TIME = startracker.Hh_mm_ss2UTC(HOUR,
+                                    MIN,
+                                    SEKUNDA,
+                                    offsets::timezone_offset);
+    // star.right_ascension = 101.52;
+    // star.declination = -16.7424;
+    if (my_location.latitude != 0 && my_location.longitude != 0)
+    {
+
+        startracker.update(my_location.latitude,
+                           my_location.longitude,
+                           star.declination,
+                           star.right_ascension,
+                           year,
+                           month,
+                           day,
+                           TIME);
+        GPS_status = true;
+
+        star.azymuth = startracker.get_star_Azymuth();
+        star.altitude = startracker.get_star_Altitude();
+        azymuth_target = star.azymuth * constants::motor1_gear_ratio;
+        altitude_target = star.altitude * constants::motor2_gear_ratio;
+
+        ready_to_move = true;
+        if (all_motors_ready_to_move() == true)
         {
-            my_location.latitude = gps.location.lat();
-            my_location.longitude = gps.location.lng();
+
+            mode = modes::MOVEMOTOR1;
+            laser(on);
         }
+    }
+    else
+    {
+        GPS_status = false;
+        ready_to_move = false;
 
-        LOG(my_location.longitude);
-
-        MIN = (float)t.min;
-        HOUR = (float)t.hour;
-        SEKUNDA = (float)t.sec;
-        TIME = startracker.Hh_mm_ss2UTC(HOUR,
-                                        MIN,
-                                        SEKUNDA,
-                                        offsets::timezone_offset);
-        // star.right_ascension = 101.52;
-        // star.declination = -16.7424;
-        if (my_location.latitude != 0 && my_location.longitude != 0)
-        {
-
-            startracker.update(my_location.latitude,
-                               my_location.longitude,
-                               star.declination,
-                               star.right_ascension,
-                               year,
-                               month,
-                               day,
-                               TIME);
-            GPS_status = true;
-
-            star.azymuth = startracker.get_star_Azymuth();
-            star.altitude = startracker.get_star_Altitude();
-            azymuth_target = star.azymuth * constants::motor1_gear_ratio;
-            altitude_target = star.altitude * constants::motor2_gear_ratio;
-
-            ready_to_move = true;
-            if (all_motors_ready_to_move())
-            {
-                mode = modes::MOVEMOTOR1;
-            }
-        }
-        else
-        {
-            GPS_status = false;
-            ready_to_move = false;
-            mode = modes::GETTING_STAR_LOCATION;
-        }
+        laser(off);
     }
 }
 
 void updateAccel()
 {
 
-    if (accel_timer.timer(refresh::accel_refresh_rate))
+    //if (accel_timer.timer(refresh::accel_refresh_rate))
+    //{
+
+    for (int i = 0; i < constants::number_of_measurements; i++)
     {
 
-        for (int i = 0; i < constants::number_of_measurements; i++)
-        {
+        mpu.getEvent(&a, &g, &temp);
 
-            mpu.getEvent(&a, &g, &temp);
-
-            accelXsum += a.orientation.x;
-            accelYsum += a.orientation.y;
-            accelZsum += a.orientation.z;
-        }
-        accelXsum /= constants::number_of_measurements;
-        accelYsum /= constants::number_of_measurements;
-        accelZsum /= constants::number_of_measurements;
-
-        // Calculate of roll and pitch in deg
-        pointing_altitude = atan2(accelXsum, sqrt(square(accelYsum) + square(accelZsum))) / (constants::pi / 180);
-        // degs angley = atan2(accelYsum, sqrt(square(accelXsum) + square(accelZsum))) / (constants::pi / 180);
-
-        // pointing_altitude = anglex;
-        LOG("angleX: ");
-        LOG(pointing_altitude);
+        accelXsum += a.orientation.x;
+        accelYsum += a.orientation.y;
+        accelZsum += a.orientation.z;
     }
+    accelXsum /= constants::number_of_measurements;
+    accelYsum /= constants::number_of_measurements;
+    accelZsum /= constants::number_of_measurements;
+
+    // Calculate of roll and pitch in deg
+    pointing_altitude = atan2(accelXsum, sqrt(square(accelYsum) + square(accelZsum))) / (constants::pi / 180);
+    // degs angley = atan2(accelYsum, sqrt(square(accelXsum) + square(accelZsum))) / (constants::pi / 180);
+
+    // pointing_altitude = anglex;
+    LOG("angleX: ");
+    LOG(pointing_altitude);
+    //}
 }
 void clearDisplay()
 {
@@ -458,170 +467,190 @@ void clearDisplay()
 }
 void updateDisplay()
 {
-    if (displaytimer.timer(refresh::TFT_refresh_rate))
+    // if (displaytimer.timer(refresh::TFT_refresh_rate))
+    // {
+    LOG("display updated");
+    mainscreen.reset_cursor();
+    TFT_dispStr(un_long, mainscreen.column, mainscreen.row, mainscreen.textsize);
+    TFT_dispStr(un_lat, mainscreen.column, mainscreen.row + 12 * 2, mainscreen.textsize);
+    TFT_dispStr(un_second, mainscreen.column, mainscreen.row + 24 * 2, mainscreen.textsize);
+    TFT_dispStr(un_azymuth, mainscreen.column, mainscreen.row + 36 * 2, mainscreen.textsize);
+    TFT_dispStr(un_altitude, mainscreen.column, mainscreen.row + 48 * 2, mainscreen.textsize);
+    TFT_dispStr(un_year, mainscreen.column, mainscreen.row + 60 * 2, mainscreen.textsize);
+    TFT_dispStr(un_month, mainscreen.column, mainscreen.row + 72 * 2, mainscreen.textsize);
+    TFT_dispStr(un_day, mainscreen.column, mainscreen.row + 84 * 2, mainscreen.textsize);
+    TFT_dispStr(un_time_utc, mainscreen.column, mainscreen.row + 96 * 2, mainscreen.textsize);
+    TFT_dispStr(un_calibration, mainscreen.column, mainscreen.row + 108 * 2, mainscreen.textsize);
+    //other method
+    mainscreen.next_column(23);
+    print(un_laser_angle, mainscreen);
+    mainscreen.next_column(18);
+    laser_angle_buff.disp = String(pointing_altitude);
+    dynamic_print(mainscreen, laser_angle_buff);
+
+    mainscreen.reset_cursor();
+    mainscreen.next_row(2);
+    mainscreen.next_column(23);
+    print(un_azymuth, mainscreen);
+    mainscreen.next_column(18);
+    az_buff.disp = String(my_location.azymuth);
+    dynamic_print(mainscreen, az_buff);
+
+    mainscreen.reset_cursor();
+    mainscreen.next_row(4);
+    mainscreen.next_column(23);
+    print(un_right_ascension, mainscreen);
+    mainscreen.next_column(18);
+    ra_buff.disp = (String)star.right_ascension;
+    dynamic_print(mainscreen, ra_buff);
+
+    mainscreen.reset_cursor();
+    mainscreen.next_row(6);
+    mainscreen.next_column(23);
+    print(un_declination, mainscreen);
+    mainscreen.next_column(18);
+    dec_buff.disp = (String)star.declination;
+    dynamic_print(mainscreen, dec_buff);
+
+    mainscreen.reset_cursor();
+    mainscreen.next_row(29);
+    print(un_motor1, mainscreen); // row 29 column 0
+    mainscreen.next_row(2);       //row 31
+    print(un_degree, mainscreen); // row 31 column 0
+    mainscreen.next_column(10);   // row 31 column 10
+    motor1_ang_buff.disp = (String)(motor1.get_position() / constants::motor1_gear_ratio);
+    dynamic_print(mainscreen, motor1_ang_buff); // row 31 column 10
+    mainscreen.reset_cursor();
+    mainscreen.set_cursor(33, 0);
+    print(un_motor2, mainscreen);
+    mainscreen.next_row(2);       // row 35 column 0
+    print(un_degree, mainscreen); // row 35 column 0
+    mainscreen.next_column(10);   //row 35 column 10
+    motor2_ang_buff.disp = (String)(motor2.get_position() / constants::motor2_gear_ratio);
+    dynamic_print(mainscreen, motor2_ang_buff); //row 35 column 10
+    mainscreen.reset_cursor();                  //row 0 column 0
+
+    //other method of printing to tft
+
+    if (GPS_status)
     {
-        LOG("display updated");
-        mainscreen.reset_cursor();
-        TFT_dispStr(un_long, mainscreen.column, mainscreen.row, mainscreen.textsize);
-        TFT_dispStr(un_lat, mainscreen.column, mainscreen.row + 12 * 2, mainscreen.textsize);
-        TFT_dispStr(un_second, mainscreen.column, mainscreen.row + 24 * 2, mainscreen.textsize);
-        TFT_dispStr(un_azymuth, mainscreen.column, mainscreen.row + 36 * 2, mainscreen.textsize);
-        TFT_dispStr(un_altitude, mainscreen.column, mainscreen.row + 48 * 2, mainscreen.textsize);
-        TFT_dispStr(un_year, mainscreen.column, mainscreen.row + 60 * 2, mainscreen.textsize);
-        TFT_dispStr(un_month, mainscreen.column, mainscreen.row + 72 * 2, mainscreen.textsize);
-        TFT_dispStr(un_day, mainscreen.column, mainscreen.row + 84 * 2, mainscreen.textsize);
-        TFT_dispStr(un_time_utc, mainscreen.column, mainscreen.row + 96 * 2, mainscreen.textsize);
-        TFT_dispStr(un_calibration, mainscreen.column, mainscreen.row + 108 * 2, mainscreen.textsize);
-        //other method
+        mainscreen.next_row(8);
         mainscreen.next_column(23);
-        print(un_laser_angle, mainscreen);
-        mainscreen.next_column(18);
-        laser_angle_buff.disp = String(pointing_altitude);
-        dynamic_print(mainscreen, laser_angle_buff);
-
-        mainscreen.reset_cursor();
+        print(un_star_visibility, mainscreen);
         mainscreen.next_row(2);
-        mainscreen.next_column(23);
-        print(un_azymuth, mainscreen);
-        mainscreen.next_column(18);
-        az_buff.disp = String(my_location.azymuth);
-        dynamic_print(mainscreen, az_buff);
-
+        startracker.IsVisible() ? visibility_buffer.disp = un_visible : visibility_buffer.disp = un_unvisible;
+        dynamic_print(mainscreen, visibility_buffer);
         mainscreen.reset_cursor();
-        mainscreen.next_row(4);
-        mainscreen.next_column(23);
-        print(un_right_ascension, mainscreen);
-        mainscreen.next_column(18);
-        ra_buff.disp = (String)star.right_ascension;
-        dynamic_print(mainscreen, ra_buff);
 
-        mainscreen.reset_cursor();
-        mainscreen.next_row(6);
-        mainscreen.next_column(23);
-        print(un_declination, mainscreen);
-        mainscreen.next_column(18);
-        dec_buff.disp = (String)star.declination;
-        dynamic_print(mainscreen, dec_buff);
-
-        mainscreen.reset_cursor();
-        mainscreen.next_row(29);
-        print(un_motor1, mainscreen); // row 29 column 0
-        mainscreen.next_row(2);       //row 31
-        print(un_degree, mainscreen); // row 31 column 0
-        mainscreen.next_column(10);   // row 31 column 10
-        motor1_ang_buff.disp = (String)(motor1.get_position() / constants::motor1_gear_ratio);
-        dynamic_print(mainscreen, motor1_ang_buff); // row 31 column 10
-        mainscreen.reset_cursor();
-        mainscreen.set_cursor(33, 0);
-        print(un_motor2, mainscreen);
-        mainscreen.next_row(2);       // row 35 column 0
-        print(un_degree, mainscreen); // row 35 column 0
-        mainscreen.next_column(10);   //row 35 column 10
-        motor2_ang_buff.disp = (String)(motor2.get_position() / constants::motor2_gear_ratio);
-        dynamic_print(mainscreen, motor2_ang_buff); //row 35 column 10
-        mainscreen.reset_cursor();                  //row 0 column 0
-
-        //other method of printing to tft
-
-        if (GPS_status)
+        String val1 = String(my_location.longitude);
+        if (!val1.equals(bufferstr))
         {
-            mainscreen.next_row(8);
-            mainscreen.next_column(23);
-            print(un_star_visibility, mainscreen);
-            mainscreen.next_row(2);
-            startracker.IsVisible() ? visibility_buffer.disp = un_visible : visibility_buffer.disp = un_unvisible;
-            dynamic_print(mainscreen, visibility_buffer);
-            mainscreen.reset_cursor();
-
-            String val1 = String(my_location.longitude);
-            if (!val1.equals(bufferstr))
-            {
-                TFT_clear(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
-                bufferstr = val1;
-                TFT_dispStr(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
-            }
-            String val3 = String(my_location.latitude);
-            if (!val3.equals(bufferstr3))
-            {
-                TFT_clear(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
-                bufferstr3 = val3;
-                TFT_dispStr(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
-            }
-            String val4 = String(star.azymuth);
-            if (!val4.equals(bufferstr4))
-            {
-                TFT_clear(bufferstr4, 8 * 7 * 2, mainscreen.row + 36 * 2, mainscreen.textsize);
-                bufferstr4 = val4;
-                TFT_dispStr(bufferstr4, 8 * 7 * 2, mainscreen.row + 36 * 2, mainscreen.textsize);
-            }
-            String val5 = String(star.altitude);
-            if (!val5.equals(bufferstr5))
-            {
-                TFT_clear(bufferstr5, 8 * 7 * 2, mainscreen.row + 48 * 2, mainscreen.textsize);
-                bufferstr5 = val5;
-                TFT_dispStr(bufferstr5, 8 * 7 * 2, mainscreen.row + 48 * 2, mainscreen.textsize);
-            }
+            TFT_clear(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
+            bufferstr = val1;
+            TFT_dispStr(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
         }
-        else
+        String val3 = String(my_location.latitude);
+        if (!val3.equals(bufferstr3))
         {
-            String val1 = "no gps";
-            if (!val1.equals(bufferstr))
-            {
-                TFT_clear(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
-                bufferstr = val1;
-                TFT_dispStr(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
-            }
-            String val3 = "no gps";
-            if (!val3.equals(bufferstr3))
-            {
-                TFT_clear(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
-                bufferstr3 = val3;
-                TFT_dispStr(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
-            }
+            TFT_clear(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
+            bufferstr3 = val3;
+            TFT_dispStr(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
         }
-        String val2 = String(int(SEKUNDA));
-        if (!val2.equals(bufferstr2))
+        String val4 = String(star.azymuth);
+        if (!val4.equals(bufferstr4))
         {
-            TFT_clear(bufferstr2, mainscreen.column + (8 * 6) * 2, mainscreen.row + 24 * 2, mainscreen.textsize);
-            bufferstr2 = val2;
-            TFT_dispStr(bufferstr2, mainscreen.column + (8 * 6) * 2, mainscreen.row + 24 * 2, mainscreen.textsize);
+            TFT_clear(bufferstr4, 8 * 7 * 2, mainscreen.row + 36 * 2, mainscreen.textsize);
+            bufferstr4 = val4;
+            TFT_dispStr(bufferstr4, 8 * 7 * 2, mainscreen.row + 36 * 2, mainscreen.textsize);
         }
-        String val6 = String((int)year);
-        if (!val6.equals(bufferstr6))
+        String val5 = String(star.altitude);
+        if (!val5.equals(bufferstr5))
         {
-            TFT_clear(bufferstr6, 8 * 7 * 2, mainscreen.row + 60 * 2, mainscreen.textsize);
-            bufferstr6 = val6;
-            TFT_dispStr(bufferstr6, 8 * 7 * 2, mainscreen.row + 60 * 2, mainscreen.textsize);
-        }
-        String val7 = String((int)month);
-        if (!val7.equals(bufferstr7))
-        {
-            TFT_clear(bufferstr7, 8 * 7 * 2, mainscreen.row + 72 * 2, mainscreen.textsize);
-            bufferstr7 = val7;
-            TFT_dispStr(bufferstr7, 8 * 7 * 2, mainscreen.row + 72 * 2, mainscreen.textsize);
-        }
-        String val8 = String((int)day);
-        if (!val8.equals(bufferstr8))
-        {
-            TFT_clear(bufferstr8, 8 * 7 * 2, mainscreen.row + 84 * 2, mainscreen.textsize);
-            bufferstr8 = val8;
-            TFT_dispStr(bufferstr8, 8 * 7 * 2, mainscreen.row + 84 * 2, mainscreen.textsize);
-        }
-        String val9 = String(TIME);
-        if (!val9.equals(bufferstr9))
-        {
-            TFT_clear(bufferstr9, 8 * 7 * 2, mainscreen.row + 96 * 2, mainscreen.textsize);
-            bufferstr9 = val9;
-            TFT_dispStr(bufferstr9, 8 * 7 * 2, mainscreen.row + 96 * 2, mainscreen.textsize);
-        }
-        String val10 = String(calibration);
-        if (!val10.equals(bufferstr10))
-        {
-            TFT_clear(bufferstr10, 8 * 10 * 2, mainscreen.row + 108 * 2, mainscreen.textsize);
-            bufferstr10 = val10;
-            TFT_dispStr(bufferstr10, 8 * 10 * 2, mainscreen.row + 108 * 2, mainscreen.textsize);
+            TFT_clear(bufferstr5, 8 * 7 * 2, mainscreen.row + 48 * 2, mainscreen.textsize);
+            bufferstr5 = val5;
+            TFT_dispStr(bufferstr5, 8 * 7 * 2, mainscreen.row + 48 * 2, mainscreen.textsize);
         }
     }
+    else
+    {
+        String val1 = "no gps";
+        if (!val1.equals(bufferstr))
+        {
+            TFT_clear(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
+            bufferstr = val1;
+            TFT_dispStr(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
+        }
+        String val3 = "no gps";
+        if (!val3.equals(bufferstr3))
+        {
+            TFT_clear(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
+            bufferstr3 = val3;
+            TFT_dispStr(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
+        }
+    }
+    String val2 = String(int(SEKUNDA));
+    if (!val2.equals(bufferstr2))
+    {
+        TFT_clear(bufferstr2, mainscreen.column + (8 * 6) * 2, mainscreen.row + 24 * 2, mainscreen.textsize);
+        bufferstr2 = val2;
+        TFT_dispStr(bufferstr2, mainscreen.column + (8 * 6) * 2, mainscreen.row + 24 * 2, mainscreen.textsize);
+    }
+    String val6 = String((int)year);
+    if (!val6.equals(bufferstr6))
+    {
+        TFT_clear(bufferstr6, 8 * 7 * 2, mainscreen.row + 60 * 2, mainscreen.textsize);
+        bufferstr6 = val6;
+        TFT_dispStr(bufferstr6, 8 * 7 * 2, mainscreen.row + 60 * 2, mainscreen.textsize);
+    }
+    String val7 = String((int)month);
+    if (!val7.equals(bufferstr7))
+    {
+        TFT_clear(bufferstr7, 8 * 7 * 2, mainscreen.row + 72 * 2, mainscreen.textsize);
+        bufferstr7 = val7;
+        TFT_dispStr(bufferstr7, 8 * 7 * 2, mainscreen.row + 72 * 2, mainscreen.textsize);
+    }
+    String val8 = String((int)day);
+    if (!val8.equals(bufferstr8))
+    {
+        TFT_clear(bufferstr8, 8 * 7 * 2, mainscreen.row + 84 * 2, mainscreen.textsize);
+        bufferstr8 = val8;
+        TFT_dispStr(bufferstr8, 8 * 7 * 2, mainscreen.row + 84 * 2, mainscreen.textsize);
+    }
+    String val9 = String(TIME);
+    if (!val9.equals(bufferstr9))
+    {
+        TFT_clear(bufferstr9, 8 * 7 * 2, mainscreen.row + 96 * 2, mainscreen.textsize);
+        bufferstr9 = val9;
+        TFT_dispStr(bufferstr9, 8 * 7 * 2, mainscreen.row + 96 * 2, mainscreen.textsize);
+    }
+    String val10 = String(calibration);
+    if (!val10.equals(bufferstr10))
+    {
+        TFT_clear(bufferstr10, 8 * 10 * 2, mainscreen.row + 108 * 2, mainscreen.textsize);
+        bufferstr10 = val10;
+        TFT_dispStr(bufferstr10, 8 * 10 * 2, mainscreen.row + 108 * 2, mainscreen.textsize);
+    }
+    //}
+}
+void clear_all_buffers()
+{
+    bufferstr = EMPTYSTRING;
+    bufferstr3 = EMPTYSTRING;
+    bufferstr4 = EMPTYSTRING;
+    bufferstr5 = EMPTYSTRING;
+    bufferstr2 = EMPTYSTRING;
+    bufferstr6 = EMPTYSTRING;
+    bufferstr7 = EMPTYSTRING;
+    bufferstr8 = EMPTYSTRING;
+    bufferstr9 = EMPTYSTRING;
+    bufferstr10 = EMPTYSTRING;
+    az_buff.clear_buffer();
+    ra_buff.clear_buffer();
+    laser_angle_buff.clear_buffer();
+    dec_buff.clear_buffer();
+    visibility_buffer.clear_buffer();
+    motor1_ang_buff.clear_buffer();
+    motor2_ang_buff.clear_buffer();
 }
 void TFT_dispStr(String str, int column, int row, uint8_t textsize)
 {
@@ -963,7 +992,7 @@ void clear_all()
 #pragma region motor_control_functions
 bool all_motors_ready_to_move()
 {
-    if (ready_to_move && (az_motor_target_reached == false) && (alt_motor_target_reached == false) && startracker.IsVisible())
+    if ((az_motor_target_reached == false) && (alt_motor_target_reached == false) && (startracker.IsVisible() == true))
     {
         return true;
     }
@@ -976,7 +1005,8 @@ bool reset_ready_to_move_markers()
 {
     alt_motor_target_reached = false;
     az_motor_target_reached = false;
-
+    entering_RA = false;
+    entering_DEC = false;
     motor1.target_reached(true);
     motor1.target_reached(true);
 }
@@ -1006,13 +1036,17 @@ bool reached_target_function(motor &engine)
 void Az_engine(float &target) //need to be in some standalone function cuz it is not attached to pin interuppt
 {
     motor1.set_target(target);
-    if (!az_motor_target_reached)
+    while (!az_motor_target_reached)
     {
         motor1.start();
         if (motor1.target_reached())
         {
             az_motor_target_reached = true;
-            alt_motor_target_reached ? mode = modes::DISPLAY_RESULTS : mode = modes::MOVEMOTOR2;
+            alt_motor_target_reached ? mode = modes::GETTING_STAR_LOCATION : mode = modes::MOVEMOTOR2;
+        }
+        else
+        {
+            mode = modes::MOVEMOTOR1;
         }
     }
 }
@@ -1021,13 +1055,17 @@ void Alt_engine(float &target)
 
     motor2.set_target(target);
 
-    if (!alt_motor_target_reached)
+    while (!alt_motor_target_reached)
     {
         motor2.start();
         if (motor2.target_reached())
         {
+            clearDisplay();
+            clear_all_buffers();
+
             alt_motor_target_reached = true;
-            az_motor_target_reached ? mode = modes::DISPLAY_RESULTS : mode = modes::MOVEMOTOR1;
+
+            az_motor_target_reached ? mode = modes::GETTING_STAR_LOCATION : mode = modes::MOVEMOTOR1;
         }
     }
 }

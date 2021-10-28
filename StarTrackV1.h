@@ -195,25 +195,25 @@ namespace offsets
 
 namespace refresh // all timer refresh rates here
 {
-    const unsigned int gps_refresh_rate = 1;           //ms
-    const unsigned int calculation_refresh_rate = 950; //ms
-    const unsigned int accel_refresh_rate = 200;       //now its only print refresh
-    const unsigned int compass_refresh_rate = 1000;    //ms
-    const unsigned int ir_refresh_rate = 70;           //ms
-    const unsigned int TFT_refresh_rate = 1000;        // frequency of reading the IR data in ms
-    const unsigned int loading_messenge_refresh = 200; // frequency of reading the IR data in ms
+    // const unsigned int gps_refresh_rate = 1;         //ms
+    // const unsigned int calculation_refresh_rate = 1; //ms
+    //  const unsigned int accel_refresh_rate = 1;       //now its only print refresh
+    //   const unsigned int compass_refresh_rate = 1;     //ms
+    //const unsigned int ir_refresh_rate = 100;        //ms
+    // const unsigned int TFT_refresh_rate = 1;         // frequency of reading the IR data in ms
+    // const unsigned int loading_messenge_refresh = 1; // frequency of reading the IR data in ms
 };
 
 namespace constants //some usefull constants to for calibration and configuration
 {
-    const float number_of_measurements = 100;
+    const float number_of_measurements = 8;
     const double pi = 3.1415926536;
     const float motor2_gear_ratio = 7.874;
     const float motor1_gear_ratio = 2.5;
     const unsigned int GPSBaud = 9600;
     const unsigned long Serial_Baud = 115200;
     //const unsigned int HALFSTEPS = 4096; // Number of half-steps for a full rotation
-    const float kp = 10;
+    const float kp = 13;
     const float kd = 0.1;
     const float ki = 0.01;
     const int motor1_lower_limit = 0;
@@ -283,8 +283,8 @@ void TFT_clear(String strr, int column, int row, uint8_t textsize = 1);
 void calculate_starposition();
 void check_gps_accel_compass();
 void input_offsets();
-void Az_engine(float &target);  // function take target to follow and getting it by reference . for azymuth motor
-void Alt_engine(float &target); // function take target to follow and getting it by reference . for altitude motor
+void Az_engine(float &);  // function take target to follow and getting it by reference . for azymuth motor
+void Alt_engine(float &); // function take target to follow and getting it by reference . for altitude motor
 void boot_init_procedure();
 void allign_with_star();
 uint8_t decodeIRfun();
@@ -317,6 +317,7 @@ bool all_motors_ready_to_move();
 bool reset_ready_to_move_markers();
 void position_calibration_display();
 bool check_if_pointing_at_north();
+void clear_all_buffers();
 #if DEBUG
 void print_debug_message(int col = 0, int row = 0, uint8_t size = 1);
 void debug_rtc();

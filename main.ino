@@ -22,18 +22,24 @@ void loop()
         position_calibration_display();
         break;
     case modes::DISPLAY_RESULTS:
-        decodeIR();
+
+        readGPS();
+        read_compass();
+        updateAccel();
+        calculate_starposition();
         updateDisplay();
 
-        updateAccel();
+        mode = modes::GETTING_STAR_LOCATION;
+
+        decodeIR();
 
         break;
     case modes::MOVEMOTOR1:
-        decodeIR();
+
         Az_engine(azymuth_target);
         break;
     case modes::MOVEMOTOR2:
-        decodeIR();
+
         Alt_engine(altitude_target);
         break;
     case modes::EDIT_LAT:
@@ -51,16 +57,17 @@ void loop()
         break;
 
     case modes::GETTING_STAR_LOCATION:
-        decodeIR();
+
         readGPS();
         read_compass();
         updateAccel();
         calculate_starposition();
         updateDisplay();
+        decodeIR();
 
         break;
     case modes::POINTING_TO_STAR:
-        allign_with_star();
+        mode = modes::MOVEMOTOR1;
 
         break;
 
