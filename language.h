@@ -42,6 +42,8 @@
 #define un_device_position_calibration "kalibracja pozycji urzadzenia"
 #define un_pointing_at_north "gotowe, wskazujesz polnoc"
 #define un_not_pointing_at_north "nie wskazujesz polnocy"
+#define un_start_tracking_continously "zacznij sledzic gwiazde"
+#define un_star_found "znaleziono gwiazde"
 #endif
 #pragma endregion polish
 #pragma region english
@@ -76,7 +78,7 @@
 #define un_enter_accel_offset "enter accel offset"
 #define un_enter_az_offset "enter azymuth offset"
 #define un_magnetic_declination "magnetic declination"
-#define un_star_visibility "star visibility" : "
+#define un_star_visibility "star visibility"
 #define un_visible "visible"
 #define un_unvisible "not visible"
 #define un_motor1 "motor 1"
@@ -85,6 +87,8 @@
 #define un_device_position_calibration "device position calibration"
 #define un_pointing_at_north "ready, poining at north"
 #define un_not_pointing_at_north "not pointing at north"
+#define un_start_tracking_continously "start star tracking"
+#define un_star_found "star found"
 #endif
 
 #pragma endregion english

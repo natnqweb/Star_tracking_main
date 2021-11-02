@@ -26,7 +26,6 @@
                 "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_BusIO",
                 "C:\\Users\\Admin\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.3\\libraries\\Wire\\src",
                 "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_Unified_Sensor",
-                "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\StarTracker",
                 "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\TinyGPSPlus\\src",
                 "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src",
                 "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\TinyStepper\\src",
@@ -39,7 +38,8 @@
                 "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Motor_PID\\src",
                 "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_HX8357_Library",
                 "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit-GFX-Library",
-                "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\SoftWire"
+                "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\SoftWire",
+                "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Mapf\\src"
             ],
             "forcedInclude": [
                 "C:\\Users\\Admin\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.3\\cores\\arduino\\Arduino.h"

@@ -4,5 +4,7 @@
     "sketch": "main.ino",
     "port": "COM5",
     "output": "../build",
-    "baudrate": "115200"
+    "baudrate": "115200",
+    "intelliSenseGen": "disable",
+    "prebuild": "IF \"%VSCA_BUILD_MODE%\"==\"Verifying\" (echo VSCA_BUILD_MODE=%VSCA_BUILD_MODE% && echo VSCA_BOARD=%VSCA_BOARD%)"
 }

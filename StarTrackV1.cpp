@@ -28,6 +28,9 @@
              27.10.2021:
              added starting angle diplay on mainscreen display for both motors
              added functions to allign with star and move both motors to correct position
+             31.10.2021:
+             throwing out some unused functions and making further improvements may add something to display
+             currently working on adding actual tracking feature where device is continusly tracking star
 
 
 
@@ -73,36 +76,7 @@ void laser(bool on_off)
     digitalWrite(Laser_pin, on_off);
     laser_state = on_off;
 }
-void allign_with_star()
-{
-    if (ready_to_move == true && (motor1.target_reached() == false || motor2.target_reached() == false))
-    {
-        float dAzymuth = abs(my_location.azymuth - star.azymuth);
-        LOG("dAzymuth");
-        LOG(dAzymuth);
-        dAzymuth *= constants::motor1_gear_ratio; //numcer of pulses to move
-                                                  // dAzymuth *= constants::motor1_gear_ratio
-        //todo move to the star position
-        // if (ready_to_move)
-        // {
-        //   while (ready_to_move && motor1.motor_state && dAzymuth > 3)
-        //    {
-        //  decodeIR();
-        //  Az_engine(dAzymuth);
-        // }
-        // while (ready_to_move && motor2.motor_state)
-        //  {
-        // }
 
-        //
-        // }
-        mode = modes::GETTING_STAR_LOCATION;
-    }
-    else
-    {
-        mode = modes::GETTING_STAR_LOCATION;
-    }
-}
 void read_compass()
 {
 
@@ -135,19 +109,27 @@ void read_compass()
 
     degs headingDegrees = heading * 180 / M_PI;
     headingDegrees += offsets::azymuth_offset;
-    // headingDegrees += offsets::azymuth_offset + offsets::magnetic_variation;
-    if (headingDegrees > 360)
+
+    if (headingDegrees >= 1 && headingDegrees < 240)
     {
-        headingDegrees -= 360;
+        headingDegrees = mapf(headingDegrees, 0, 239, 0, 179);
     }
-    else if (headingDegrees < 0)
+    else if (headingDegrees >= 240)
     {
-        headingDegrees += 360;
+        headingDegrees = mapf(headingDegrees, 240, 360, 180, 360);
     }
-    else if (headingDegrees == 360)
+    smoothHeadingDegrees = round(headingDegrees);
+
+    if (smoothHeadingDegrees < (previousDegree + 2) && smoothHeadingDegrees > (previousDegree - 2))
     {
-        headingDegrees = 0;
+        smoothHeadingDegrees = previousDegree;
     }
+    if (smoothHeadingDegrees <= 2 || smoothHeadingDegrees >= 358)
+    {
+        smoothHeadingDegrees = 0;
+    }
+
+    previousDegree = smoothHeadingDegrees;
 
     LOG("Heading (degrees): ");
     LOG(headingDegrees);
@@ -204,8 +186,8 @@ void compass_init()
 void initialize_()
 {
     start_debuging(constants::Serial_Baud);
-    motor1.init(constants::kp, constants::ki, constants::kd);
-    motor2.init(constants::kp, constants::ki, constants::kd);
+    motor1.init(constants::kp1, constants::ki1, constants::kd1);
+    motor2.init(constants::kp2, constants::ki2, constants::kd2);
     motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
     motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
     pinMode(Laser_pin, OUTPUT);
@@ -232,56 +214,22 @@ void reset_all_go_to_main()
     clearDisplay();
     clear_all_buffers();
     reset_ready_to_move_markers();
-    mode = modes::INIT_PROCEDURE;
+
+    mode = INIT_PROCEDURE;
 }
 void go_to_main()
 {
     clearDisplay();
     clear_all_buffers();
-    mode = modes::INIT_PROCEDURE;
+    mode = INIT_PROCEDURE;
 }
 void decodeIR()
 {
     remote_input_handler_selector(go_to_main, plus, reset_all_go_to_main, minus, switch_laser, zero);
-    /*  switch (decodeIRfun())
-    {
-
-    case plus:
-        clearDisplay();
-        clear_all_buffers();
-        mode = modes::INIT_PROCEDURE;
-        break;
-    case minus:
-        //  mode == 0 ? mode = 3 : mode -= 1;
-        break;
-    case EQ:
-        //calibration = !calibration;
-        break;
-    case zero:
-
-        laser_mode = !laser_mode;
-        laser_mode ? laser(on) : laser(off);
-        break;
-    case two:
-        clearDisplay();
-        clear_all_buffers();
-        reset_ready_to_move_markers();
-        mode = modes::INIT_PROCEDURE;
-
-        break;
-    default:
-
-        break;
-    } */
 }
-//void smartDelay()// no delays!
-//{
-//}
 
 void readGPS()
 {
-
-    /* code */
 
     while (Serial3.available())
     {
@@ -332,11 +280,13 @@ void calculate_starposition()
         azymuth_target = star.azymuth * constants::motor1_gear_ratio;
         altitude_target = star.altitude * constants::motor2_gear_ratio;
 
+        // float diff1 = abs(star.azymuth - (motor1.get_position() / constants::motor1_gear_ratio));
+        // float diff2 = abs(star.altitude - (motor2.get_position() / constants::motor1_gear_ratio)); //angle diffrence betwen motor and star
         ready_to_move = true;
-        if (all_motors_ready_to_move() == true)
+        if (all_motors_ready_to_move())
         {
 
-            mode = modes::MOVEMOTOR1;
+            mode = MOVEMOTOR1;
             laser(on);
         }
     }
@@ -390,6 +340,11 @@ void clearDisplay()
     TFT_clear(un_day, mainscreen.column, mainscreen.row + 84 * 2, mainscreen.textsize);
     TFT_clear(un_time_utc, mainscreen.column, mainscreen.row + 96 * 2, mainscreen.textsize);
     TFT_clear(un_calibration, mainscreen.column, mainscreen.row + 108 * 2, mainscreen.textsize);
+
+    mainscreen.set_cursor(23, 23);
+    if (mode == DISPLAY_RESULTS)
+        TFT_clear(un_star_found, mainscreen.column, mainscreen.row, mainscreen.textsize);
+    mainscreen.reset_cursor();
     mainscreen.next_column(23);
     clear(un_laser_angle, mainscreen);
     mainscreen.next_column(18);
@@ -481,6 +436,10 @@ void updateDisplay()
     TFT_dispStr(un_day, mainscreen.column, mainscreen.row + 84 * 2, mainscreen.textsize);
     TFT_dispStr(un_time_utc, mainscreen.column, mainscreen.row + 96 * 2, mainscreen.textsize);
     TFT_dispStr(un_calibration, mainscreen.column, mainscreen.row + 108 * 2, mainscreen.textsize);
+    mainscreen.set_cursor(23, 23);
+    if (mode == DISPLAY_RESULTS)
+        TFT_dispStr(un_star_found, mainscreen.column, mainscreen.row, mainscreen.textsize);
+    mainscreen.reset_cursor();
     //other method
     mainscreen.next_column(23);
     print(un_laser_angle, mainscreen);
@@ -534,6 +493,7 @@ void updateDisplay()
 
     if (GPS_status)
     {
+        mainscreen.reset_cursor();
         mainscreen.next_row(8);
         mainscreen.next_column(23);
         print(un_star_visibility, mainscreen);
@@ -671,11 +631,17 @@ void TFT_clear(String strr, int column, int row, uint8_t textsize)
     TFTscreen.setCursor(column, row);
     TFTscreen.print(printout1);
 }
-
-#pragma region init_procedure
-void boot_init_exit_func1()
+void movemotors()
 {
-    mode = modes::SELECT_OFFSET;
+    motor1.set_target(azymuth_target);
+    motor2.set_target(altitude_target);
+    motor1.start();
+    motor2.start();
+}
+#pragma region init_procedure
+void clear_exit_disp()
+{
+    boot_init_disp.reset_cursor();
     TFT_clear(un_instruction, boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
     TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
     TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
@@ -687,58 +653,53 @@ void boot_init_exit_func1()
     TFT_clear(un_device_position_calibration, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
     TFT_clear(un_submit_continue, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
     TFT_clear(un_star_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+    boot_init_disp.set_cursor(36, 0);
+    clear("1-", boot_init_disp);
+    boot_init_disp.set_cursor(36, 4);
+    clear(un_start_tracking_continously, boot_init_disp);
+    boot_init_disp.reset_cursor();
+}
+void boot_init_exit_tracking_mode()
+{
+    clear_exit_disp();
+    read_compass();
+    updateAccel();
+    readGPS();
+
+    new_starting_position();
+
+    setmode = true;
+    continous_tracking = false;
+    mode = GETTING_STAR_LOCATION;
+}
+void boot_init_exit_func1()
+{
+    mode = SELECT_OFFSET;
+    clear_exit_disp();
     setmode = true;
 }
 void set_true_confirm()
 {
+    manual_calibration = false;
+    continous_tracking = false;
     confirm = true;
 }
 void boot_init_exit_func2()
 {
-    mode = modes::SETTINGS;
-    TFT_clear(un_instruction, boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
-    TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-    TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-    TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-    TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-    TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-    TFT_clear(un_set_mag_declination, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-    TFT_clear(un_your_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-    TFT_clear(un_device_position_calibration, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-    TFT_clear(un_submit_continue, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-    TFT_clear(un_star_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+    mode = SETTINGS;
+    clear_exit_disp();
     setmode = true;
 }
 void boot_init_exit_func3()
 {
-    mode = modes::EDIT_LAT;
-    TFT_clear(un_instruction, boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
-    TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-    TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-    TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-    TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-    TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-    TFT_clear(un_set_mag_declination, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-    TFT_clear(un_your_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-    TFT_clear(un_device_position_calibration, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-    TFT_clear(un_submit_continue, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-    TFT_clear(un_star_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+    mode = EDIT_LAT;
+    clear_exit_disp();
     setmode = true;
 }
 void boot_init_exit_func4()
 {
-    mode = modes::CALIBRATE_POSITION;
-    TFT_clear(un_instruction, boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
-    TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-    TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-    TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-    TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-    TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-    TFT_clear(un_set_mag_declination, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-    TFT_clear(un_your_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-    TFT_clear(un_device_position_calibration, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-    TFT_clear(un_submit_continue, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-    TFT_clear(un_star_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+    mode = CALIBRATE_POSITION;
+    clear_exit_disp();
     setmode = true;
 }
 void boot_init_procedure()
@@ -747,21 +708,11 @@ void boot_init_procedure()
 
     confirm = false;
     setmode = false;
-    remote_input_handler_selector(set_true_confirm, play, boot_init_exit_func1, EQ, boot_init_exit_func2, zero, boot_init_exit_func3, plus, boot_init_exit_func4, minus);
+    remote_input_handler_selector(set_true_confirm, play, boot_init_exit_func1, EQ, boot_init_exit_func2, zero, boot_init_exit_func3, plus, boot_init_exit_func4, minus, boot_init_exit_tracking_mode, one);
     if (confirm || setmode)
     {
 
-        TFT_clear(un_instruction, boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
-        TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-        TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-        TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-        TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-        TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-        TFT_clear(un_set_mag_declination, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-        TFT_clear(un_your_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-        TFT_clear(un_device_position_calibration, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-        TFT_clear(un_submit_continue, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-        TFT_clear(un_star_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+        clear_exit_disp();
     }
     else
     {
@@ -772,6 +723,11 @@ void boot_init_procedure()
         TFT_dispStr("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
         TFT_dispStr("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
         TFT_dispStr("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+        boot_init_disp.set_cursor(36, 0);
+        print("1-", boot_init_disp);
+        boot_init_disp.set_cursor(36, 4);
+        print(un_start_tracking_continously, boot_init_disp);
+        boot_init_disp.reset_cursor();
         TFT_dispStr(un_set_mag_declination, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
         TFT_dispStr(un_your_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
         TFT_dispStr(un_device_position_calibration, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
@@ -779,8 +735,6 @@ void boot_init_procedure()
         TFT_dispStr(un_star_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
     }
 
-    static int mess_row = 0;
-    static int mess_col = 0;
     if (confirm)
     {
         read_compass();
@@ -791,9 +745,8 @@ void boot_init_procedure()
             new_starting_position();
         }
         confirm = false;
-        mess_row = 0;
-        mess_col = 0;
-        mode = modes::GETTING_STAR_LOCATION;
+
+        mode = GETTING_STAR_LOCATION;
     }
 }
 #pragma endregion init_procedure
@@ -808,6 +761,7 @@ void new_starting_position()
 uint8_t decodeIRfun()
 {
     bool command_flag = false;
+
     if (IrReceiver.decode())
     {
 
@@ -819,6 +773,7 @@ uint8_t decodeIRfun()
                 IrReceiver.resume();
                 command_flag = true;
                 IrReceiver.decodedIRData.command = no_command;
+
                 return pilot_commands[i];
             }
         }
@@ -840,7 +795,7 @@ void entering_dec_exit_handle()
     boot_disp.reset_cursor();
     star.declination = input_DEC.toFloat();
     entering_DEC = true;
-    entering_RA ? mode = modes::INIT_PROCEDURE : mode = modes::edit_RA;
+    entering_RA ? mode = INIT_PROCEDURE : mode = EDIT_RA;
 }
 void entering_ra_exit_handle()
 {
@@ -851,9 +806,9 @@ void entering_ra_exit_handle()
     boot_disp.reset_cursor();
     star.right_ascension = input_RA.toFloat();
     entering_RA = true;
-    entering_DEC ? mode = modes::INIT_PROCEDURE : mode = modes::edit_dec;
+    entering_DEC ? mode = INIT_PROCEDURE : mode = EDIT_DEC;
 }
-void edit_Ra_Dec() // todo : make interface for entering Ra and Dec after booting
+void edit_Ra_Dec() // todo : make interface for entering Ra and Dec after booting *done
 {
     boot_disp.reset_cursor();
 
@@ -867,7 +822,7 @@ void edit_Ra_Dec() // todo : make interface for entering Ra and Dec after bootin
         TFT_clear(un_setting_2_DEC, boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
         TFT_clear(un_setting_play, boot_disp.column, boot_disp.row + 40, boot_disp.textsize);
 
-        mode = modes::edit_RA;
+        mode = EDIT_RA;
     }
     else if (decodeIRfun() == two)
     {
@@ -875,7 +830,7 @@ void edit_Ra_Dec() // todo : make interface for entering Ra and Dec after bootin
         TFT_clear(un_setting_2_DEC, boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
         TFT_clear(un_setting_play, boot_disp.column, boot_disp.row + 40, boot_disp.textsize);
 
-        mode = modes::edit_dec;
+        mode = EDIT_DEC;
     }
 }
 void edit_ra()
@@ -899,17 +854,6 @@ void edit_dec()
     boot_disp.reset_cursor();
 }
 #pragma endregion editing_ra_dec
-bool check_if_calibrated() // run before calculating to ensure that its worth wasting time for calculations
-{
-    bool star_ready = false;
-    (star.right_ascension != 0 && star.declination != 0) ? star_ready = true : star_ready = false;
-    bool iamready = false;
-    (my_location.latitude != 0 && my_location.longitude != 0 && (day && month && year && HOUR && MIN != 0)) ? iamready = true : iamready = false;
-    if (star_ready && iamready)
-        return true;
-    else
-        return false;
-}
 
 #pragma region offset_selectscrn
 void offset_select_remote_exit_play()
@@ -922,7 +866,7 @@ void offset_select_remote_exit_play()
     clear(un_enter_accel_offset, offsets_screen);
     offsets_screen.next_row(2);
     clear(un_enter_az_offset, offsets_screen);
-    mode = modes::GETTING_STAR_LOCATION;
+    mode = GETTING_STAR_LOCATION;
 }
 void offset_select_remote_exit_one()
 {
@@ -934,7 +878,7 @@ void offset_select_remote_exit_one()
     clear(un_enter_accel_offset, offsets_screen);
     offsets_screen.next_row(2);
     clear(un_enter_az_offset, offsets_screen);
-    mode = modes::OFFSET_EDIT;
+    mode = OFFSET_EDIT;
     offset_edit_mode = offset_editing::MAGNETIC;
 }
 void offset_select_remote_exit_two()
@@ -992,7 +936,8 @@ void clear_all()
 #pragma region motor_control_functions
 bool all_motors_ready_to_move()
 {
-    if ((az_motor_target_reached == false) && (alt_motor_target_reached == false) && (startracker.IsVisible() == true))
+    decodeIR();
+    if ((az_motor_target_reached == false) && (alt_motor_target_reached == false) && (startracker.IsVisible() == true) && (tracking_finished == false))
     {
         return true;
     }
@@ -1005,10 +950,11 @@ bool reset_ready_to_move_markers()
 {
     alt_motor_target_reached = false;
     az_motor_target_reached = false;
+    tracking_finished = false;
     entering_RA = false;
     entering_DEC = false;
     motor1.target_reached(true);
-    motor1.target_reached(true);
+    motor2.target_reached(true);
 }
 void safety_motor_position_control() // turn off motor if laser is to far up or down
 {
@@ -1019,7 +965,7 @@ void safety_motor_position_control() // turn off motor if laser is to far up or 
     else
         motor2.turn_on();
 }
-bool reached_target_function(motor &engine)
+bool reached_target_function(motor engine)
 {
     if (engine.target_reached())
     {
@@ -1033,40 +979,34 @@ bool reached_target_function(motor &engine)
     }
 }
 
-void Az_engine(float &target) //need to be in some standalone function cuz it is not attached to pin interuppt
+void Az_engine() //need to be in some standalone function cuz it is not attached to pin interuppt
 {
-    motor1.set_target(target);
-    while (!az_motor_target_reached)
+    az_motor_target_reached = false;
+    motor1.set_target(azymuth_target);
+    motor1.limit(0, 120);
+    motor1.start();
+
+    if (motor1.target_reached())
     {
-        motor1.start();
-        if (motor1.target_reached())
-        {
-            az_motor_target_reached = true;
-            alt_motor_target_reached ? mode = modes::GETTING_STAR_LOCATION : mode = modes::MOVEMOTOR2;
-        }
-        else
-        {
-            mode = modes::MOVEMOTOR1;
-        }
+        az_motor_target_reached = true;
+
+        alt_motor_target_reached ? mode = GETTING_STAR_LOCATION : mode = MOVEMOTOR2;
     }
 }
 void Alt_engine(float &target)
 {
-
+    alt_motor_target_reached = false;
     motor2.set_target(target);
+    motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
+    motor2.start();
 
-    while (!alt_motor_target_reached)
+    if (motor2.target_reached())
     {
-        motor2.start();
-        if (motor2.target_reached())
-        {
-            clearDisplay();
-            clear_all_buffers();
 
-            alt_motor_target_reached = true;
+        alt_motor_target_reached = true;
 
-            az_motor_target_reached ? mode = modes::GETTING_STAR_LOCATION : mode = modes::MOVEMOTOR1;
-        }
+        az_motor_target_reached ? mode = GETTING_STAR_LOCATION : mode = MOVEMOTOR1;
+        tracking_finished = true;
     }
 }
 
@@ -1114,7 +1054,7 @@ void offset_disp_exit_procedure()
     clear(un_magnetic_declination, edit_magnetic_var);
     edit_magnetic_var.next_row(2);
     clear(input_MAG_DEC, edit_magnetic_var);
-    mode = modes::GETTING_STAR_LOCATION;
+    mode = GETTING_STAR_LOCATION;
 }
 #pragma region edit_lat_long_functions
 void exit_lat()
@@ -1125,7 +1065,7 @@ void exit_lat()
     clear(input_lat, lat_long_disp);
     my_location.latitude = input_lat.toFloat();
     lat_long_disp.reset_cursor();
-    mode = modes::EDIT_LONG;
+    mode = EDIT_LONG;
 }
 void exit_long()
 {
@@ -1136,7 +1076,7 @@ void exit_long()
     my_location.longitude = input_long.toFloat();
     lat_long_disp.reset_cursor();
     automatic_mode = false;
-    mode = modes::INIT_PROCEDURE;
+    mode = INIT_PROCEDURE;
 }
 void edit_lat()
 {
@@ -1334,7 +1274,7 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
         break;
     }
 }
-void remote_input_handler_selector(void_func exitprint, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4, void_func exitprint5, uint8_t number5)
+void remote_input_handler_selector(void_func exitprint, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4, void_func exitprint5, uint8_t number5, void_func exitprint6, uint8_t number6)
 {
     switch (decodeIRfun())
     {
@@ -1350,6 +1290,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == zero)
             exitprint5();
+        else if (number6 == zero)
+            exitprint6();
         break;
     case one:
 
@@ -1363,6 +1305,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == one)
             exitprint5();
+        else if (number6 == one)
+            exitprint6();
         break;
     case two:
 
@@ -1376,6 +1320,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == two)
             exitprint5();
+        else if (number6 == two)
+            exitprint6();
         break;
     case three:
 
@@ -1389,6 +1335,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == three)
             exitprint5();
+        else if (number6 == three)
+            exitprint6();
         break;
     case four:
 
@@ -1402,6 +1350,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == four)
             exitprint5();
+        else if (number6 == four)
+            exitprint6();
         break;
     case five:
 
@@ -1415,6 +1365,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == five)
             exitprint5();
+        else if (number6 == five)
+            exitprint6();
         break;
     case six:
 
@@ -1428,6 +1380,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == six)
             exitprint5();
+        else if (number6 == six)
+            exitprint6();
         break;
     case seven:
 
@@ -1441,6 +1395,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == seven)
             exitprint5();
+        else if (number6 == seven)
+            exitprint6();
         break;
     case eight:
 
@@ -1454,6 +1410,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == eight)
             exitprint5();
+        else if (number6 == eight)
+            exitprint6();
         break;
     case nine:
 
@@ -1467,6 +1425,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == nine)
             exitprint5();
+        else if (number6 == nine)
+            exitprint6();
         break;
     case EQ:
 
@@ -1480,6 +1440,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == EQ)
             exitprint5();
+        else if (number6 == EQ)
+            exitprint6();
         break;
     case play:
         if (number == play)
@@ -1492,6 +1454,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == play)
             exitprint5();
+        else if (number6 == play)
+            exitprint6();
 
         break;
     case plus:
@@ -1505,6 +1469,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == plus)
             exitprint5();
+        else if (number6 == plus)
+            exitprint6();
 
         break;
     case minus:
@@ -1518,6 +1484,8 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint4();
         else if (number5 == minus)
             exitprint5();
+        else if (number6 == minus)
+            exitprint6();
 
         break;
     }
@@ -1532,34 +1500,11 @@ void check_gps_accel_compass()
 }
 bool check_if_pointing_at_north()
 {
-    float compassoutput = my_location.azymuth;
 
-    if (compassoutput > 357)
-    {
-        if (abs(round(compassoutput - 357)) < 2)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    if (smoothHeadingDegrees == 0)
+        return true;
     else
-    {
-        if (compassoutput < 5)
-        {
-            if (abs(round(compassoutput)) < 3)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
         return false;
-    }
 }
 void position_calibration_exit_func1()
 {
@@ -1585,7 +1530,7 @@ void position_calibration_exit_func1()
     calibration_disp.reset_cursor();
     new_starting_position();
     manual_calibration = true;
-    mode = modes::INIT_PROCEDURE;
+    mode = INIT_PROCEDURE;
 }
 void position_calibration_exit_cancel()
 {
@@ -1610,7 +1555,7 @@ void position_calibration_exit_cancel()
     ra_buff.clear_buffer();
     calibration_disp.reset_cursor();
     manual_calibration = false;
-    mode = modes::INIT_PROCEDURE;
+    mode = INIT_PROCEDURE;
 }
 void position_calibration_display()
 
@@ -1638,7 +1583,7 @@ void position_calibration_display()
     calibration_disp.set_cursor(14, 0);
     print(un_azymuth, calibration_disp);
     calibration_disp.set_cursor(14, 10);
-    ra_buff.disp = String(my_location.azymuth);
+    ra_buff.disp = String(smoothHeadingDegrees);
     dynamic_print(calibration_disp, ra_buff);
     calibration_disp.reset_cursor();
     remote_input_handler_selector(position_calibration_exit_func1, play, position_calibration_exit_cancel, zero);
@@ -1650,6 +1595,7 @@ void print_debug_message(int col, int row, uint8_t size)
 {
     TFT_dispStr("debug", col, row, size);
 }
+
 void debug_motors()
 {
 

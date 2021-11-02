@@ -5,17 +5,18 @@
 #include <Arduino.h>
 #include "language.h"
 #include <DS3231.h>
-#include <Adafruit_GFX.h>
 #include <Adafruit_HX8357.h>
-#include <SPI.h>
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <TinyGPS++.h>
 #include <IRremote.h>
 #include <Adafruit_HMC5883_U.h>
 #include <SkyMap.h>
-//#include <Encoder_Motor_PID.h> replaced by classic motor_pid
+#include <Mapf.h>
+#include <Simpletimer.h>
+
 #include <Motor_PID.h>
+
 #pragma endregion includes
 #pragma region definitions
 #define right 1
@@ -78,18 +79,18 @@ enum pins : const uint8_t
     IN2_2 = 11  //B2-b
 
 };
-enum class modes
+enum modes : const uint8_t
 { // program modes
 
     SETTINGS = 1,
     MAIN = 0,
     GETTING_STAR_LOCATION = 2,
-    POINTING_TO_STAR = 3,
+    TRACKING_MODE = 3,
     INIT_PROCEDURE = 4,
     OFFSET_EDIT = 5,
     SELECT_OFFSET = 6,
-    edit_RA = 7,
-    edit_dec = 8,
+    EDIT_RA = 7,
+    EDIT_DEC = 8,
     EDIT_LAT = 9,
     EDIT_LONG = 10,
     MOVEMOTOR1 = 11,
@@ -151,12 +152,7 @@ struct Star
     degs declination;                                                                          //must be in degrees
     Star(degs azymuth = 0, degs altitude = 0, degs right_ascension = 0, degs declination = 0); //must be in degrees
 };
-struct simpletimer //struct to manage time dependent tasks
-{
 
-    unsigned long before;
-    bool timer(unsigned long _time);
-};
 struct displayconfig
 {
     int row = 0;
@@ -206,50 +202,76 @@ namespace refresh // all timer refresh rates here
 
 namespace constants //some usefull constants to for calibration and configuration
 {
-    const float number_of_measurements = 8;
+    const float number_of_measurements = 64;
     const double pi = 3.1415926536;
     const float motor2_gear_ratio = 7.874;
     const float motor1_gear_ratio = 2.5;
     const unsigned int GPSBaud = 9600;
     const unsigned long Serial_Baud = 115200;
     //const unsigned int HALFSTEPS = 4096; // Number of half-steps for a full rotation
-    const float kp = 13;
-    const float kd = 0.1;
-    const float ki = 0.01;
-    const int motor1_lower_limit = 0;
+    const float kp1 = 20;
+    const float kd1 = 0.1;
+    const float ki1 = 0.01;
+    const float kp2 = 13;
+    const float kd2 = 0.1;
+    const float ki2 = 0.01;
+    const int motor1_lower_limit = 110;
     const int motor1_upper_limit = 120;
-    const int motor2_lower_limit = 120;
+    const int motor2_lower_limit = 136;
     const int motor2_upper_limit = 255;
+    const float minimal_deg_diff_to_move = 3;
 };
 #pragma endregion namespaces
 #pragma region variables
-buffers ra_buff, dec_buff, az_buff, laser_angle_buff, visibility_buffer, motor1_ang_buff, motor2_ang_buff;
-String input_MAG_DEC;
-bool laser_mode = false;
-bool setmode, confirm;
+
 auto offset_edit_mode = offset_editing::NOT_SET;
 auto mode = modes::MAIN;
 unsigned char pilot_commands[] = {plus, minus, play, EQ, zero, one, two, three, four, five, six, seven, eight, nine, no_command};
-bool calibration = false;
 float day, month, year, TIME, MIN, HOUR, SEKUNDA; //datetime
-bool ready_to_move = false;
-char printout1[4];                                                                                                                               //uint buffer
-String bufferstr, bufferstr2, bufferstr3, bufferstr4, bufferstr5, bufferstr6, bufferstr7, bufferstr8, bufferstr9, bufferstr10, bfstr11, bfstr12; //string buffer
-degs pointing_altitude;                                                                                                                          //data from accel
-bool laser_state;
+degs pointing_altitude;                           //data from accel
 degs starting_position_az, starting_position_alt; // calibration starting point for encoder so you dont need to level it every time manually
 uint8_t decoded_command = 0x00U;
-bool GPS_status = false;
 float accelXsum = 0;
 float accelYsum = 0;
 float accelZsum = 0;
-bool entering_DEC = false, entering_RA = false, automatic_mode = true;
+int previousDegree, smoothHeadingDegrees;
+#if DEBUG
+Simpletimer logtimer;
+#endif
+#pragma region buffers
+//buffers
+float previous_azymuth, previous_altitude;
+String input_MAG_DEC;
 String input_RA, input_DEC, input_lat, input_long;
 float azymuth_target = 0, altitude_target = 0;
-sensors_event_t a, g, temp;
+char printout1[4]; //uint buffer
+buffers ra_buff, dec_buff, az_buff, laser_angle_buff, visibility_buffer, motor1_ang_buff, motor2_ang_buff;
+String bufferstr, bufferstr2, bufferstr3, bufferstr4, bufferstr5, bufferstr6, bufferstr7, bufferstr8, bufferstr9, bufferstr10, bfstr11, bfstr12; //string buffer
+#pragma endregion buffers
+#pragma region booleans
+//booleans and markers
+bool tracking_finished = false;
+bool laser_state;
+bool manual_calibration = false;
+bool laser_mode = false;
+bool setmode, confirm;
+bool calibration = false;
 bool az_motor_target_reached = false, alt_motor_target_reached = false;
+bool ready_to_move = false;
+bool GPS_status = false;
+bool entering_DEC = false, entering_RA = false, automatic_mode = true;
+bool continous_tracking = false;
+
+#pragma endregion booleans
+
+#pragma region sensors
+//sensor events Adafruit_MPU6050 and hmc5883l
+sensors_event_t a, g, temp;
 sensors_event_t compass_event;
 sensor_t compass_hmcl;
+#pragma endregion sensors
+#pragma region displayconfig
+//displayconfiguration structure it contains information about cursor position
 displayconfig mainscreen;
 displayconfig boot_init_disp;
 displayconfig boot_disp;
@@ -259,37 +281,63 @@ displayconfig lat_long_disp;
 displayconfig deleteallinput;
 displayconfig star_visibility_disp;
 displayconfig calibration_disp;
-bool manual_calibration = false;
+#pragma endregion displayconfig
+
 #pragma endregion variables
 #pragma region custom_typedefs
 typedef void (*void_func)(void);
 typedef void (*exit_print)(String, displayconfig &);
 #pragma endregion custom_typedefs
 #pragma region function_prototypes
-void movemotors();
+// its just an empty function that do nothing
+void empty_function()
+{
+}
+#pragma region main_functions
+// get hmc5883l readings and save them
 void read_compass();
-void init_accel();
+// init procedure called at setup
 void initialize_();
+// custom pilot procedure can be called anywhere in program
 void decodeIR();
+// that function is called when you need to calibrate rtc when calibrated you dont need it
 void RTC_calibration();
+// this function contains while loop for reading data from serial port 3 on mega to reed neo6m data
 void readGPS();
+// updates accelerometer and changes values to degrees to get laser angle
 void updateAccel();
+// main display that displays all information about star location etc.
 void updateDisplay();
-void clearDisplay();
+// turns on or off laser
 void laser(bool on_off);
+// main functions that handles calculations and decide whenever startracking is posible
+void calculate_starposition();
+void Az_engine();         // function take target to follow and getting it by reference . for azymuth motor
+void Alt_engine(float &); // function take target to follow and getting it by reference . for altitude motor
+// procedure at the beginning of program it takes place in loop not in setup
+void boot_init_procedure();
+// when user decide to change offsets and click edit offset he enters input_offsets mode
+void input_offsets();
+void edit_Ra_Dec();
+void edit_dec();
+void edit_ra();
+//offset selection screen
+void offset_select();
+void edit_lat();
+void edit_long();
+// position calibration screen you need to confirm when you are facing north to set calibration data
+void position_calibration_display();
+#pragma endregion main_functions
+void movemotors();
+void init_accel();
+void clearDisplay();
 void TFT_dispStr(String str, int column, int row, uint8_t textsize = 1);
 void TFT_clear(String strr, int column, int row, uint8_t textsize = 1);
 //main function that preforms astronomy calculations based on current time and location
-void calculate_starposition();
 void check_gps_accel_compass();
-void input_offsets();
-void Az_engine(float &);  // function take target to follow and getting it by reference . for azymuth motor
-void Alt_engine(float &); // function take target to follow and getting it by reference . for altitude motor
-void boot_init_procedure();
-void allign_with_star();
+
 uint8_t decodeIRfun();
-bool check_if_calibrated();
-void edit_Ra_Dec();
+
 // when value changes refresh display clear previous displayed value and print new one
 void dynamic_print(displayconfig &, buffers &);
 void print(String, displayconfig &); //this custom function for printing it takes dislayconfig as a parameter to control where the disp cursor is
@@ -297,27 +345,19 @@ void clear(String, displayconfig &);
 void compass_init();
 void new_starting_position();
 void safety_motor_position_control();
-void offset_select();
-void empty_function()
-{
-}
-void edit_dec();
-void edit_ra();
-void edit_lat();
-void edit_long();
+
 // this functions saves in string every clicked button and performs exitfnct when irremote input matches expected command can take up to 3 functions
 void remote_input_handler_str(void_func, String &, uint8_t, displayconfig &, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0);
 // function that takes void functions as parameters and performs whats inside them only if ir reemote decodes given command can take up to 3 functions
-void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0, void_func exitprint5 = empty_function, uint8_t number5 = 0);
+void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0, void_func exitprint5 = empty_function, uint8_t number5 = 0, void_func exitprint6 = empty_function, uint8_t number6 = 0);
 //code specific for debuging purposes only if debug not true this code is not visible for compiler
-
 // // true if target  position is reached and false if not
-bool reached_target_function(motor &);
+bool reached_target_function(motor);
 bool all_motors_ready_to_move();
 bool reset_ready_to_move_markers();
-void position_calibration_display();
 bool check_if_pointing_at_north();
 void clear_all_buffers();
+
 #if DEBUG
 void print_debug_message(int col = 0, int row = 0, uint8_t size = 1);
 void debug_rtc();
