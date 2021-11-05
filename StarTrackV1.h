@@ -209,16 +209,16 @@ namespace constants //some usefull constants to for calibration and configuratio
     const unsigned int GPSBaud = 9600;
     const unsigned long Serial_Baud = 115200;
     //const unsigned int HALFSTEPS = 4096; // Number of half-steps for a full rotation
-    const float kp1 = 20;
-    const float kd1 = 0.1;
-    const float ki1 = 0.01;
+    const float kp1 = 0.84;
+    const float kd1 = 1;
+    const float ki1 = 0.3;
     const float kp2 = 13;
     const float kd2 = 0.1;
     const float ki2 = 0.01;
-    const int motor1_lower_limit = 110;
-    const int motor1_upper_limit = 120;
-    const int motor2_lower_limit = 136;
-    const int motor2_upper_limit = 255;
+    static const int motor1_lower_limit = 0;
+    static const int motor1_upper_limit = 130;
+    static const int motor2_lower_limit = 136;
+    static const int motor2_upper_limit = 255;
     const float minimal_deg_diff_to_move = 3;
 };
 #pragma endregion namespaces
@@ -299,7 +299,7 @@ void read_compass();
 // init procedure called at setup
 void initialize_();
 // custom pilot procedure can be called anywhere in program
-void decodeIR();
+static void decodeIR();
 // that function is called when you need to calibrate rtc when calibrated you dont need it
 void RTC_calibration();
 // this function contains while loop for reading data from serial port 3 on mega to reed neo6m data
@@ -307,13 +307,13 @@ void readGPS();
 // updates accelerometer and changes values to degrees to get laser angle
 void updateAccel();
 // main display that displays all information about star location etc.
-void updateDisplay();
+static void updateDisplay();
 // turns on or off laser
 void laser(bool on_off);
 // main functions that handles calculations and decide whenever startracking is posible
-void calculate_starposition();
-void Az_engine();         // function take target to follow and getting it by reference . for azymuth motor
-void Alt_engine(float &); // function take target to follow and getting it by reference . for altitude motor
+static void calculate_starposition();
+static void Az_engine();  // function take target to follow and getting it by reference . for azymuth motor
+static void Alt_engine(); // function take target to follow and getting it by reference . for altitude motor
 // procedure at the beginning of program it takes place in loop not in setup
 void boot_init_procedure();
 // when user decide to change offsets and click edit offset he enters input_offsets mode
@@ -336,7 +336,7 @@ void TFT_clear(String strr, int column, int row, uint8_t textsize = 1);
 //main function that preforms astronomy calculations based on current time and location
 void check_gps_accel_compass();
 
-uint8_t decodeIRfun();
+static uint8_t decodeIRfun();
 
 // when value changes refresh display clear previous displayed value and print new one
 void dynamic_print(displayconfig &, buffers &);
@@ -347,12 +347,12 @@ void new_starting_position();
 void safety_motor_position_control();
 
 // this functions saves in string every clicked button and performs exitfnct when irremote input matches expected command can take up to 3 functions
-void remote_input_handler_str(void_func, String &, uint8_t, displayconfig &, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0);
+static void remote_input_handler_str(void_func, String &, uint8_t, displayconfig &, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0);
 // function that takes void functions as parameters and performs whats inside them only if ir reemote decodes given command can take up to 3 functions
-void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0, void_func exitprint5 = empty_function, uint8_t number5 = 0, void_func exitprint6 = empty_function, uint8_t number6 = 0);
+static void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0, void_func exitprint5 = empty_function, uint8_t number5 = 0, void_func exitprint6 = empty_function, uint8_t number6 = 0);
 //code specific for debuging purposes only if debug not true this code is not visible for compiler
 // // true if target  position is reached and false if not
-bool reached_target_function(motor);
+
 bool all_motors_ready_to_move();
 bool reset_ready_to_move_markers();
 bool check_if_pointing_at_north();

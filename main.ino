@@ -30,7 +30,7 @@ void loop()
         break;
     case MOVEMOTOR2:
 
-        Alt_engine(altitude_target);
+        Alt_engine();
 
         break;
     case EDIT_LAT:
@@ -57,8 +57,8 @@ void loop()
 
         break;
     case DISPLAY_RESULTS:
-        delay(5000);
-        reset_all_go_to_main();
+        updateDisplay();
+        decodeIR();
 
         break;
 
@@ -77,7 +77,12 @@ void loop()
         break;
 
     default:
-
+#if DEBUG
+        while (DEBUG)
+        {
+            TFTscreen.println("herehrhearjhaslrdasjkldujaskn");
+        }
+#endif
         mode = INIT_PROCEDURE;
         break;
     }

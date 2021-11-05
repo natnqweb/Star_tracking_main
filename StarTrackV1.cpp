@@ -31,6 +31,8 @@
              31.10.2021:
              throwing out some unused functions and making further improvements may add something to display
              currently working on adding actual tracking feature where device is continusly tracking star
+             05.11.2021:
+             breakthrough ! added static functions and now everything is working properly
 
 
 
@@ -223,7 +225,7 @@ void go_to_main()
     clear_all_buffers();
     mode = INIT_PROCEDURE;
 }
-void decodeIR()
+static void decodeIR()
 {
     remote_input_handler_selector(go_to_main, plus, reset_all_go_to_main, minus, switch_laser, zero);
 }
@@ -238,7 +240,7 @@ void readGPS()
     }
 }
 
-void calculate_starposition()
+static void calculate_starposition()
 {
 
     t = rtc.getTime();
@@ -758,23 +760,23 @@ void new_starting_position()
     motor1.set_position(starting_position_az);
     motor2.set_position(starting_position_alt);
 }
-uint8_t decodeIRfun()
+static uint8_t decodeIRfun()
 {
     bool command_flag = false;
 
     if (IrReceiver.decode())
     {
 
-        for (int i = 0; i < sizeof(pilot_commands); i++)
+        for (auto command : pilot_commands) //(int i = 0; i < sizeof(pilot_commands); i++)
         {
-            if (IrReceiver.decodedIRData.command == pilot_commands[i])
+            if (IrReceiver.decodedIRData.command == command)
             {
 
                 IrReceiver.resume();
                 command_flag = true;
                 IrReceiver.decodedIRData.command = no_command;
 
-                return pilot_commands[i];
+                return command;
             }
         }
         IrReceiver.resume();
@@ -936,7 +938,7 @@ void clear_all()
 #pragma region motor_control_functions
 bool all_motors_ready_to_move()
 {
-    decodeIR();
+
     if ((az_motor_target_reached == false) && (alt_motor_target_reached == false) && (startracker.IsVisible() == true) && (tracking_finished == false))
     {
         return true;
@@ -965,25 +967,12 @@ void safety_motor_position_control() // turn off motor if laser is to far up or 
     else
         motor2.turn_on();
 }
-bool reached_target_function(motor engine)
-{
-    if (engine.target_reached())
-    {
 
-        return true;
-    }
-    else
-    {
-
-        return false;
-    }
-}
-
-void Az_engine() //need to be in some standalone function cuz it is not attached to pin interuppt
+static void Az_engine() //need to be in some standalone function cuz it is not attached to pin interuppt
 {
     az_motor_target_reached = false;
     motor1.set_target(azymuth_target);
-    motor1.limit(0, 120);
+    motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
     motor1.start();
 
     if (motor1.target_reached())
@@ -993,10 +982,10 @@ void Az_engine() //need to be in some standalone function cuz it is not attached
         alt_motor_target_reached ? mode = GETTING_STAR_LOCATION : mode = MOVEMOTOR2;
     }
 }
-void Alt_engine(float &target)
+static void Alt_engine()
 {
     alt_motor_target_reached = false;
-    motor2.set_target(target);
+    motor2.set_target(altitude_target);
     motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
     motor2.start();
 
@@ -1005,7 +994,7 @@ void Alt_engine(float &target)
 
         alt_motor_target_reached = true;
 
-        az_motor_target_reached ? mode = GETTING_STAR_LOCATION : mode = MOVEMOTOR1;
+        az_motor_target_reached ? mode = DISPLAY_RESULTS : mode = MOVEMOTOR1;
         tracking_finished = true;
     }
 }
@@ -1100,7 +1089,7 @@ void edit_long()
 }
 #pragma endregion edit_lat_long_functions
 #pragma region Remote_control_functions
-void remote_input_handler_str(void_func exitprint, String &result, uint8_t number, displayconfig &cnfg, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4)
+static void remote_input_handler_str(void_func exitprint, String &result, uint8_t number, displayconfig &cnfg, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4)
 {
     switch (decodeIRfun())
     {
@@ -1274,7 +1263,7 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
         break;
     }
 }
-void remote_input_handler_selector(void_func exitprint, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4, void_func exitprint5, uint8_t number5, void_func exitprint6, uint8_t number6)
+static void remote_input_handler_selector(void_func exitprint, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4, void_func exitprint5, uint8_t number5, void_func exitprint6, uint8_t number6)
 {
     switch (decodeIRfun())
     {
@@ -1595,16 +1584,27 @@ void print_debug_message(int col, int row, uint8_t size)
 {
     TFT_dispStr("debug", col, row, size);
 }
-
+void debug_display()
+{
+    TFTscreen.clear();
+}
 void debug_motors()
 {
 
     /*   motor2.set_target(710);
     motor2.limit(120, 255);
     motor2.start(); */
-    motor1.set_target(-900);
-    motor1.limit(0, 120);
+    motor1.set_target(100);
+    motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
     motor1.start();
+    if (logtimer.timer(1000))
+    {
+        LOG(motor1.get_position());
+        if (motor1.target_reached())
+        {
+            LOG("done");
+        }
+    }
     /* MOTOR1
     during debugging i found settings for second motor witch are 
     same kp kd and ki as motor2 and limitits upper 120 lower 0 
