@@ -247,10 +247,6 @@ void go_to_main()
     clear_all_buffers();
     mode = INIT_PROCEDURE;
 }
-extern void decodeIR_remote()
-{
-    remote_input_handler_selector(go_to_main, plus, reset_all_go_to_main, minus, switch_laser, zero);
-}
 
 void readGPS()
 {
@@ -353,96 +349,103 @@ void updateAccel()
 }
 void clearDisplay()
 {
-    mainscreen.reset_cursor();
-    TFT_clear(un_long, mainscreen.column, mainscreen.row, mainscreen.textsize);
-    TFT_clear(un_lat, mainscreen.column, mainscreen.row + 12 * 2, mainscreen.textsize);
-    TFT_clear(un_second, mainscreen.column, mainscreen.row + 24 * 2, mainscreen.textsize);
-    TFT_clear(un_azymuth, mainscreen.column, mainscreen.row + 36 * 2, mainscreen.textsize);
-    TFT_clear(un_altitude, mainscreen.column, mainscreen.row + 48 * 2, mainscreen.textsize);
-    TFT_clear(un_year, mainscreen.column, mainscreen.row + 60 * 2, mainscreen.textsize);
-    TFT_clear(un_month, mainscreen.column, mainscreen.row + 72 * 2, mainscreen.textsize);
-    TFT_clear(un_day, mainscreen.column, mainscreen.row + 84 * 2, mainscreen.textsize);
-    TFT_clear(un_time_utc, mainscreen.column, mainscreen.row + 96 * 2, mainscreen.textsize);
-    TFT_clear(un_calibration, mainscreen.column, mainscreen.row + 108 * 2, mainscreen.textsize);
 
-    mainscreen.set_cursor(23, 23);
-    if (mode == DISPLAY_RESULTS)
-        TFT_clear(un_star_found, mainscreen.column, mainscreen.row, mainscreen.textsize);
     mainscreen.reset_cursor();
-    mainscreen.next_column(23);
+    clear(un_long, mainscreen);
+    mainscreen.set_cursor(2, 0);
+    clear(un_lat, mainscreen);
+    mainscreen.next_row();
+    clear(un_second, mainscreen);
+    mainscreen.next_row();
+    clear(un_azymuth, mainscreen);
+    mainscreen.next_row();
+    clear(un_altitude, mainscreen);
+    mainscreen.next_row();
+    clear(un_year, mainscreen);
+    mainscreen.next_row();
+    clear(un_month, mainscreen);
+    mainscreen.next_row();
+    clear(un_day, mainscreen);
+    mainscreen.next_row();
+    clear(un_time_utc, mainscreen);
+    mainscreen.set_cursor(31, 23);
+    if (mode == DISPLAY_RESULTS)
+        clear(un_star_found, mainscreen);
+    mainscreen.reset_cursor();
+    //other method
+    mainscreen.next_column(31);
     clear(un_laser_angle, mainscreen);
     mainscreen.next_column(18);
 
     clear(laser_angle_buff.disp, mainscreen);
-    laser_angle_buff.clear_buffer();
+
     mainscreen.reset_cursor();
-    mainscreen.next_row(2);
-    mainscreen.next_column(23);
+    mainscreen.next_row();
+    mainscreen.next_column(31);
     clear(un_azymuth, mainscreen);
     mainscreen.next_column(18);
     clear(az_buff.disp, mainscreen);
-    az_buff.clear_buffer();
+
     mainscreen.reset_cursor();
     mainscreen.next_row(4);
-    mainscreen.next_column(23);
+    mainscreen.next_column(31);
     clear(un_right_ascension, mainscreen);
     mainscreen.next_column(18);
     clear(ra_buff.disp, mainscreen);
-    ra_buff.clear_buffer();
+
     mainscreen.reset_cursor();
     mainscreen.next_row(6);
-    mainscreen.next_column(23);
+    mainscreen.next_column(31);
     clear(un_declination, mainscreen);
     mainscreen.next_column(18);
     clear(dec_buff.disp, mainscreen);
-    dec_buff.clear_buffer();
-    mainscreen.reset_cursor();
-    TFT_clear(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
 
-    TFT_clear(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
-    TFT_clear(bufferstr4, 8 * 7 * 2, mainscreen.row + 36 * 2, mainscreen.textsize);
-    TFT_clear(bufferstr5, 8 * 7 * 2, mainscreen.row + 48 * 2, mainscreen.textsize);
-
-    TFT_clear(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
-    TFT_clear(bufferstr2, mainscreen.column + (8 * 6) * 2, mainscreen.row + 24 * 2, mainscreen.textsize);
-    TFT_clear(bufferstr6, 8 * 7 * 2, mainscreen.row + 60 * 2, mainscreen.textsize);
-    TFT_clear(bufferstr7, 8 * 7 * 2, mainscreen.row + 72 * 2, mainscreen.textsize);
-    TFT_clear(bufferstr8, 8 * 7 * 2, mainscreen.row + 84 * 2, mainscreen.textsize);
-    TFT_clear(bufferstr9, 8 * 7 * 2, mainscreen.row + 96 * 2, mainscreen.textsize);
-    TFT_clear(bufferstr10, 8 * 10 * 2, mainscreen.row + 108 * 2, mainscreen.textsize);
-    bufferstr = EMPTYSTRING;
-    bufferstr3 = EMPTYSTRING;
-    bufferstr4 = EMPTYSTRING;
-    bufferstr5 = EMPTYSTRING;
-    bufferstr2 = EMPTYSTRING;
-    bufferstr6 = EMPTYSTRING;
-    bufferstr7 = EMPTYSTRING;
-    bufferstr8 = EMPTYSTRING;
-    bufferstr9 = EMPTYSTRING;
-    bufferstr10 = EMPTYSTRING;
-    mainscreen.next_row(8);
-    mainscreen.next_column(23);
-    clear(un_star_visibility, mainscreen);
-    mainscreen.next_row(2);
-    clear(visibility_buffer.disp, mainscreen);
-    visibility_buffer.clear_buffer();
     mainscreen.reset_cursor();
     mainscreen.next_row(29);
-    clear(un_motor1, mainscreen);
-    mainscreen.next_row(2); //row 14
-    clear(un_degree, mainscreen);
-    mainscreen.next_column(10); // column 10
-    clear(motor1_ang_buff.disp, mainscreen);
-    motor1_ang_buff.clear_buffer();
-
+    clear(un_motor1, mainscreen);            // row 29 column 0
+    mainscreen.next_row();                   //row 31
+    clear(un_degree, mainscreen);            // row 31 column 0
+    mainscreen.next_column(10);              // row 31 column 10
+    clear(motor1_ang_buff.disp, mainscreen); // row 31 column 10
+    mainscreen.reset_cursor();
     mainscreen.set_cursor(33, 0);
     clear(un_motor2, mainscreen);
-    mainscreen.next_row(2);
-    clear(un_degree, mainscreen); //
-    mainscreen.next_column(10);
-    clear(motor2_ang_buff.disp, mainscreen);
-    motor2_ang_buff.clear_buffer();
+    mainscreen.next_row();                   // row 35 column 0
+    clear(un_degree, mainscreen);            // row 35 column 0
+    mainscreen.next_column(10);              //row 35 column 10
+    clear(motor2_ang_buff.disp, mainscreen); //row 35 column 10
+    mainscreen.reset_cursor();               //row 0 column 0
+    mainscreen.next_row(8);
+    mainscreen.next_column(31);
+    clear(un_star_visibility, mainscreen);
+    mainscreen.next_row();
+
+    clear(visibility_buffer.disp, mainscreen);
     mainscreen.reset_cursor();
+    // results
+    mainscreen.set_cursor(0, 15);
+    clear(_long_buff.disp, mainscreen);
+    mainscreen.next_row();
+    clear(_lat_buff.disp, mainscreen);
+    mainscreen.next_row();
+    clear(_sec_buff.disp, mainscreen);
+    mainscreen.next_row();
+
+    clear(_star_az_buff.disp, mainscreen);
+    mainscreen.next_row();
+    clear(_star_alt_buff.disp, mainscreen);
+    mainscreen.next_row();
+
+    clear(String(t.year), mainscreen);
+    mainscreen.next_row();
+    clear(String(t.mon), mainscreen);
+    mainscreen.next_row();
+    clear(String(t.date), mainscreen);
+    mainscreen.next_row();
+    clear(_time_buff.disp, mainscreen);
+
+    mainscreen.reset_cursor();
+    clear_all_buffers();
 }
 void updateDisplay()
 {
@@ -450,30 +453,37 @@ void updateDisplay()
     // {
     LOG("display updated");
     mainscreen.reset_cursor();
-    TFT_dispStr(un_long, mainscreen.column, mainscreen.row, mainscreen.textsize);
-    TFT_dispStr(un_lat, mainscreen.column, mainscreen.row + 12 * 2, mainscreen.textsize);
-    TFT_dispStr(un_second, mainscreen.column, mainscreen.row + 24 * 2, mainscreen.textsize);
-    TFT_dispStr(un_azymuth, mainscreen.column, mainscreen.row + 36 * 2, mainscreen.textsize);
-    TFT_dispStr(un_altitude, mainscreen.column, mainscreen.row + 48 * 2, mainscreen.textsize);
-    TFT_dispStr(un_year, mainscreen.column, mainscreen.row + 60 * 2, mainscreen.textsize);
-    TFT_dispStr(un_month, mainscreen.column, mainscreen.row + 72 * 2, mainscreen.textsize);
-    TFT_dispStr(un_day, mainscreen.column, mainscreen.row + 84 * 2, mainscreen.textsize);
-    TFT_dispStr(un_time_utc, mainscreen.column, mainscreen.row + 96 * 2, mainscreen.textsize);
-    TFT_dispStr(un_calibration, mainscreen.column, mainscreen.row + 108 * 2, mainscreen.textsize);
-    mainscreen.set_cursor(23, 23);
+    print(un_long, mainscreen);
+    mainscreen.set_cursor(2, 0);
+    print(un_lat, mainscreen);
+    mainscreen.next_row();
+    print(un_second, mainscreen);
+    mainscreen.next_row();
+    print(un_azymuth, mainscreen);
+    mainscreen.next_row();
+    print(un_altitude, mainscreen);
+    mainscreen.next_row();
+    print(un_year, mainscreen);
+    mainscreen.next_row();
+    print(un_month, mainscreen);
+    mainscreen.next_row();
+    print(un_day, mainscreen);
+    mainscreen.next_row();
+    print(un_time_utc, mainscreen);
+    mainscreen.set_cursor(31, 23);
     if (mode == DISPLAY_RESULTS)
-        TFT_dispStr(un_star_found, mainscreen.column, mainscreen.row, mainscreen.textsize);
+        print(un_star_found, mainscreen);
     mainscreen.reset_cursor();
     //other method
-    mainscreen.next_column(23);
+    mainscreen.next_column(31);
     print(un_laser_angle, mainscreen);
     mainscreen.next_column(18);
     laser_angle_buff.disp = String(pointing_altitude);
     dynamic_print(mainscreen, laser_angle_buff);
 
     mainscreen.reset_cursor();
-    mainscreen.next_row(2);
-    mainscreen.next_column(23);
+    mainscreen.next_row();
+    mainscreen.next_column(31);
     print(un_azymuth, mainscreen);
     mainscreen.next_column(18);
     az_buff.disp = String(my_location.azymuth);
@@ -481,7 +491,7 @@ void updateDisplay()
 
     mainscreen.reset_cursor();
     mainscreen.next_row(4);
-    mainscreen.next_column(23);
+    mainscreen.next_column(31);
     print(un_right_ascension, mainscreen);
     mainscreen.next_column(18);
     ra_buff.disp = (String)star.right_ascension;
@@ -489,7 +499,7 @@ void updateDisplay()
 
     mainscreen.reset_cursor();
     mainscreen.next_row(6);
-    mainscreen.next_column(23);
+    mainscreen.next_column(31);
     print(un_declination, mainscreen);
     mainscreen.next_column(18);
     dec_buff.disp = (String)star.declination;
@@ -498,7 +508,7 @@ void updateDisplay()
     mainscreen.reset_cursor();
     mainscreen.next_row(29);
     print(un_motor1, mainscreen); // row 29 column 0
-    mainscreen.next_row(2);       //row 31
+    mainscreen.next_row();        //row 31
     print(un_degree, mainscreen); // row 31 column 0
     mainscreen.next_column(10);   // row 31 column 10
     motor1_ang_buff.disp = (String)(motor1.get_position() / constants::motor1_gear_ratio);
@@ -506,128 +516,60 @@ void updateDisplay()
     mainscreen.reset_cursor();
     mainscreen.set_cursor(33, 0);
     print(un_motor2, mainscreen);
-    mainscreen.next_row(2);       // row 35 column 0
+    mainscreen.next_row();        // row 35 column 0
     print(un_degree, mainscreen); // row 35 column 0
     mainscreen.next_column(10);   //row 35 column 10
     motor2_ang_buff.disp = (String)(motor2.get_position() / constants::motor2_gear_ratio);
     dynamic_print(mainscreen, motor2_ang_buff); //row 35 column 10
     mainscreen.reset_cursor();                  //row 0 column 0
-
-    //other method of printing to tft
-
+    mainscreen.next_row(8);
+    mainscreen.next_column(31);
+    print(un_star_visibility, mainscreen);
+    mainscreen.next_row();
     if (GPS_status)
-    {
-        mainscreen.reset_cursor();
-        mainscreen.next_row(8);
-        mainscreen.next_column(23);
-        print(un_star_visibility, mainscreen);
-        mainscreen.next_row(2);
-        startracker.IsVisible() ? visibility_buffer.disp = un_visible : visibility_buffer.disp = un_unvisible;
-        dynamic_print(mainscreen, visibility_buffer);
-        mainscreen.reset_cursor();
 
-        String val1 = String(my_location.longitude);
-        if (!val1.equals(bufferstr))
-        {
-            TFT_clear(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
-            bufferstr = val1;
-            TFT_dispStr(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
-        }
-        String val3 = String(my_location.latitude);
-        if (!val3.equals(bufferstr3))
-        {
-            TFT_clear(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
-            bufferstr3 = val3;
-            TFT_dispStr(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
-        }
-        String val4 = String(star.azymuth);
-        if (!val4.equals(bufferstr4))
-        {
-            TFT_clear(bufferstr4, 8 * 7 * 2, mainscreen.row + 36 * 2, mainscreen.textsize);
-            bufferstr4 = val4;
-            TFT_dispStr(bufferstr4, 8 * 7 * 2, mainscreen.row + 36 * 2, mainscreen.textsize);
-        }
-        String val5 = String(star.altitude);
-        if (!val5.equals(bufferstr5))
-        {
-            TFT_clear(bufferstr5, 8 * 7 * 2, mainscreen.row + 48 * 2, mainscreen.textsize);
-            bufferstr5 = val5;
-            TFT_dispStr(bufferstr5, 8 * 7 * 2, mainscreen.row + 48 * 2, mainscreen.textsize);
-        }
-    }
+        startracker.IsVisible() ? visibility_buffer.disp = un_visible : visibility_buffer.disp = un_unvisible;
+
     else
-    {
-        String val1 = "no gps";
-        if (!val1.equals(bufferstr))
-        {
-            TFT_clear(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
-            bufferstr = val1;
-            TFT_dispStr(bufferstr, mainscreen.column + (8 * 6) * 2, mainscreen.row, mainscreen.textsize);
-        }
-        String val3 = "no gps";
-        if (!val3.equals(bufferstr3))
-        {
-            TFT_clear(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
-            bufferstr3 = val3;
-            TFT_dispStr(bufferstr3, mainscreen.column + (8 * 6) * 2, mainscreen.row + 12 * 2, mainscreen.textsize);
-        }
-    }
-    String val2 = String(int(SEKUNDA));
-    if (!val2.equals(bufferstr2))
-    {
-        TFT_clear(bufferstr2, mainscreen.column + (8 * 6) * 2, mainscreen.row + 24 * 2, mainscreen.textsize);
-        bufferstr2 = val2;
-        TFT_dispStr(bufferstr2, mainscreen.column + (8 * 6) * 2, mainscreen.row + 24 * 2, mainscreen.textsize);
-    }
-    String val6 = String((int)year);
-    if (!val6.equals(bufferstr6))
-    {
-        TFT_clear(bufferstr6, 8 * 7 * 2, mainscreen.row + 60 * 2, mainscreen.textsize);
-        bufferstr6 = val6;
-        TFT_dispStr(bufferstr6, 8 * 7 * 2, mainscreen.row + 60 * 2, mainscreen.textsize);
-    }
-    String val7 = String((int)month);
-    if (!val7.equals(bufferstr7))
-    {
-        TFT_clear(bufferstr7, 8 * 7 * 2, mainscreen.row + 72 * 2, mainscreen.textsize);
-        bufferstr7 = val7;
-        TFT_dispStr(bufferstr7, 8 * 7 * 2, mainscreen.row + 72 * 2, mainscreen.textsize);
-    }
-    String val8 = String((int)day);
-    if (!val8.equals(bufferstr8))
-    {
-        TFT_clear(bufferstr8, 8 * 7 * 2, mainscreen.row + 84 * 2, mainscreen.textsize);
-        bufferstr8 = val8;
-        TFT_dispStr(bufferstr8, 8 * 7 * 2, mainscreen.row + 84 * 2, mainscreen.textsize);
-    }
-    String val9 = String(TIME);
-    if (!val9.equals(bufferstr9))
-    {
-        TFT_clear(bufferstr9, 8 * 7 * 2, mainscreen.row + 96 * 2, mainscreen.textsize);
-        bufferstr9 = val9;
-        TFT_dispStr(bufferstr9, 8 * 7 * 2, mainscreen.row + 96 * 2, mainscreen.textsize);
-    }
-    String val10 = String(calibration);
-    if (!val10.equals(bufferstr10))
-    {
-        TFT_clear(bufferstr10, 8 * 10 * 2, mainscreen.row + 108 * 2, mainscreen.textsize);
-        bufferstr10 = val10;
-        TFT_dispStr(bufferstr10, 8 * 10 * 2, mainscreen.row + 108 * 2, mainscreen.textsize);
-    }
+        visibility_buffer.disp = un_no_satelites;
+
+    dynamic_print(mainscreen, visibility_buffer);
+    mainscreen.reset_cursor();
+
+    GPS_status ? _long_buff.disp = String(my_location.longitude) : _long_buff.disp = un_no_gps;
+    // results
+    mainscreen.set_cursor(0, 15);
+    dynamic_print(mainscreen, _long_buff);
+    mainscreen.next_row();
+    GPS_status ? _lat_buff.disp = String(my_location.latitude) : _lat_buff.disp = un_no_gps;
+    dynamic_print(mainscreen, _lat_buff);
+    mainscreen.next_row();
+    _sec_buff.disp = String(int(SEKUNDA));
+    dynamic_print(mainscreen, _sec_buff);
+    mainscreen.next_row();
+    GPS_status ? _star_az_buff.disp = String(star.azymuth) : _star_az_buff.disp = "...";
+    dynamic_print(mainscreen, _star_az_buff);
+    mainscreen.next_row();
+    GPS_status ? _star_alt_buff.disp = String(star.altitude) : _star_alt_buff.disp = "...";
+    dynamic_print(mainscreen, _star_alt_buff);
+    mainscreen.next_row();
+
+    print(String(t.year), mainscreen);
+    mainscreen.next_row();
+    print(String(t.mon), mainscreen);
+    mainscreen.next_row();
+    print(String(t.date), mainscreen);
+    mainscreen.next_row();
+    _time_buff.disp = (String)TIME;
+    dynamic_print(mainscreen, _time_buff);
+
+    mainscreen.reset_cursor();
+
     //}
 }
 void clear_all_buffers()
 {
-    bufferstr = EMPTYSTRING;
-    bufferstr3 = EMPTYSTRING;
-    bufferstr4 = EMPTYSTRING;
-    bufferstr5 = EMPTYSTRING;
-    bufferstr2 = EMPTYSTRING;
-    bufferstr6 = EMPTYSTRING;
-    bufferstr7 = EMPTYSTRING;
-    bufferstr8 = EMPTYSTRING;
-    bufferstr9 = EMPTYSTRING;
-    bufferstr10 = EMPTYSTRING;
+
     az_buff.clear_buffer();
     ra_buff.clear_buffer();
     laser_angle_buff.clear_buffer();
@@ -635,6 +577,14 @@ void clear_all_buffers()
     visibility_buffer.clear_buffer();
     motor1_ang_buff.clear_buffer();
     motor2_ang_buff.clear_buffer();
+    _time_buff.clear_buffer();
+    _lat_buff.clear_buffer();
+    _day_buff.clear_buffer();
+    _long_buff.clear_buffer();
+    _star_alt_buff.clear_buffer();
+    _star_az_buff.clear_buffer();
+    _year_buff.clear_buffer();
+    _sec_buff.clear_buffer();
 }
 void TFT_dispStr(String str, int column, int row, uint8_t textsize)
 {
@@ -666,21 +616,34 @@ void movemotors()
 void clear_exit_disp()
 {
     boot_init_disp.reset_cursor();
-    TFT_clear(un_instruction, boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
-    TFT_clear("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-    TFT_clear("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-    TFT_clear("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-    TFT_clear("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-    TFT_clear("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
-    TFT_clear(un_set_mag_declination, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-    TFT_clear(un_your_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-    TFT_clear(un_device_position_calibration, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-    TFT_clear(un_submit_continue, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-    TFT_clear(un_star_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+    clear(un_instruction, boot_init_disp);
+    boot_init_disp.next_row();
+    clear("EQ-", boot_init_disp);
+    boot_init_disp.next_row();
+    clear("+", boot_init_disp);
+    boot_init_disp.next_row();
+    clear("-", boot_init_disp);
+    boot_init_disp.next_row();
+    clear("play", boot_init_disp);
+    boot_init_disp.next_row();
+    clear("0", boot_init_disp);
+
     boot_init_disp.set_cursor(36, 0);
     clear("1-", boot_init_disp);
     boot_init_disp.set_cursor(36, 4);
     clear(un_start_tracking_continously, boot_init_disp);
+    boot_init_disp.reset_cursor();
+    boot_init_disp.set_cursor(0, 8);
+    boot_init_disp.next_row();
+    clear(un_set_mag_declination, boot_init_disp);
+    boot_init_disp.next_row();
+    clear(un_your_location, boot_init_disp);
+    boot_init_disp.next_row();
+    clear(un_device_position_calibration, boot_init_disp);
+    boot_init_disp.next_row();
+    clear(un_submit_continue, boot_init_disp);
+    boot_init_disp.next_row();
+    clear(un_star_location, boot_init_disp);
     boot_init_disp.reset_cursor();
 }
 void boot_init_exit_tracking_mode()
@@ -740,23 +703,36 @@ void boot_init_procedure()
     }
     else
     {
+        boot_init_disp.reset_cursor();
+        print(un_instruction, boot_init_disp);
+        boot_init_disp.next_row();
+        print("EQ-", boot_init_disp);
+        boot_init_disp.next_row();
+        print("+", boot_init_disp);
+        boot_init_disp.next_row();
+        print("-", boot_init_disp);
+        boot_init_disp.next_row();
+        print("play", boot_init_disp);
+        boot_init_disp.next_row();
+        print("0", boot_init_disp);
 
-        TFT_dispStr(un_instruction, boot_init_disp.column, boot_init_disp.row, boot_init_disp.textsize);
-        TFT_dispStr("EQ-", boot_init_disp.column, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-        TFT_dispStr("+", boot_init_disp.column, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-        TFT_dispStr("-", boot_init_disp.column, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-        TFT_dispStr("play", boot_init_disp.column, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-        TFT_dispStr("0", boot_init_disp.row, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
         boot_init_disp.set_cursor(36, 0);
         print("1-", boot_init_disp);
         boot_init_disp.set_cursor(36, 4);
         print(un_start_tracking_continously, boot_init_disp);
         boot_init_disp.reset_cursor();
-        TFT_dispStr(un_set_mag_declination, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 12 * 2, boot_init_disp.textsize);
-        TFT_dispStr(un_your_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 24 * 2, boot_init_disp.textsize);
-        TFT_dispStr(un_device_position_calibration, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 36 * 2, boot_init_disp.textsize);
-        TFT_dispStr(un_submit_continue, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 48 * 2, boot_init_disp.textsize);
-        TFT_dispStr(un_star_location, boot_init_disp.column + (8 * 6) * 2, boot_init_disp.row + 60 * 2, boot_init_disp.textsize);
+        boot_init_disp.set_cursor(0, 8);
+        boot_init_disp.next_row();
+        print(un_set_mag_declination, boot_init_disp);
+        boot_init_disp.next_row();
+        print(un_your_location, boot_init_disp);
+        boot_init_disp.next_row();
+        print(un_device_position_calibration, boot_init_disp);
+        boot_init_disp.next_row();
+        print(un_submit_continue, boot_init_disp);
+        boot_init_disp.next_row();
+        print(un_star_location, boot_init_disp);
+        boot_init_disp.reset_cursor();
     }
 
     if (confirm)
@@ -883,24 +859,24 @@ void edit_dec()
 void offset_select_remote_exit_play()
 {
     clear("1-", offsets_screen);
-    offsets_screen.next_row(2);
+    offsets_screen.next_row();
     clear("2-", offsets_screen);
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
     clear(un_enter_accel_offset, offsets_screen);
-    offsets_screen.next_row(2);
+    offsets_screen.next_row();
     clear(un_enter_az_offset, offsets_screen);
     mode = GETTING_STAR_LOCATION;
 }
 void offset_select_remote_exit_one()
 {
     clear("1-", offsets_screen);
-    offsets_screen.next_row(2);
+    offsets_screen.next_row();
     clear("2-", offsets_screen);
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
     clear(un_enter_accel_offset, offsets_screen);
-    offsets_screen.next_row(2);
+    offsets_screen.next_row();
     clear(un_enter_az_offset, offsets_screen);
     mode = OFFSET_EDIT;
     offset_edit_mode = offset_editing::MAGNETIC;
@@ -908,12 +884,12 @@ void offset_select_remote_exit_one()
 void offset_select_remote_exit_two()
 {
     clear("1-", offsets_screen);
-    offsets_screen.next_row(2);
+    offsets_screen.next_row();
     clear("2-", offsets_screen);
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
     clear(un_enter_accel_offset, offsets_screen);
-    offsets_screen.next_row(2);
+    offsets_screen.next_row();
     clear(un_enter_az_offset, offsets_screen);
 }
 
@@ -921,12 +897,12 @@ void offset_select() // todo: let user enter all offsets independently from this
 {
     offsets_screen.reset_cursor();
     print("1-", offsets_screen);
-    offsets_screen.next_row(2);
+    offsets_screen.next_row();
     print("2-", offsets_screen);
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
     print(un_enter_accel_offset, offsets_screen);
-    offsets_screen.next_row(2);
+    offsets_screen.next_row();
     print(un_enter_az_offset, offsets_screen);
     offsets_screen.reset_cursor();
     remote_input_handler_selector(offset_select_remote_exit_one, one, offset_select_remote_exit_one, two, offset_select_remote_exit_play, play);
@@ -1032,9 +1008,9 @@ void input_offsets()
         edit_magnetic_var.reset_cursor();
 
         print(un_set_mag_declination, edit_magnetic_var);
-        edit_magnetic_var.next_row(2);
+        edit_magnetic_var.next_row();
         print(un_magnetic_declination, edit_magnetic_var);
-        edit_magnetic_var.next_row(2);
+        edit_magnetic_var.next_row();
         deleteallinput = edit_magnetic_var;
         print(input_MAG_DEC, edit_magnetic_var);
 
@@ -1061,9 +1037,9 @@ void offset_disp_exit_procedure()
     offsets::magnetic_variation = input_MAG_DEC.toFloat();
     edit_magnetic_var.reset_cursor();
     clear(un_set_mag_declination, edit_magnetic_var);
-    edit_magnetic_var.next_row(2);
+    edit_magnetic_var.next_row();
     clear(un_magnetic_declination, edit_magnetic_var);
-    edit_magnetic_var.next_row(2);
+    edit_magnetic_var.next_row();
     clear(input_MAG_DEC, edit_magnetic_var);
     mode = GETTING_STAR_LOCATION;
 }
@@ -1599,7 +1575,10 @@ void position_calibration_display()
     calibration_disp.reset_cursor();
     remote_input_handler_selector(position_calibration_exit_func1, play, position_calibration_exit_cancel, zero);
 }
-
+void decodeIR_remote()
+{
+    remote_input_handler_selector(go_to_main, plus, reset_all_go_to_main, minus, switch_laser, zero);
+}
 #pragma endregion Position_calibration
 #if DEBUG
 void print_debug_message(int col, int row, uint8_t size)

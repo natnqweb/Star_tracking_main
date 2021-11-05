@@ -44,6 +44,8 @@
 #define un_not_pointing_at_north "nie wskazujesz polnocy"
 #define un_start_tracking_continously "zacznij sledzic gwiazde"
 #define un_star_found "znaleziono gwiazde"
+#define un_no_gps "brak gps"
+#define un_no_satelites "brak satelit"
 #endif
 #pragma endregion polish
 #pragma region english
@@ -89,6 +91,8 @@
 #define un_not_pointing_at_north "not pointing at north"
 #define un_start_tracking_continously "start star tracking"
 #define un_star_found "star found"
+#define un_no_gps "no gps"
+#define un_no_satelites "brak satelit"
 #endif
 
 #pragma endregion english

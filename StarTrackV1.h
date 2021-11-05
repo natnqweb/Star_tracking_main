@@ -155,7 +155,7 @@ struct displayconfig
     int row = 0;
     int column = 0;
     uint8_t textsize = 2;
-    void next_row(int how_many_rows_further = 1, uint8_t pixels = 8);
+    void next_row(int how_many_rows_further = 2, uint8_t pixels = 8);
 
     void next_column(int how_many_columns = 1, uint8_t pixels = 8);
     void reset_cursor();
@@ -222,14 +222,16 @@ int previousDegree, smoothHeadingDegrees;
 Simpletimer logtimer;
 #endif
 #pragma region buffers
+char *char_array1;
+char *char_array2;
 //buffers
 float previous_azymuth, previous_altitude;
 String input_MAG_DEC;
 String input_RA, input_DEC, input_lat, input_long;
 float azymuth_target = 0, altitude_target = 0;
 char printout1[4]; //uint buffer
-buffers ra_buff, dec_buff, az_buff, laser_angle_buff, visibility_buffer, motor1_ang_buff, motor2_ang_buff;
-String bufferstr, bufferstr2, bufferstr3, bufferstr4, bufferstr5, bufferstr6, bufferstr7, bufferstr8, bufferstr9, bufferstr10, bfstr11, bfstr12; //string buffer
+buffers ra_buff, dec_buff, az_buff, laser_angle_buff, visibility_buffer, motor1_ang_buff, motor2_ang_buff, _long_buff, _lat_buff, _day_buff, _year_buff, _time_buff, _star_az_buff, _star_alt_buff, _sec_buff;
+//string buffer
 #pragma endregion buffers
 #pragma region booleans
 //booleans and markers

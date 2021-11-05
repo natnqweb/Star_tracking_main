@@ -52,8 +52,8 @@ void loop()
         readGPS();
         read_compass();
         updateAccel();
-        updateDisplay();
         calculate_starposition();
+        updateDisplay();
 
         break;
     case DISPLAY_RESULTS:
