@@ -15,7 +15,7 @@ void loop()
 
     if (mode == GETTING_STAR_LOCATION)
     {
-        decodeIR();
+        decodeIR_remote();
     }
     switch (mode)
     {
@@ -58,7 +58,7 @@ void loop()
         break;
     case DISPLAY_RESULTS:
         updateDisplay();
-        decodeIR();
+        decodeIR_remote();
 
         break;
 

@@ -32,7 +32,7 @@
              throwing out some unused functions and making further improvements may add something to display
              currently working on adding actual tracking feature where device is continusly tracking star
              05.11.2021:
-             breakthrough ! added static functions and now everything is working properly
+             breakthrough ! added  functions and now everything is working properly
 
 
 
@@ -41,7 +41,29 @@
         
  */
 #pragma region constructor_definitions
-
+void displayconfig::next_row(int how_many_rows_further, uint8_t pixels)
+{
+    this->row += (pixels * how_many_rows_further);
+}
+void displayconfig::next_column(int how_many_columns = 1, uint8_t pixels = 8)
+{
+    this->column += (pixels * how_many_columns);
+}
+void displayconfig::reset_cursor()
+{
+    this->column = 0;
+    this->row = 0;
+}
+void displayconfig::set_cursor(int row, int column, uint8_t pixels = 8)
+{
+    displayconfig::reset_cursor();
+    this->row += (pixels * row);
+    this->column += (pixels * column);
+}
+void buffers::clear_buffer()
+{
+    buff = EMPTYSTRING;
+}
 Myposition::Myposition(degs latitude, degs longitude, degs azymuth)
 {
     this->latitude = latitude;
@@ -225,7 +247,7 @@ void go_to_main()
     clear_all_buffers();
     mode = INIT_PROCEDURE;
 }
-static void decodeIR()
+extern void decodeIR_remote()
 {
     remote_input_handler_selector(go_to_main, plus, reset_all_go_to_main, minus, switch_laser, zero);
 }
@@ -240,7 +262,7 @@ void readGPS()
     }
 }
 
-static void calculate_starposition()
+void calculate_starposition()
 {
 
     t = rtc.getTime();
@@ -760,7 +782,7 @@ void new_starting_position()
     motor1.set_position(starting_position_az);
     motor2.set_position(starting_position_alt);
 }
-static uint8_t decodeIRfun()
+uint8_t decodeIRfun()
 {
     bool command_flag = false;
 
@@ -968,7 +990,7 @@ void safety_motor_position_control() // turn off motor if laser is to far up or 
         motor2.turn_on();
 }
 
-static void Az_engine() //need to be in some standalone function cuz it is not attached to pin interuppt
+void Az_engine() //need to be in some standalone function cuz it is not attached to pin interuppt
 {
     az_motor_target_reached = false;
     motor1.set_target(azymuth_target);
@@ -982,7 +1004,7 @@ static void Az_engine() //need to be in some standalone function cuz it is not a
         alt_motor_target_reached ? mode = GETTING_STAR_LOCATION : mode = MOVEMOTOR2;
     }
 }
-static void Alt_engine()
+void Alt_engine()
 {
     alt_motor_target_reached = false;
     motor2.set_target(altitude_target);
@@ -1089,7 +1111,7 @@ void edit_long()
 }
 #pragma endregion edit_lat_long_functions
 #pragma region Remote_control_functions
-static void remote_input_handler_str(void_func exitprint, String &result, uint8_t number, displayconfig &cnfg, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4)
+void remote_input_handler_str(void_func exitprint, String &result, uint8_t number, displayconfig &cnfg, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4)
 {
     switch (decodeIRfun())
     {
@@ -1263,7 +1285,7 @@ static void remote_input_handler_str(void_func exitprint, String &result, uint8_
         break;
     }
 }
-static void remote_input_handler_selector(void_func exitprint, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4, void_func exitprint5, uint8_t number5, void_func exitprint6, uint8_t number6)
+void remote_input_handler_selector(void_func exitprint, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4, void_func exitprint5, uint8_t number5, void_func exitprint6, uint8_t number6)
 {
     switch (decodeIRfun())
     {
