@@ -222,8 +222,6 @@ int previousDegree, smoothHeadingDegrees;
 Simpletimer logtimer;
 #endif
 #pragma region buffers
-char *char_array1;
-char *char_array2;
 //buffers
 float previous_azymuth, previous_altitude;
 String input_MAG_DEC;
