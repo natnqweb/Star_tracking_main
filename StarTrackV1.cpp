@@ -162,13 +162,12 @@ void read_compass()
 }
 void RTC_calibration()
 {
-    if (calibration)
+    readGPS();
+    if (calibration && gps.time.isValid())
     {
 
-        readGPS();
-
         // The following lines can be uncommented to set the date and time
-        rtc.setDOW(MONDAY);                                                                            // Set Day-of-Week to SUNDAY or whatever day of week it is
+        // Set Day-of-Week to SUNDAY or whatever day of week it is
         rtc.setTime(gps.time.hour() + offsets::timezone_offset, gps.time.minute(), gps.time.second()); // Set the time to 12:00:00 (24hr format)
         rtc.setDate(gps.date.day(), gps.date.month(), gps.date.year());                                // Set the date to January 1st, 2014
     }                                                                                                  // Initialize the rtc object
@@ -447,12 +446,20 @@ void clearDisplay()
     int previous_column = mainscreen.column; //
     mainscreen.next_row();
     mainscreen.column = 0;
+
     clear(un_local_time, mainscreen);
     mainscreen.column = previous_column;
-    mainscreen.next_column(3);
+    mainscreen.next_column(5);
+
     clear(_local_time_buff.disp, mainscreen);
     //
 
+    //gps time
+    mainscreen.next_row();
+    mainscreen.column = 0;
+
+    clear(_calibrate_buff.disp, mainscreen);
+    //
     mainscreen.reset_cursor();
     clear_all_buffers();
 }
@@ -575,14 +582,23 @@ void updateDisplay()
     int previous_column = mainscreen.column; //
     mainscreen.next_row();
     mainscreen.column = 0;
+
     print(un_local_time, mainscreen);
     mainscreen.column = previous_column;
-    mainscreen.next_column(3);
-    char disps[12];
-    sprintf(disps, "%d:%d:%d", t.hour, t.min, t.sec);
+    mainscreen.next_column(5);
+
+    char disps[6];
+
+    t.min < 10 ? snprintf(disps, sizeof(disps), "%d:0%d", t.hour, t.min) : snprintf(disps, sizeof(disps), "%d:%d", t.hour, t.min);
+
     _local_time_buff.disp = String(disps);
     dynamic_print(mainscreen, _local_time_buff);
-
+    //gps time
+    mainscreen.next_row();
+    mainscreen.column = 0;
+    gps.time.second() != 0 ? _calibrate_buff.disp = un_can_calibrate : _calibrate_buff.disp = un_cant_calibrate;
+    dynamic_print(mainscreen, _calibrate_buff);
+    //
     //
     mainscreen.reset_cursor();
 
@@ -606,6 +622,7 @@ void clear_all_buffers()
     _star_az_buff.clear_buffer();
     _year_buff.clear_buffer();
     _sec_buff.clear_buffer();
+    _calibrate_buff.clear_buffer();
     // dodanaj wyświetlanie czasu
 
     _local_time_buff.clear_buffer();
@@ -1569,6 +1586,12 @@ void position_calibration_exit_cancel()
     manual_calibration = false;
     mode = INIT_PROCEDURE;
 }
+void turn_on_off_calibration()
+{
+    calibration = !calibration;
+
+    RTC_calibration();
+}
 void position_calibration_display()
 
 {
@@ -1602,7 +1625,7 @@ void position_calibration_display()
 }
 void decodeIR_remote()
 {
-    remote_input_handler_selector(go_to_main, plus, reset_all_go_to_main, minus, switch_laser, zero);
+    remote_input_handler_selector(go_to_main, plus, reset_all_go_to_main, minus, switch_laser, zero, turn_on_off_calibration, two);
 }
 #pragma endregion Position_calibration
 #if DEBUG

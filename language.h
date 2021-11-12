@@ -47,6 +47,9 @@
 #define un_no_gps "brak gps"
 #define un_no_satelites "brak satelit"
 #define un_local_time "czas lokalny"
+#define un_time_from_gps "czas gps"
+#define un_can_calibrate "{1}"
+#define un_cant_calibrate "{0}"
 #endif
 #pragma endregion polish
 #pragma region english
@@ -95,6 +98,9 @@
 #define un_no_gps "no gps"
 #define un_no_satelites "no satelites"
 #define un_local_time "local time"
+#define un_time_from_gps "gps time"
+#define un_can_calibrate "{1}"
+#define un_cant_calibrate "{0}"
 #endif
 
 #pragma endregion english

@@ -228,7 +228,7 @@ String input_MAG_DEC;
 String input_RA, input_DEC, input_lat, input_long;
 float azymuth_target = 0, altitude_target = 0;
 char printout1[4]; //uint buffer
-buffers ra_buff, dec_buff, az_buff, laser_angle_buff, visibility_buffer, motor1_ang_buff, motor2_ang_buff, _long_buff, _lat_buff, _day_buff, _year_buff, _time_buff, _star_az_buff, _star_alt_buff, _sec_buff, _local_time_buff;
+buffers ra_buff, dec_buff, az_buff, laser_angle_buff, visibility_buffer, motor1_ang_buff, motor2_ang_buff, _long_buff, _lat_buff, _day_buff, _year_buff, _time_buff, _star_az_buff, _star_alt_buff, _sec_buff, _local_time_buff, _calibrate_buff;
 //string buffer
 #pragma endregion buffers
 #pragma region booleans
@@ -311,6 +311,7 @@ void edit_long();
 // position calibration screen you need to confirm when you are facing north to set calibration data
 void position_calibration_display();
 #pragma endregion main_functions
+void turn_on_off_calibration();
 void movemotors();
 void init_accel();
 void clearDisplay();
