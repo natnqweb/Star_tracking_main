@@ -46,6 +46,7 @@
 #define un_star_found "znaleziono gwiazde"
 #define un_no_gps "brak gps"
 #define un_no_satelites "brak satelit"
+#define un_local_time "czas lokalny"
 #endif
 #pragma endregion polish
 #pragma region english
@@ -92,7 +93,8 @@
 #define un_start_tracking_continously "start star tracking"
 #define un_star_found "star found"
 #define un_no_gps "no gps"
-#define un_no_satelites "brak satelit"
+#define un_no_satelites "no satelites"
+#define un_local_time "local time"
 #endif
 
 #pragma endregion english

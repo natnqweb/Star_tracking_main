@@ -33,8 +33,8 @@
              currently working on adding actual tracking feature where device is continusly tracking star
              05.11.2021:
              breakthrough ! added  functions and now everything is working properly
-
-
+            12.11.2021:
+            added local time display
 
 
         
@@ -443,6 +443,15 @@ void clearDisplay()
     clear(String(t.date), mainscreen);
     mainscreen.next_row();
     clear(_time_buff.disp, mainscreen);
+    // dodanaj wyświetlanie czasu
+    int previous_column = mainscreen.column; //
+    mainscreen.next_row();
+    mainscreen.column = 0;
+    clear(un_local_time, mainscreen);
+    mainscreen.column = previous_column;
+    mainscreen.next_column(3);
+    clear(_local_time_buff.disp, mainscreen);
+    //
 
     mainscreen.reset_cursor();
     clear_all_buffers();
@@ -562,7 +571,19 @@ void updateDisplay()
     mainscreen.next_row();
     _time_buff.disp = (String)TIME;
     dynamic_print(mainscreen, _time_buff);
+    // add time display
+    int previous_column = mainscreen.column; //
+    mainscreen.next_row();
+    mainscreen.column = 0;
+    print(un_local_time, mainscreen);
+    mainscreen.column = previous_column;
+    mainscreen.next_column(3);
+    char disps[12];
+    sprintf(disps, "%d:%d:%d", t.hour, t.min, t.sec);
+    _local_time_buff.disp = String(disps);
+    dynamic_print(mainscreen, _local_time_buff);
 
+    //
     mainscreen.reset_cursor();
 
     //}
@@ -585,6 +606,10 @@ void clear_all_buffers()
     _star_az_buff.clear_buffer();
     _year_buff.clear_buffer();
     _sec_buff.clear_buffer();
+    // dodanaj wyświetlanie czasu
+
+    _local_time_buff.clear_buffer();
+    //
 }
 void TFT_dispStr(String str, int column, int row, uint8_t textsize)
 {
