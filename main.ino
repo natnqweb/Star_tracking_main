@@ -80,7 +80,7 @@ void loop()
 #if DEBUG
         while (DEBUG)
         {
-            TFTscreen.println("herehrhearjhaslrdasjkldujaskn");
+            read_compass();
         }
 #endif
         mode = INIT_PROCEDURE;

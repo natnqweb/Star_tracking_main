@@ -31,6 +31,7 @@
 #define DEBUG false
 #endif
 #if DEBUG == true
+
 #define LOG(x) Serial.println(x)          //send debug message to serial port
 #define start_debuging(y) Serial.begin(y) //enable serial port with y baud
 #else
@@ -165,9 +166,8 @@ struct displayconfig
 #pragma region namespaces
 namespace offsets
 {
-    hrs timezone_offset = 2;        //UTC +2
+    hrs timezone_offset = 1;        //UTC +2
     degs magnetic_variation = -6.5; // 7 degrees due to magnetic declination
-    degs azymuth_offset = 0;        // offset from uneven attachment
     //degs altitude_offset = 0;
     // degs motor_position_offset = 0;
 };
@@ -348,6 +348,8 @@ void debug_rtc();
 void debug_motors();
 displayconfig debug_motor_display;
 buffers debugbuffer;
+void init_compass_test();
+float read_compass_test();
 #endif
 #pragma endregion function_prototypes
 #endif

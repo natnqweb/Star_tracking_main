@@ -95,6 +95,7 @@ Star star(0, 0, 101.52, -16.7424);    //Sirius ra and dec at start
 
 #pragma endregion constructors
 #pragma region functions
+
 void laser(bool on_off)
 {
     digitalWrite(Laser_pin, on_off);
@@ -132,7 +133,6 @@ void read_compass()
     // Convert radians to degrees for readability.
 
     degs headingDegrees = heading * 180 / M_PI;
-    headingDegrees += offsets::azymuth_offset;
 
     if (headingDegrees >= 1 && headingDegrees < 240)
     {
@@ -223,8 +223,10 @@ void initialize_()
     TFTscreen.setRotation(3);
     IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK, USE_DEFAULT_FEEDBACK_LED_PIN);
     IrReceiver.decodeNEC();
-    compass_init();
+
     init_accel();
+
+    compass_init();
 }
 
 void switch_laser()
@@ -1629,14 +1631,7 @@ void decodeIR_remote()
 }
 #pragma endregion Position_calibration
 #if DEBUG
-void print_debug_message(int col, int row, uint8_t size)
-{
-    TFT_dispStr("debug", col, row, size);
-}
-void debug_display()
-{
-    TFTscreen.clear();
-}
+
 void debug_motors()
 {
 
@@ -1697,5 +1692,26 @@ void debug_rtc()
 
     debugrtc.reset_cursor();
 }
+#pragma region testing
+//compass new class tests
+
+void init_compass_test()
+{
+    Compass.SetDeclination(offsets::magnetic_declination_hours, offsets::magnetic_declination_minutes, offsets::declination_dir);
+    Compass.SetSamplingMode(COMPASS_SINGLE);
+    Compass.SetScale(COMPASS_SCALE_130);
+    Compass.SetOrientation(COMPASS_HORIZONTAL_Y_NORTH);
+}
+float read_compass_test()
+{
+    float heading_test = Compass.GetHeadingDegrees();
+
+    LOG("Heading:");
+    LOG(heading_test);
+    return heading_test;
+}
+
+//
+#pragma endregion testing
 #endif
 #pragma endregion functions
