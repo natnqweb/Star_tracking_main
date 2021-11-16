@@ -3,7 +3,7 @@
     "board": "arduino:avr:mega",
     "sketch": "main.ino",
     "port": "COM5",
-    "output": "../build",
+    "output": "./build",
     "baudrate": "115200",
     "intelliSenseGen": "disable",
     "prebuild": "IF \"%VSCA_BUILD_MODE%\"==\"Verifying\" (echo VSCA_BUILD_MODE=%VSCA_BUILD_MODE% && echo VSCA_BOARD=%VSCA_BOARD%)"

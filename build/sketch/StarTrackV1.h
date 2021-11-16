@@ -1,3 +1,4 @@
+#line 1 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.h"
 #pragma once
 #ifndef StarTrackV1_h
 #define StarTrackV1_h

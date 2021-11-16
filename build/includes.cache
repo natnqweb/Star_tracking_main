@@ -1,0 +1,272 @@
+[
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "C:\\Users\\Admin\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.3\\cores\\arduino"
+  },
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "C:\\Users\\Admin\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.3\\variants\\mega"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "DS3231.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\DS3231"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "Adafruit_HX8357.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_HX8357_Library"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "Adafruit_SPITFT.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_GFX_Library"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "SPI.h",
+    "Includepath": "C:\\Users\\Admin\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.3\\libraries\\SPI\\src"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "Adafruit_MPU6050.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_MPU6050"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "Adafruit_BusIO_Register.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_BusIO"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "Wire.h",
+    "Includepath": "C:\\Users\\Admin\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.3\\libraries\\Wire\\src"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "Adafruit_Sensor.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_Unified_Sensor"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "TinyGPS++.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\TinyGPSPlus\\src"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "IRremote.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "Adafruit_HMC5883_U.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_HMC5883_Unified"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "SkyMap.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\SkyMap\\src"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "Mapf.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Mapf\\src"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "Simpletimer.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Simpletimer\\src"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "Motor_PID.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Motor_PID\\src"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\DS3231\\DS3231.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_HX8357_Library\\Adafruit_HX8357.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_GFX_Library\\Adafruit_GFX.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_GFX_Library\\Adafruit_GrayOLED.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_GFX_Library\\Adafruit_SPITFT.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_GFX_Library\\glcdfont.c",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.3\\libraries\\SPI\\src\\SPI.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_MPU6050\\Adafruit_MPU6050.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_BusIO\\Adafruit_BusIO_Register.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_BusIO\\Adafruit_I2CDevice.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_BusIO\\Adafruit_SPIDevice.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.3\\libraries\\Wire\\src\\Wire.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.3\\libraries\\Wire\\src\\utility\\twi.c",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_Unified_Sensor\\Adafruit_Sensor.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\TinyGPSPlus\\src\\TinyGPS++.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_BoseWave.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Denon.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Dish.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_DistanceProtocol.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_JVC.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Kaseikyo.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_LG.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Lego.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_MagiQuest.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_NEC.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Pronto.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_RC5_RC6.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Samsung.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Sony.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Template.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Whynter.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Adafruit_HMC5883_Unified\\Adafruit_HMC5883_U.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\SkyMap\\src\\SkyMap.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Mapf\\src\\Mapf.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Simpletimer\\src\\Simpletimer.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Motor_PID\\src\\Motor_PID.cpp",
+    "Include": "",
+    "Includepath": null
+  }
+]
