@@ -50,6 +50,8 @@
 #define un_time_from_gps "czas gps"
 #define un_can_calibrate "{1}"
 #define un_cant_calibrate "{0}"
+#define un_recent_location "ostatnia lokalizacja"
+#define un_recently_tracked_star "ostatnia gwiazda"
 #endif
 #pragma endregion polish
 #pragma region english
@@ -101,6 +103,8 @@
 #define un_time_from_gps "gps time"
 #define un_can_calibrate "{1}"
 #define un_cant_calibrate "{0}"
+#define un_recent_location "recent location"
+#define un_recently_tracked_star "recent star"
 #endif
 
 #pragma endregion english

@@ -42,4 +42,5 @@ c:\Users\Admin\Documents\Arduino\Star_tracking_main\build\sketch\StarTrackV1.cpp
  C:\Users\Admin\Documents\Arduino\libraries\SkyMap\src/SkyMap.h \
  C:\Users\Admin\Documents\Arduino\libraries\Mapf\src/Mapf.h \
  C:\Users\Admin\Documents\Arduino\libraries\Simpletimer\src/Simpletimer.h \
+ C:\Users\Admin\Documents\Arduino\libraries\uEEPROMLib\src/uEEPROMLib.h \
  C:\Users\Admin\Documents\Arduino\libraries\Motor_PID\src/Motor_PID.h

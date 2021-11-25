@@ -13,7 +13,7 @@ void setup()
 void loop()
 {
 
-    if (mode == GETTING_STAR_LOCATION)
+    if (mode == GETTING_STAR_LOCATION || mode == DISPLAY_RESULTS)
     {
         decodeIR_remote();
     }
@@ -49,16 +49,13 @@ void loop()
 
     case GETTING_STAR_LOCATION:
 
-        readGPS();
         read_compass();
-        updateAccel();
+        accel_callback_timer.run(refresh::accel_refresh_rate);
         calculate_starposition();
-        updateDisplay();
 
-        break;
-    case DISPLAY_RESULTS:
-        updateDisplay();
-        decodeIR_remote();
+        display_callback_timer.run(refresh::TFT_refresh_rate);
+
+        startup = false;
 
         break;
 

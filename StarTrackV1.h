@@ -14,11 +14,21 @@
 #include <SkyMap.h>
 #include <Mapf.h>
 #include <Simpletimer.h>
-
+#include <uEEPROMLib.h>
 #include <Motor_PID.h>
 
 #pragma endregion includes
 #pragma region definitions
+#pragma region eeprom_variables
+#define eeprom_lat_address 10
+#define eeprom_long_address 15
+#define eeprom_ra_address 20
+#define eeprom_dec_address 25
+#define eeprom_second_address 30
+#define eeprom_laser_angle 34
+#define eeprom_time_utc 39
+#pragma endregion eeprom_variables
+
 #define right 1
 #define left -1
 #define up 1
@@ -41,13 +51,29 @@
 #define ENABLE_LED_FEEDBACK 0          //feedback from IRDECODER 0 off 1on
 #define USE_DEFAULT_FEEDBACK_LED_PIN 1 //feedback from IRDECODER
 #pragma endregion macros_debg
-#pragma region i2c_adress
+#pragma region i2c_address
 #define accel_address 0x69
-#define compass_adress 0x1E
-#define other_address 0x57 //was detected in scanning
+#define compass_address 0x1E
+#define eeprom_address 0x57 //eeprom  i2c_address
 #define rtc_address 0x68
-#pragma endregion i2c_adress
-
+#pragma endregion i2c_address
+#pragma region remote_commands
+#define plus 0x15
+#define minus 0x7
+#define play 0x43
+#define EQ 0x9
+#define zero 0x16
+#define one 0xC
+#define two 0x18
+#define three 0x5E
+#define four 0x8
+#define five 0x1C
+#define six 0x5A
+#define seven 0x42
+#define eight 0x52
+#define nine 0x4A
+#define no_command 0x00
+#pragma endregion remote_commands
 #pragma endregion definitions
 
 #pragma region enumerations
@@ -100,25 +126,7 @@ enum modes : const uint8_t
     CALIBRATE_POSITION = 14
 
 };
-enum remote_commands : unsigned char // all commands from ir remote
-{
-    plus = 0x15,
-    minus = 0x7,
-    play = 0x43,
-    EQ = 0x9,
-    zero = 0x16,
-    one = 0xC,
-    two = 0x18,
-    three = 0x5E,
-    four = 0x8,
-    five = 0x1C,
-    six = 0x5A,
-    seven = 0x42,
-    eight = 0x52,
-    nine = 0x4A,
-    no_command = 0x00
 
-};
 enum states : bool
 {
 
@@ -174,12 +182,13 @@ namespace offsets
 
 namespace refresh // all timer refresh rates here
 {
+
     // const unsigned int gps_refresh_rate = 1;         //ms
     // const unsigned int calculation_refresh_rate = 1; //ms
-    //  const unsigned int accel_refresh_rate = 1;       //now its only print refresh
-    //   const unsigned int compass_refresh_rate = 1;     //ms
-    //const unsigned int ir_refresh_rate = 100;        //ms
-    // const unsigned int TFT_refresh_rate = 1;         // frequency of reading the IR data in ms
+    const unsigned int accel_refresh_rate = 500; //now its only print refresh
+                                                 //   const unsigned int compass_refresh_rate = 1;     //ms
+                                                 //const unsigned int ir_refresh_rate = 100;        //ms
+    const unsigned int TFT_refresh_rate = 1000;  // frequency of reading the IR data in ms
     // const unsigned int loading_messenge_refresh = 1; // frequency of reading the IR data in ms
 };
 
@@ -228,7 +237,8 @@ String input_MAG_DEC;
 String input_RA, input_DEC, input_lat, input_long;
 float azymuth_target = 0, altitude_target = 0;
 char printout1[30]; //uint buffer 240bits 30 bytes
-buffers ra_buff, dec_buff, az_buff, laser_angle_buff, visibility_buffer, motor1_ang_buff, motor2_ang_buff, _long_buff, _lat_buff, _day_buff, _year_buff, _time_buff, _star_az_buff, _star_alt_buff, _sec_buff, _local_time_buff, _calibrate_buff;
+
+buffers ra_buff, dec_buff, az_buff, visibility_buffer, motor1_ang_buff, motor2_ang_buff, _long_buff, _lat_buff, _day_buff, _year_buff, _star_az_buff, _star_alt_buff, _local_time_buff, _calibrate_buff;
 //string buffer
 #pragma endregion buffers
 #pragma region booleans
@@ -244,7 +254,8 @@ bool ready_to_move = false;
 bool GPS_status = false;
 bool entering_DEC = false, entering_RA = false, automatic_mode = true;
 bool continous_tracking = false;
-
+bool startup = true;
+bool print_boot_init_once = true;
 #pragma endregion booleans
 
 #pragma region sensors
@@ -278,6 +289,7 @@ void empty_function()
 }
 #pragma region main_functions
 // get hmc5883l readings and save them
+
 void read_compass();
 // init procedure called at setup
 void initialize_();
@@ -326,10 +338,22 @@ uint8_t decodeIRfun();
 void dynamic_print(displayconfig &, buffers &);
 void print(String, displayconfig &); //this custom function for printing it takes dislayconfig as a parameter to control where the disp cursor is
 void clear(String, displayconfig &);
+/* void dynamic_print_eeprom_int(displayconfig &, int, unsigned int);
+void dynamic_print_eeprom_float(displayconfig &, float, unsigned int); */
 void compass_init();
 void new_starting_position();
 void safety_motor_position_control();
+//memory allocation and access
 
+namespace EEPROM
+{
+    template <class T>
+    T read(unsigned int);
+    template <class T>
+    void write(unsigned int, T);
+    template <class T>
+    void dynamic_print_eeprom(displayconfig &, T, unsigned int);
+};
 // this functions saves in string every clicked button and performs exitfnct when irremote input matches expected command can take up to 3 functions
 void remote_input_handler_str(void_func, String &, uint8_t, displayconfig &, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0);
 // function that takes void functions as parameters and performs whats inside them only if ir reemote decodes given command can take up to 3 functions

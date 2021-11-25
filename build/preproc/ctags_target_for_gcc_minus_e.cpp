@@ -119,25 +119,49 @@ Star::Star(degs azymuth, degs altitude, degs right_ascension, degs declination)
     this->right_ascension = right_ascension;
     this->declination = declination;
 }
+
 #pragma endregion constructor_definitions
 #pragma region constructors
 TinyGPSPlus gps;
 Time t;
 DS3231 rtc(SDA, SCL);
+uEEPROMLib _EEPROM(0x57 /*eeprom  i2c_address*/);
+uEEPROMLib *eeprom = &_EEPROM;
+Simpletimer accel_callback_timer;
+Simpletimer display_callback_timer;
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(1132); //added custon id  1132
 Adafruit_MPU6050 mpu;
 
 Adafruit_HX8357 TFTscreen = Adafruit_HX8357(cs, dc, rst);
 SkyMap startracker;
-motor motor1(ENCA, ENCB, IN1, IN2);
-motor motor2(ENCA2, ENCB2, IN1_2, IN2_2);
+motor _motor1(ENCA, ENCB, IN1, IN2);
+motor *motor1 = &_motor1;
+
+motor _motor2(ENCA2, ENCB2, IN1_2, IN2_2);
+motor *motor2 = &_motor2;
+IRrecv IR(IR_RECEIVE_PIN);
 
 Myposition my_location(50.03, 21.01); //location for tarnów
 Star star(0, 0, 101.52, -16.7424); //Sirius ra and dec at start
 
 #pragma endregion constructors
 #pragma region functions
+#pragma region eeprom
+template <class T>
+void EEPROM::write(unsigned int address, T value)
+{
+    if (!eeprom->eeprom_write(address, value))
+        ;
+}
+template <class T>
+T EEPROM::read(unsigned int address)
+{
+    T temprorary_storage = 0;
+    eeprom->eeprom_read<T>(address, &temprorary_storage);
+    return temprorary_storage;
+}
 
+#pragma endregion eeprom
 void laser(bool on_off)
 {
     digitalWrite(Laser_pin, on_off);
@@ -175,9 +199,9 @@ void read_compass()
     // Convert radians to degrees for readability.
 
     degs headingDegrees = heading * 180 / 
-# 135 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 159 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                          3.14159265358979323846 /* pi */
-# 135 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 159 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                              ;
 
     if (headingDegrees >= 1 && headingDegrees < 240)
@@ -255,24 +279,27 @@ void compass_init()
 void initialize_()
 {
     ;
-    motor1.init(constants::kp1, constants::ki1, constants::kd1);
-    motor2.init(constants::kp2, constants::ki2, constants::kd2);
-    motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
-    motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
+    motor1->init(constants::kp1, constants::ki1, constants::kd1);
+    motor2->init(constants::kp2, constants::ki2, constants::kd2);
+    motor1->limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
+    motor2->limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
     pinMode(Laser_pin, 0x1);
 
     rtc.begin();
+    IR.begin(IR_RECEIVE_PIN, false);
     Serial3.begin(constants::GPSBaud);
 
     TFTscreen.begin();
     TFTscreen.fillScreen(0x0000 /*|< BLACK color for drawing graphics*/);
     TFTscreen.setRotation(3);
-    IrReceiver.begin(IR_RECEIVE_PIN, 0 /*feedback from IRDECODER 0 off 1on*/, 1 /*feedback from IRDECODER*/);
-    IrReceiver.decodeNEC();
+
+    IR.decodeNEC();
 
     init_accel();
 
     compass_init();
+    accel_callback_timer.register_callback(updateAccel);
+    display_callback_timer.register_callback(updateDisplay);
 }
 
 void switch_laser()
@@ -307,19 +334,24 @@ void readGPS()
 
 void calculate_starposition()
 {
-
+    readGPS();
     t = rtc.getTime();
     day = (float)t.date;
     month = (float)t.mon;
     year = (float)t.year;
-    if (automatic_mode)
+    if ((gps.location.lat() != 0) || (gps.location.lng() != 0))
     {
-        my_location.latitude = gps.location.lat();
-        my_location.longitude = gps.location.lng();
+        if (automatic_mode)
+        {
+            my_location.latitude = gps.location.lat();
+            my_location.longitude = gps.location.lng();
+            EEPROM::write(10, my_location.latitude);
+            EEPROM::write(15, my_location.longitude);
+        }
+        GPS_status = true;
     }
 
     ;
-
     MIN = (float)t.min;
     HOUR = (float)t.hour;
     SEKUNDA = (float)t.sec;
@@ -329,7 +361,7 @@ void calculate_starposition()
                                     offsets::timezone_offset);
     // star.right_ascension = 101.52;
     // star.declination = -16.7424;
-    if (my_location.latitude != 0 && my_location.longitude != 0)
+    if (GPS_status)
     {
 
         startracker.update(my_location.latitude,
@@ -340,15 +372,14 @@ void calculate_starposition()
                            month,
                            day,
                            TIME);
-        GPS_status = true;
 
         star.azymuth = startracker.get_star_Azymuth();
         star.altitude = startracker.get_star_Altitude();
         azymuth_target = star.azymuth * constants::motor1_gear_ratio;
         altitude_target = star.altitude * constants::motor2_gear_ratio;
 
-        // float diff1 = abs(star.azymuth - (motor1.get_position() / constants::motor1_gear_ratio));
-        // float diff2 = abs(star.altitude - (motor2.get_position() / constants::motor1_gear_ratio)); //angle diffrence betwen motor and star
+        // float diff1 = abs(star.azymuth - (motor1->get_position() / constants::motor1_gear_ratio));
+        // float diff2 = abs(star.altitude - (motor2->get_position() / constants::motor1_gear_ratio)); //angle diffrence betwen motor and star
         ready_to_move = true;
         if (all_motors_ready_to_move())
         {
@@ -359,7 +390,7 @@ void calculate_starposition()
     }
     else
     {
-        GPS_status = false;
+
         ready_to_move = false;
 
         laser(off);
@@ -424,7 +455,8 @@ void clearDisplay()
     clear("kat_lasera", mainscreen);
     mainscreen.next_column(18);
 
-    clear(laser_angle_buff.disp, mainscreen);
+    //clear(laser_angle_buff.disp, mainscreen);
+    clear(String(EEPROM::read<float>(34)), mainscreen);
 
     mainscreen.reset_cursor();
     mainscreen.next_row();
@@ -475,7 +507,8 @@ void clearDisplay()
     mainscreen.next_row();
     clear(_lat_buff.disp, mainscreen);
     mainscreen.next_row();
-    clear(_sec_buff.disp, mainscreen);
+    //clear(_sec_buff.disp, mainscreen);
+    clear(String(EEPROM::read<int>(30)), mainscreen);
     mainscreen.next_row();
 
     clear(_star_az_buff.disp, mainscreen);
@@ -489,7 +522,7 @@ void clearDisplay()
     mainscreen.next_row();
     clear(String(t.date), mainscreen);
     mainscreen.next_row();
-    clear(_time_buff.disp, mainscreen);
+    clear(String(EEPROM::read<float>(39)), mainscreen);
     // dodanaj wyświetlanie czasu
     int previous_column = mainscreen.column; //
     mainscreen.next_row();
@@ -542,8 +575,11 @@ void updateDisplay()
     mainscreen.next_column(31);
     print("kat_lasera", mainscreen);
     mainscreen.next_column(18);
-    laser_angle_buff.disp = String(pointing_altitude);
-    dynamic_print(mainscreen, laser_angle_buff);
+    /*     laser_angle_buff.disp = String(pointing_altitude);
+
+    dynamic_print(mainscreen, laser_angle_buff); */
+# 534 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    EEPROM::dynamic_print_eeprom(mainscreen, pointing_altitude, 34);
 
     mainscreen.reset_cursor();
     mainscreen.next_row();
@@ -575,7 +611,7 @@ void updateDisplay()
     mainscreen.next_row(); //row 31
     print("kat", mainscreen); // row 31 column 0
     mainscreen.next_column(10); // row 31 column 10
-    motor1_ang_buff.disp = (String)(motor1.get_position() / constants::motor1_gear_ratio);
+    motor1_ang_buff.disp = (String)(motor1->get_position() / constants::motor1_gear_ratio);
     dynamic_print(mainscreen, motor1_ang_buff); // row 31 column 10
     mainscreen.reset_cursor();
     mainscreen.set_cursor(33, 0);
@@ -583,7 +619,7 @@ void updateDisplay()
     mainscreen.next_row(); // row 35 column 0
     print("kat", mainscreen); // row 35 column 0
     mainscreen.next_column(10); //row 35 column 10
-    motor2_ang_buff.disp = (String)(motor2.get_position() / constants::motor2_gear_ratio);
+    motor2_ang_buff.disp = (String)(motor2->get_position() / constants::motor2_gear_ratio);
     dynamic_print(mainscreen, motor2_ang_buff); //row 35 column 10
     mainscreen.reset_cursor(); //row 0 column 0
     mainscreen.next_row(8);
@@ -608,8 +644,11 @@ void updateDisplay()
     GPS_status ? _lat_buff.disp = String(my_location.latitude) : _lat_buff.disp = "brak gps";
     dynamic_print(mainscreen, _lat_buff);
     mainscreen.next_row();
-    _sec_buff.disp = String(int(SEKUNDA));
-    dynamic_print(mainscreen, _sec_buff);
+    /*   _sec_buff.disp = String(int(SEKUNDA));
+
+    dynamic_print(mainscreen, _sec_buff); */
+# 601 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    EEPROM::dynamic_print_eeprom(mainscreen, (int)SEKUNDA, 30);
     mainscreen.next_row();
     GPS_status ? _star_az_buff.disp = String(star.azymuth) : _star_az_buff.disp = "...";
     dynamic_print(mainscreen, _star_az_buff);
@@ -624,8 +663,11 @@ void updateDisplay()
     mainscreen.next_row();
     print(String(t.date), mainscreen);
     mainscreen.next_row();
-    _time_buff.disp = (String)TIME;
-    dynamic_print(mainscreen, _time_buff);
+    /*     _time_buff.disp = (String)TIME;
+
+    dynamic_print(mainscreen, _time_buff); */
+# 618 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    EEPROM::dynamic_print_eeprom(mainscreen, TIME, 39);
     // add time display
     int previous_column = mainscreen.column; //
     mainscreen.next_row();
@@ -657,23 +699,24 @@ void clear_all_buffers()
 
     az_buff.clear_buffer();
     ra_buff.clear_buffer();
-    laser_angle_buff.clear_buffer();
+    //laser_angle_buff.clear_buffer();
     dec_buff.clear_buffer();
     visibility_buffer.clear_buffer();
     motor1_ang_buff.clear_buffer();
     motor2_ang_buff.clear_buffer();
-    _time_buff.clear_buffer();
+    // _time_buff.clear_buffer();
     _lat_buff.clear_buffer();
     _day_buff.clear_buffer();
     _long_buff.clear_buffer();
     _star_alt_buff.clear_buffer();
     _star_az_buff.clear_buffer();
     _year_buff.clear_buffer();
-    _sec_buff.clear_buffer();
+    // _sec_buff.clear_buffer();
     _calibrate_buff.clear_buffer();
     // dodanaj wyświetlanie czasu
 
     _local_time_buff.clear_buffer();
+    print_boot_init_once = true;
     //
 }
 void TFT_dispStr(String str, int column, int row, uint8_t textsize)
@@ -697,10 +740,10 @@ void TFT_clear(String strr, int column, int row, uint8_t textsize)
 }
 void movemotors()
 {
-    motor1.set_target(azymuth_target);
-    motor2.set_target(altitude_target);
-    motor1.start();
-    motor2.start();
+    motor1->set_target(azymuth_target);
+    motor2->set_target(altitude_target);
+    motor1->start();
+    motor2->start();
 }
 #pragma region init_procedure
 void clear_exit_disp()
@@ -717,7 +760,20 @@ void clear_exit_disp()
     clear("play", boot_init_disp);
     boot_init_disp.next_row();
     clear("0", boot_init_disp);
-
+    boot_init_disp.next_row();
+    int prev_column = boot_init_disp.column;
+    clear("ostatnia lokalizacja", boot_init_disp);
+    boot_init_disp.next_column(34);
+    clear(String(EEPROM::read<float>(10)), boot_init_disp);
+    boot_init_disp.next_column(12);
+    clear(String(EEPROM::read<float>(15)), boot_init_disp);
+    boot_init_disp.column = prev_column;
+    boot_init_disp.next_row();
+    clear("ostatnia gwiazda", boot_init_disp);
+    boot_init_disp.next_column(34);
+    clear(String(EEPROM::read<float>(20)), boot_init_disp);
+    boot_init_disp.next_column(12);
+    clear(String(EEPROM::read<float>(25)), boot_init_disp);
     boot_init_disp.set_cursor(36, 0);
     clear("1-", boot_init_disp);
     boot_init_disp.set_cursor(36, 4);
@@ -785,7 +841,7 @@ void boot_init_procedure()
 
     confirm = false;
     setmode = false;
-    remote_input_handler_selector(set_true_confirm, play, boot_init_exit_func1, EQ, boot_init_exit_func2, zero, boot_init_exit_func3, plus, boot_init_exit_func4, minus, boot_init_exit_tracking_mode, one);
+    remote_input_handler_selector(set_true_confirm, 0x43, boot_init_exit_func1, 0x9, boot_init_exit_func2, 0x16, boot_init_exit_func3, 0x15, boot_init_exit_func4, 0x7, boot_init_exit_tracking_mode, 0xC);
     if (confirm || setmode)
     {
 
@@ -793,36 +849,57 @@ void boot_init_procedure()
     }
     else
     {
-        boot_init_disp.reset_cursor();
-        print("instrukcja:", boot_init_disp);
-        boot_init_disp.next_row();
-        print("EQ-", boot_init_disp);
-        boot_init_disp.next_row();
-        print("+", boot_init_disp);
-        boot_init_disp.next_row();
-        print("-", boot_init_disp);
-        boot_init_disp.next_row();
-        print("play", boot_init_disp);
-        boot_init_disp.next_row();
-        print("0", boot_init_disp);
+        if (print_boot_init_once)
+        {
+            boot_init_disp.reset_cursor();
+            print("instrukcja:", boot_init_disp);
+            boot_init_disp.next_row();
+            print("EQ-", boot_init_disp);
+            boot_init_disp.next_row();
+            print("+", boot_init_disp);
+            boot_init_disp.next_row();
+            print("-", boot_init_disp);
+            boot_init_disp.next_row();
+            print("play", boot_init_disp);
+            boot_init_disp.next_row();
+            print("0", boot_init_disp);
+            //display recent search
+            boot_init_disp.next_row();
+            print("ostatnia lokalizacja", boot_init_disp);
+            int prev_column = boot_init_disp.column;
+            boot_init_disp.next_column(34);
+            print(String(EEPROM::read<float>(10)), boot_init_disp);
+            boot_init_disp.next_column(12);
+            print(String(EEPROM::read<float>(15)), boot_init_disp);
+            boot_init_disp.column = prev_column;
+            boot_init_disp.next_row();
+            print("ostatnia gwiazda", boot_init_disp);
+            boot_init_disp.next_column(34);
+            print(String(EEPROM::read<float>(20)), boot_init_disp);
+            boot_init_disp.next_column(12);
+            print(String(EEPROM::read<float>(25)), boot_init_disp);
 
-        boot_init_disp.set_cursor(36, 0);
-        print("1-", boot_init_disp);
-        boot_init_disp.set_cursor(36, 4);
-        print("zacznij sledzic gwiazde", boot_init_disp);
-        boot_init_disp.reset_cursor();
-        boot_init_disp.set_cursor(0, 8);
-        boot_init_disp.next_row();
-        print("Ustw.mag.deklinacje", boot_init_disp);
-        boot_init_disp.next_row();
-        print("twoja lok.", boot_init_disp);
-        boot_init_disp.next_row();
-        print("kalibracja pozycji urzadzenia", boot_init_disp);
-        boot_init_disp.next_row();
-        print("potwierdz/kontynuuj", boot_init_disp);
-        boot_init_disp.next_row();
-        print("wsp. gwiazdy", boot_init_disp);
-        boot_init_disp.reset_cursor();
+            //display recent search
+
+            boot_init_disp.set_cursor(36, 0);
+            print("1-", boot_init_disp);
+            boot_init_disp.set_cursor(36, 4);
+            print("zacznij sledzic gwiazde", boot_init_disp);
+            boot_init_disp.reset_cursor();
+            boot_init_disp.set_cursor(0, 8);
+            boot_init_disp.next_row();
+            print("Ustw.mag.deklinacje", boot_init_disp);
+            boot_init_disp.next_row();
+            print("twoja lok.", boot_init_disp);
+            boot_init_disp.next_row();
+            print("kalibracja pozycji urzadzenia", boot_init_disp);
+            boot_init_disp.next_row();
+            print("potwierdz/kontynuuj", boot_init_disp);
+            boot_init_disp.next_row();
+            print("wsp. gwiazdy", boot_init_disp);
+            boot_init_disp.reset_cursor();
+        }
+        print_boot_init_once = false;
     }
 
     if (confirm)
@@ -845,34 +922,34 @@ void new_starting_position()
     //todo : define this constatns for motors they may differ significantly
     starting_position_az = my_location.azymuth * constants::motor1_gear_ratio;
     starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
-    motor1.set_position(starting_position_az);
-    motor2.set_position(starting_position_alt);
+    motor1->set_position(starting_position_az);
+    motor2->set_position(starting_position_alt);
 }
 uint8_t decodeIRfun()
 {
     bool command_flag = false;
 
-    if (IrReceiver.decode())
+    if (IR.decode())
     {
 
         for (auto command : pilot_commands) //(int i = 0; i < sizeof(pilot_commands); i++)
         {
-            if (IrReceiver.decodedIRData.command == command)
+            if (IR.decodedIRData.command == command)
             {
 
-                IrReceiver.resume();
+                IR.resume();
                 command_flag = true;
-                IrReceiver.decodedIRData.command = no_command;
+                IR.decodedIRData.command = 0x00;
 
                 return command;
             }
         }
-        IrReceiver.resume();
+        IR.resume();
     }
     if (command_flag == false)
     {
 
-        return no_command;
+        return 0x00;
     }
 }
 #pragma region editing_ra_dec
@@ -884,8 +961,11 @@ void entering_dec_exit_handle()
     TFT_clear(input_DEC, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
     star.declination = input_DEC.toFloat();
+    EEPROM::write(25, star.declination);
     entering_DEC = true;
     entering_RA ? mode = INIT_PROCEDURE : mode = EDIT_RA;
+    if (mode == INIT_PROCEDURE)
+        clear_all_buffers();
 }
 void entering_ra_exit_handle()
 {
@@ -895,8 +975,11 @@ void entering_ra_exit_handle()
     TFT_clear(input_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
     star.right_ascension = input_RA.toFloat();
+    EEPROM::write(20, star.right_ascension);
     entering_RA = true;
     entering_DEC ? mode = INIT_PROCEDURE : mode = EDIT_DEC;
+    if (mode == INIT_PROCEDURE)
+        clear_all_buffers();
 }
 void edit_Ra_Dec() // todo : make interface for entering Ra and Dec after booting *done
 {
@@ -906,7 +989,7 @@ void edit_Ra_Dec() // todo : make interface for entering Ra and Dec after bootin
     TFT_dispStr("2- DEC", boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
     TFT_dispStr("play- zakoncz", boot_disp.column, 40, boot_disp.textsize);
 
-    if (decodeIRfun() == one)
+    if (decodeIRfun() == 0xC)
     {
         TFT_clear("1- RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
         TFT_clear("2- DEC", boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
@@ -914,7 +997,7 @@ void edit_Ra_Dec() // todo : make interface for entering Ra and Dec after bootin
 
         mode = EDIT_RA;
     }
-    else if (decodeIRfun() == two)
+    else if (decodeIRfun() == 0x18)
     {
         TFT_clear("1- RA", boot_disp.column, boot_disp.row, boot_disp.textsize);
         TFT_clear("2- DEC", boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
@@ -930,7 +1013,7 @@ void edit_ra()
     boot_disp.row += 30;
     TFT_dispStr(input_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
-    remote_input_handler_str(entering_ra_exit_handle, input_RA, play, deleteallinput);
+    remote_input_handler_str(entering_ra_exit_handle, input_RA, 0x43, deleteallinput);
     boot_disp.reset_cursor();
 }
 void edit_dec()
@@ -940,7 +1023,7 @@ void edit_dec()
     deleteallinput = boot_disp;
     TFT_dispStr(input_DEC, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
-    remote_input_handler_str(entering_dec_exit_handle, input_DEC, play, deleteallinput);
+    remote_input_handler_str(entering_dec_exit_handle, input_DEC, 0x43, deleteallinput);
     boot_disp.reset_cursor();
 }
 #pragma endregion editing_ra_dec
@@ -995,7 +1078,7 @@ void offset_select() // todo: let user enter all offsets independently from this
     offsets_screen.next_row();
     print("wprowadz offset azymutu", offsets_screen);
     offsets_screen.reset_cursor();
-    remote_input_handler_selector(offset_select_remote_exit_one, one, offset_select_remote_exit_one, two, offset_select_remote_exit_play, play);
+    remote_input_handler_selector(offset_select_remote_exit_one, 0xC, offset_select_remote_exit_one, 0x18, offset_select_remote_exit_play, 0x43);
 }
 
 #pragma endregion offset_selectscrn
@@ -1015,6 +1098,84 @@ void dynamic_print(displayconfig &cnfg, buffers &buffs)
         clear(buffs.buff, cnfg);
         buffs.buff = buffs.disp;
         print(buffs.buff, cnfg);
+    }
+}
+/* void dynamic_print_eeprom_int(displayconfig &cnfg, int val, unsigned int address)
+
+{
+
+    if (startup)
+
+    {
+
+        print(String(val), cnfg);
+
+        EEPROM::write(address, val);
+
+    }
+
+    else if (!(EEPROM::read<int>(address) == val))
+
+    {
+
+
+
+        clear(String(EEPROM::read<int>(address)), cnfg);
+
+        EEPROM::write(address, val);
+
+        print(String(val), cnfg);
+
+    }
+
+}
+
+
+
+void dynamic_print_eeprom_float(displayconfig &cnfg, float val, unsigned int address)
+
+{
+
+    if (startup)
+
+    {
+
+        print(String(val), cnfg);
+
+        EEPROM::write(address, val);
+
+    }
+
+    else if (!(EEPROM::read<float>(address) == val))
+
+    {
+
+
+
+        clear(String(EEPROM::read<float>(address)), cnfg);
+
+        EEPROM::write(address, val);
+
+        print(String(val), cnfg);
+
+    }
+
+} */
+# 1082 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+template <class T>
+void EEPROM::dynamic_print_eeprom(displayconfig &cnfg, T val, unsigned int address)
+{
+    if (startup)
+    {
+        print(String(val), cnfg);
+        EEPROM::write(address, val);
+    }
+    else if (!(EEPROM::read<T>(address) == val))
+    {
+
+        clear(String(EEPROM::read<T>(address)), cnfg);
+        EEPROM::write(address, val);
+        print(String(val), cnfg);
     }
 }
 void clear_all()
@@ -1043,27 +1204,27 @@ bool reset_ready_to_move_markers()
     tracking_finished = false;
     entering_RA = false;
     entering_DEC = false;
-    motor1.target_reached(true);
-    motor2.target_reached(true);
+    motor1->target_reached(true);
+    motor2->target_reached(true);
 }
 void safety_motor_position_control() // turn off motor if laser is to far up or down
 {
     if (pointing_altitude > 90 || pointing_altitude < -10 || star.altitude > 90 || star.altitude < -10)
     {
-        motor2.turn_off();
+        motor2->turn_off();
     }
     else
-        motor2.turn_on();
+        motor2->turn_on();
 }
 
 void Az_engine() //need to be in some standalone function cuz it is not attached to pin interuppt
 {
     az_motor_target_reached = false;
-    motor1.set_target(azymuth_target);
-    motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
-    motor1.start();
+    motor1->set_target(azymuth_target);
+    motor1->limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
+    motor1->start();
 
-    if (motor1.target_reached())
+    if (motor1->target_reached())
     {
         az_motor_target_reached = true;
 
@@ -1073,16 +1234,24 @@ void Az_engine() //need to be in some standalone function cuz it is not attached
 void Alt_engine()
 {
     alt_motor_target_reached = false;
-    motor2.set_target(altitude_target);
-    motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
-    motor2.start();
+    motor2->set_target(altitude_target);
+    motor2->limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
+    motor2->start();
 
-    if (motor2.target_reached())
+    if (motor2->target_reached())
     {
 
         alt_motor_target_reached = true;
 
-        az_motor_target_reached ? mode = DISPLAY_RESULTS : mode = MOVEMOTOR1;
+        az_motor_target_reached ? mode = GETTING_STAR_LOCATION : mode = MOVEMOTOR1;
+        if (mode == GETTING_STAR_LOCATION)
+        {
+            delay(200);
+            clearDisplay();
+            delay(200);
+            clear_all_buffers();
+            delay(200);
+        }
         tracking_finished = true;
     }
 }
@@ -1104,7 +1273,7 @@ void input_offsets()
         deleteallinput = edit_magnetic_var;
         print(input_MAG_DEC, edit_magnetic_var);
 
-        remote_input_handler_str(offset_disp_exit_procedure, input_MAG_DEC, play, deleteallinput);
+        remote_input_handler_str(offset_disp_exit_procedure, input_MAG_DEC, 0x43, deleteallinput);
     case offset_editing::TIME:
         displayconfig edit_time;
 
@@ -1141,6 +1310,7 @@ void exit_lat()
     lat_long_disp.next_row(3);
     clear(input_lat, lat_long_disp);
     my_location.latitude = input_lat.toFloat();
+    EEPROM::write(10, my_location.latitude);
     lat_long_disp.reset_cursor();
     mode = EDIT_LONG;
 }
@@ -1151,8 +1321,11 @@ void exit_long()
     lat_long_disp.next_row(3);
     clear(input_long, lat_long_disp);
     my_location.longitude = input_long.toFloat();
+    EEPROM::write(15, my_location.longitude);
     lat_long_disp.reset_cursor();
     automatic_mode = false;
+    GPS_status = true;
+    clear_all_buffers();
     mode = INIT_PROCEDURE;
 }
 void edit_lat()
@@ -1163,7 +1336,7 @@ void edit_lat()
     deleteallinput = lat_long_disp;
     print(input_lat, lat_long_disp);
     lat_long_disp.reset_cursor();
-    remote_input_handler_str(exit_lat, input_lat, play, deleteallinput);
+    remote_input_handler_str(exit_lat, input_lat, 0x43, deleteallinput);
 }
 void edit_long()
 {
@@ -1173,7 +1346,7 @@ void edit_long()
     deleteallinput = lat_long_disp;
     print(input_long, lat_long_disp);
     lat_long_disp.reset_cursor();
-    remote_input_handler_str(exit_long, input_long, play, deleteallinput);
+    remote_input_handler_str(exit_long, input_long, 0x43, deleteallinput);
 }
 #pragma endregion edit_lat_long_functions
 #pragma region Remote_control_functions
@@ -1181,171 +1354,171 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
 {
     switch (decodeIRfun())
     {
-    case zero:
+    case 0x16:
 
         result += "0";
-        if (number == zero)
+        if (number == 0x16)
             exitprint();
-        else if (number2 == zero)
+        else if (number2 == 0x16)
             exitprint2();
-        else if (number3 == zero)
+        else if (number3 == 0x16)
             exitprint3();
-        else if (number4 == zero)
+        else if (number4 == 0x16)
             exitprint4();
         break;
-    case one:
+    case 0xC:
 
         result += "1";
-        if (number == one)
+        if (number == 0xC)
             exitprint();
-        else if (number2 == one)
+        else if (number2 == 0xC)
             exitprint2();
-        else if (number3 == one)
+        else if (number3 == 0xC)
             exitprint3();
-        else if (number4 == one)
+        else if (number4 == 0xC)
             exitprint4();
         break;
-    case two:
+    case 0x18:
 
         result += "2";
-        if (number == two)
+        if (number == 0x18)
             exitprint();
-        else if (number2 == two)
+        else if (number2 == 0x18)
             exitprint2();
-        else if (number3 == two)
+        else if (number3 == 0x18)
             exitprint3();
-        else if (number4 == two)
+        else if (number4 == 0x18)
             exitprint4();
         break;
-    case three:
+    case 0x5E:
 
         result += "3";
-        if (number == three)
+        if (number == 0x5E)
             exitprint();
-        else if (number2 == three)
+        else if (number2 == 0x5E)
             exitprint2();
-        else if (number3 == three)
+        else if (number3 == 0x5E)
             exitprint3();
-        else if (number4 == three)
+        else if (number4 == 0x5E)
             exitprint4();
         break;
-    case four:
+    case 0x8:
 
         result += "4";
-        if (number == four)
+        if (number == 0x8)
             exitprint();
-        else if (number2 == four)
+        else if (number2 == 0x8)
             exitprint2();
-        else if (number3 == four)
+        else if (number3 == 0x8)
             exitprint3();
-        else if (number4 == four)
+        else if (number4 == 0x8)
             exitprint4();
         break;
-    case five:
+    case 0x1C:
 
         result += "5";
-        if (number == five)
+        if (number == 0x1C)
             exitprint();
-        else if (number2 == five)
+        else if (number2 == 0x1C)
             exitprint2();
-        else if (number3 == five)
+        else if (number3 == 0x1C)
             exitprint3();
-        else if (number4 == five)
+        else if (number4 == 0x1C)
             exitprint4();
         break;
-    case six:
+    case 0x5A:
 
         result += "6";
-        if (number == six)
+        if (number == 0x5A)
             exitprint();
-        else if (number2 == six)
+        else if (number2 == 0x5A)
             exitprint2();
-        else if (number3 == six)
+        else if (number3 == 0x5A)
             exitprint3();
-        else if (number4 == six)
+        else if (number4 == 0x5A)
             exitprint4();
         break;
-    case seven:
+    case 0x42:
 
         result += "7";
-        if (number == seven)
+        if (number == 0x42)
             exitprint();
-        else if (number2 == seven)
+        else if (number2 == 0x42)
             exitprint2();
-        else if (number3 == seven)
+        else if (number3 == 0x42)
             exitprint3();
-        else if (number4 == seven)
+        else if (number4 == 0x42)
             exitprint4();
         break;
-    case eight:
+    case 0x52:
 
         result += "8";
-        if (number == eight)
+        if (number == 0x52)
             exitprint();
-        else if (number2 == eight)
+        else if (number2 == 0x52)
             exitprint2();
-        else if (number3 == eight)
+        else if (number3 == 0x52)
             exitprint3();
-        else if (number4 == eight)
+        else if (number4 == 0x52)
             exitprint4();
         break;
-    case nine:
+    case 0x4A:
 
         result += "9";
-        if (number == nine)
+        if (number == 0x4A)
             exitprint();
-        else if (number2 == nine)
+        else if (number2 == 0x4A)
             exitprint2();
-        else if (number3 == nine)
+        else if (number3 == 0x4A)
             exitprint3();
-        else if (number4 == nine)
+        else if (number4 == 0x4A)
             exitprint4();
         break;
-    case EQ:
+    case 0x9:
 
         result += ".";
-        if (number == EQ)
+        if (number == 0x9)
             exitprint();
-        else if (number2 == EQ)
+        else if (number2 == 0x9)
             exitprint2();
-        else if (number3 == EQ)
+        else if (number3 == 0x9)
             exitprint3();
-        else if (number4 == EQ)
+        else if (number4 == 0x9)
             exitprint4();
         break;
-    case play:
-        if (number == play)
+    case 0x43:
+        if (number == 0x43)
             exitprint();
-        else if (number2 == play)
+        else if (number2 == 0x43)
             exitprint2();
-        else if (number3 == play)
+        else if (number3 == 0x43)
             exitprint3();
-        else if (number4 == play)
+        else if (number4 == 0x43)
             exitprint4();
 
         break;
-    case plus: // plus clears input line and input string
+    case 0x15: // plus clears input line and input string
         clear(result, cnfg);
         result = "";
-        if (number == plus)
+        if (number == 0x15)
             exitprint();
-        else if (number2 == plus)
+        else if (number2 == 0x15)
             exitprint2();
-        else if (number3 == plus)
+        else if (number3 == 0x15)
             exitprint3();
-        else if (number4 == plus)
+        else if (number4 == 0x15)
             exitprint4();
 
         break;
-    case minus:
+    case 0x7:
         result += "-";
-        if (number == minus)
+        if (number == 0x7)
             exitprint();
-        else if (number2 == minus)
+        else if (number2 == 0x7)
             exitprint2();
-        else if (number3 == minus)
+        else if (number3 == 0x7)
             exitprint3();
-        else if (number4 == minus)
+        else if (number4 == 0x7)
             exitprint4();
 
         break;
@@ -1355,213 +1528,213 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
 {
     switch (decodeIRfun())
     {
-    case zero:
+    case 0x16:
 
-        if (number == zero)
+        if (number == 0x16)
             exitprint();
-        else if (number2 == zero)
+        else if (number2 == 0x16)
             exitprint2();
-        else if (number3 == zero)
+        else if (number3 == 0x16)
             exitprint3();
-        else if (number4 == zero)
+        else if (number4 == 0x16)
             exitprint4();
-        else if (number5 == zero)
+        else if (number5 == 0x16)
             exitprint5();
-        else if (number6 == zero)
+        else if (number6 == 0x16)
             exitprint6();
         break;
-    case one:
+    case 0xC:
 
-        if (number == one)
+        if (number == 0xC)
             exitprint();
-        else if (number2 == one)
+        else if (number2 == 0xC)
             exitprint2();
-        else if (number3 == one)
+        else if (number3 == 0xC)
             exitprint3();
-        else if (number4 == one)
+        else if (number4 == 0xC)
             exitprint4();
-        else if (number5 == one)
+        else if (number5 == 0xC)
             exitprint5();
-        else if (number6 == one)
+        else if (number6 == 0xC)
             exitprint6();
         break;
-    case two:
+    case 0x18:
 
-        if (number == two)
+        if (number == 0x18)
             exitprint();
-        else if (number2 == two)
+        else if (number2 == 0x18)
             exitprint2();
-        else if (number3 == two)
+        else if (number3 == 0x18)
             exitprint3();
-        else if (number4 == two)
+        else if (number4 == 0x18)
             exitprint4();
-        else if (number5 == two)
+        else if (number5 == 0x18)
             exitprint5();
-        else if (number6 == two)
+        else if (number6 == 0x18)
             exitprint6();
         break;
-    case three:
+    case 0x5E:
 
-        if (number == three)
+        if (number == 0x5E)
             exitprint();
-        else if (number2 == three)
+        else if (number2 == 0x5E)
             exitprint2();
-        else if (number3 == three)
+        else if (number3 == 0x5E)
             exitprint3();
-        else if (number4 == three)
+        else if (number4 == 0x5E)
             exitprint4();
-        else if (number5 == three)
+        else if (number5 == 0x5E)
             exitprint5();
-        else if (number6 == three)
+        else if (number6 == 0x5E)
             exitprint6();
         break;
-    case four:
+    case 0x8:
 
-        if (number == four)
+        if (number == 0x8)
             exitprint();
-        else if (number2 == four)
+        else if (number2 == 0x8)
             exitprint2();
-        else if (number3 == four)
+        else if (number3 == 0x8)
             exitprint3();
-        else if (number4 == four)
+        else if (number4 == 0x8)
             exitprint4();
-        else if (number5 == four)
+        else if (number5 == 0x8)
             exitprint5();
-        else if (number6 == four)
+        else if (number6 == 0x8)
             exitprint6();
         break;
-    case five:
+    case 0x1C:
 
-        if (number == five)
+        if (number == 0x1C)
             exitprint();
-        else if (number2 == five)
+        else if (number2 == 0x1C)
             exitprint2();
-        else if (number3 == five)
+        else if (number3 == 0x1C)
             exitprint3();
-        else if (number4 == five)
+        else if (number4 == 0x1C)
             exitprint4();
-        else if (number5 == five)
+        else if (number5 == 0x1C)
             exitprint5();
-        else if (number6 == five)
+        else if (number6 == 0x1C)
             exitprint6();
         break;
-    case six:
+    case 0x5A:
 
-        if (number == six)
+        if (number == 0x5A)
             exitprint();
-        else if (number2 == six)
+        else if (number2 == 0x5A)
             exitprint2();
-        else if (number3 == six)
+        else if (number3 == 0x5A)
             exitprint3();
-        else if (number4 == six)
+        else if (number4 == 0x5A)
             exitprint4();
-        else if (number5 == six)
+        else if (number5 == 0x5A)
             exitprint5();
-        else if (number6 == six)
+        else if (number6 == 0x5A)
             exitprint6();
         break;
-    case seven:
+    case 0x42:
 
-        if (number == seven)
+        if (number == 0x42)
             exitprint();
-        else if (number2 == seven)
+        else if (number2 == 0x42)
             exitprint2();
-        else if (number3 == seven)
+        else if (number3 == 0x42)
             exitprint3();
-        else if (number4 == seven)
+        else if (number4 == 0x42)
             exitprint4();
-        else if (number5 == seven)
+        else if (number5 == 0x42)
             exitprint5();
-        else if (number6 == seven)
+        else if (number6 == 0x42)
             exitprint6();
         break;
-    case eight:
+    case 0x52:
 
-        if (number == eight)
+        if (number == 0x52)
             exitprint();
-        else if (number2 == eight)
+        else if (number2 == 0x52)
             exitprint2();
-        else if (number3 == eight)
+        else if (number3 == 0x52)
             exitprint3();
-        else if (number4 == eight)
+        else if (number4 == 0x52)
             exitprint4();
-        else if (number5 == eight)
+        else if (number5 == 0x52)
             exitprint5();
-        else if (number6 == eight)
+        else if (number6 == 0x52)
             exitprint6();
         break;
-    case nine:
+    case 0x4A:
 
-        if (number == nine)
+        if (number == 0x4A)
             exitprint();
-        else if (number2 == nine)
+        else if (number2 == 0x4A)
             exitprint2();
-        else if (number3 == nine)
+        else if (number3 == 0x4A)
             exitprint3();
-        else if (number4 == nine)
+        else if (number4 == 0x4A)
             exitprint4();
-        else if (number5 == nine)
+        else if (number5 == 0x4A)
             exitprint5();
-        else if (number6 == nine)
+        else if (number6 == 0x4A)
             exitprint6();
         break;
-    case EQ:
+    case 0x9:
 
-        if (number == EQ)
+        if (number == 0x9)
             exitprint();
-        else if (number2 == EQ)
+        else if (number2 == 0x9)
             exitprint2();
-        else if (number3 == EQ)
+        else if (number3 == 0x9)
             exitprint3();
-        else if (number4 == EQ)
+        else if (number4 == 0x9)
             exitprint4();
-        else if (number5 == EQ)
+        else if (number5 == 0x9)
             exitprint5();
-        else if (number6 == EQ)
+        else if (number6 == 0x9)
             exitprint6();
         break;
-    case play:
-        if (number == play)
+    case 0x43:
+        if (number == 0x43)
             exitprint();
-        else if (number2 == play)
+        else if (number2 == 0x43)
             exitprint2();
-        else if (number3 == play)
+        else if (number3 == 0x43)
             exitprint3();
-        else if (number4 == play)
+        else if (number4 == 0x43)
             exitprint4();
-        else if (number5 == play)
+        else if (number5 == 0x43)
             exitprint5();
-        else if (number6 == play)
-            exitprint6();
-
-        break;
-    case plus:
-        if (number == plus)
-            exitprint();
-        else if (number2 == plus)
-            exitprint2();
-        else if (number3 == plus)
-            exitprint3();
-        else if (number4 == plus)
-            exitprint4();
-        else if (number5 == plus)
-            exitprint5();
-        else if (number6 == plus)
+        else if (number6 == 0x43)
             exitprint6();
 
         break;
-    case minus:
-        if (number == minus)
+    case 0x15:
+        if (number == 0x15)
             exitprint();
-        else if (number2 == minus)
+        else if (number2 == 0x15)
             exitprint2();
-        else if (number3 == minus)
+        else if (number3 == 0x15)
             exitprint3();
-        else if (number4 == minus)
+        else if (number4 == 0x15)
             exitprint4();
-        else if (number5 == minus)
+        else if (number5 == 0x15)
             exitprint5();
-        else if (number6 == minus)
+        else if (number6 == 0x15)
+            exitprint6();
+
+        break;
+    case 0x7:
+        if (number == 0x7)
+            exitprint();
+        else if (number2 == 0x7)
+            exitprint2();
+        else if (number3 == 0x7)
+            exitprint3();
+        else if (number4 == 0x7)
+            exitprint4();
+        else if (number5 == 0x7)
+            exitprint5();
+        else if (number6 == 0x7)
             exitprint6();
 
         break;
@@ -1591,8 +1764,8 @@ void position_calibration_exit_func1()
     clear("kat_lasera", calibration_disp);
     calibration_disp.set_cursor(6, 0);
 
-    clear(laser_angle_buff.disp, calibration_disp);
-    laser_angle_buff.clear_buffer();
+    clear(String(EEPROM::read<float>(34)), calibration_disp);
+
     calibration_disp.set_cursor(8, 0);
     clear("azymut" /*short from universal azymuth*/, calibration_disp);
     calibration_disp.set_cursor(10, 0);
@@ -1607,6 +1780,7 @@ void position_calibration_exit_func1()
     calibration_disp.reset_cursor();
     new_starting_position();
     manual_calibration = true;
+    clear_all_buffers();
     mode = INIT_PROCEDURE;
 }
 void position_calibration_exit_cancel()
@@ -1617,8 +1791,8 @@ void position_calibration_exit_cancel()
     clear("kat_lasera", calibration_disp);
     calibration_disp.set_cursor(6, 0);
 
-    clear(laser_angle_buff.disp, calibration_disp);
-    laser_angle_buff.clear_buffer();
+    clear(String(EEPROM::read<float>(34)), calibration_disp);
+
     calibration_disp.set_cursor(8, 0);
     clear("azymut" /*short from universal azymuth*/, calibration_disp);
     calibration_disp.set_cursor(10, 0);
@@ -1632,6 +1806,7 @@ void position_calibration_exit_cancel()
     ra_buff.clear_buffer();
     calibration_disp.reset_cursor();
     manual_calibration = false;
+    clear_all_buffers();
     mode = INIT_PROCEDURE;
 }
 void turn_on_off_calibration()
@@ -1649,8 +1824,8 @@ void position_calibration_display()
     calibration_disp.set_cursor(4, 0);
     print("kat_lasera", calibration_disp);
     calibration_disp.set_cursor(6, 0);
-    laser_angle_buff.disp = String(pointing_altitude);
-    dynamic_print(calibration_disp, laser_angle_buff);
+
+    EEPROM::dynamic_print_eeprom(calibration_disp, pointing_altitude, 34);
     calibration_disp.set_cursor(8, 0);
     print("azymut" /*short from universal azymuth*/, calibration_disp);
     calibration_disp.set_cursor(10, 0);
@@ -1669,14 +1844,14 @@ void position_calibration_display()
     ra_buff.disp = String(smoothHeadingDegrees);
     dynamic_print(calibration_disp, ra_buff);
     calibration_disp.reset_cursor();
-    remote_input_handler_selector(position_calibration_exit_func1, play, position_calibration_exit_cancel, zero);
+    remote_input_handler_selector(position_calibration_exit_func1, 0x43, position_calibration_exit_cancel, 0x16);
 }
 void decodeIR_remote()
 {
-    remote_input_handler_selector(go_to_main, plus, reset_all_go_to_main, minus, switch_laser, zero, turn_on_off_calibration, two);
+    remote_input_handler_selector(go_to_main, 0x15, reset_all_go_to_main, 0x7, switch_laser, 0x16, turn_on_off_calibration, 0x18);
 }
 #pragma endregion Position_calibration
-# 1717 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1855 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 #pragma endregion functions
 # 1 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\main.ino"
 
@@ -1694,7 +1869,7 @@ void setup()
 void loop()
 {
 
-    if (mode == GETTING_STAR_LOCATION)
+    if (mode == GETTING_STAR_LOCATION || mode == DISPLAY_RESULTS)
     {
         decodeIR_remote();
     }
@@ -1730,16 +1905,13 @@ void loop()
 
     case GETTING_STAR_LOCATION:
 
-        readGPS();
         read_compass();
-        updateAccel();
+        accel_callback_timer.run(refresh::accel_refresh_rate);
         calculate_starposition();
-        updateDisplay();
 
-        break;
-    case DISPLAY_RESULTS:
-        updateDisplay();
-        decodeIR_remote();
+        display_callback_timer.run(refresh::TFT_refresh_rate);
+
+        startup = false;
 
         break;
 

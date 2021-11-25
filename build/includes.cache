@@ -81,6 +81,11 @@
   },
   {
     "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
+    "Include": "uEEPROMLib.h",
+    "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\uEEPROMLib\\src"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
     "Include": "Motor_PID.h",
     "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Motor_PID\\src"
   },
@@ -261,6 +266,11 @@
   },
   {
     "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\Simpletimer\\src\\Simpletimer.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\uEEPROMLib\\src\\uEEPROMLib.cpp",
     "Include": "",
     "Includepath": null
   },
