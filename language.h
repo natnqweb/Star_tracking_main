@@ -52,6 +52,10 @@
 #define un_cant_calibrate "{0}"
 #define un_recent_location "ostatnia lokalizacja"
 #define un_recently_tracked_star "ostatnia gwiazda"
+#define un_set_position_manually "1- ustaw urzadzenie recznie"
+#define un_if_you_want_to_calibrate_play "aby kalibrowac wcisnij play"
+#define un_exit_press "aby wyjsc wcisnij 0"
+#define un_use_compass_to_find_north "uzyj busoli i wskaz polnoc"
 #endif
 #pragma endregion polish
 #pragma region english
@@ -105,6 +109,10 @@
 #define un_cant_calibrate "{0}"
 #define un_recent_location "recent location"
 #define un_recently_tracked_star "recent star"
+#define un_set_position_manually "1- set device position manually"
+#define un_use_compass_to_find_north "use compass to find north"
+#define un_if_you_want_to_calibrate_play "to continue press play"
+#define un_exit_press "to exit plress 0"
 #endif
 
 #pragma endregion english

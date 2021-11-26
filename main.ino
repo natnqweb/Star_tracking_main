@@ -20,6 +20,7 @@ void loop()
     switch (mode)
     {
     case CALIBRATE_POSITION:
+        startup = false;
         position_calibration_display();
         break;
 
@@ -71,6 +72,9 @@ void loop()
         break;
     case OFFSET_EDIT:
         input_offsets();
+        break;
+    case MANUAL_CALIBRATION:
+        manual_calibration_screen();
         break;
 
     default:

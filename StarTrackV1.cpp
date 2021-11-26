@@ -670,7 +670,7 @@ void clear_all_buffers()
 void TFT_dispStr(String str, int column, int row, uint8_t textsize)
 {
 
-    str.toCharArray(printout1, str.length() + 2);
+    str.toCharArray(printout1, buffersize);
 
     TFTscreen.setTextSize(textsize);
     TFTscreen.setTextColor(HX8357_WHITE);
@@ -680,7 +680,7 @@ void TFT_dispStr(String str, int column, int row, uint8_t textsize)
 void TFT_clear(String strr, int column, int row, uint8_t textsize)
 {
 
-    strr.toCharArray(printout1, strr.length() + 2);
+    strr.toCharArray(printout1, buffersize);
     TFTscreen.setTextSize(textsize);
     TFTscreen.setTextColor(HX8357_BLACK);
     TFTscreen.setCursor(column, row);
@@ -868,10 +868,20 @@ void boot_init_procedure()
 void new_starting_position()
 {
     //todo : define this constatns for motors they may differ significantly
-    starting_position_az = my_location.azymuth * constants::motor1_gear_ratio;
-    starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
-    motor1->set_position(starting_position_az);
-    motor2->set_position(starting_position_alt);
+    if (automatic_calibration)
+    {
+        starting_position_az = my_location.azymuth * constants::motor1_gear_ratio;
+        starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
+        motor1->set_position(starting_position_az);
+        motor2->set_position(starting_position_alt);
+    }
+    else
+    {
+        starting_position_az = offsets::magnetic_declination * constants::motor1_gear_ratio;
+        starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
+        motor1->set_position(starting_position_az);
+        motor2->set_position(starting_position_alt);
+    }
 }
 uint8_t decodeIRfun()
 {
@@ -1087,7 +1097,7 @@ void EEPROM::dynamic_print_eeprom(displayconfig &cnfg, T val, unsigned int addre
         print(String(val), cnfg);
         EEPROM::write(address, val);
     }
-    else if (!(EEPROM::read<T>(address) == val))
+    else if (EEPROM::read<T>(address) != val)
     {
 
         clear(String(EEPROM::read<T>(address)), cnfg);
@@ -1211,13 +1221,15 @@ void offset_disp_exit_procedure()
 {
     offset_edit_mode = offset_editing::TIME;
     offsets::magnetic_variation = input_MAG_DEC.toFloat();
+    offsets::magnetic_declination = input_MAG_DEC.toFloat();
     edit_magnetic_var.reset_cursor();
     clear(un_set_mag_declination, edit_magnetic_var);
     edit_magnetic_var.next_row();
     clear(un_magnetic_declination, edit_magnetic_var);
     edit_magnetic_var.next_row();
     clear(input_MAG_DEC, edit_magnetic_var);
-    mode = GETTING_STAR_LOCATION;
+
+    automatic_calibration ? mode = GETTING_STAR_LOCATION : mode = MANUAL_CALIBRATION;
 }
 #pragma region edit_lat_long_functions
 void exit_lat()
@@ -1673,7 +1685,7 @@ bool check_if_pointing_at_north()
     else
         return false;
 }
-void position_calibration_exit_func1()
+void clear_calibration_screen()
 {
     calibration_disp.set_cursor(0, 0);
     clear(un_device_position_calibration, calibration_disp);
@@ -1693,8 +1705,17 @@ void position_calibration_exit_func1()
     calibration_disp.set_cursor(14, 10);
 
     clear(ra_buff.disp, calibration_disp);
+
     ra_buff.clear_buffer();
+    calibration_disp.column = 0;
+    calibration_disp.next_row();
+    clear(un_set_position_manually, calibration_disp);
+
     calibration_disp.reset_cursor();
+}
+void position_calibration_exit_func1()
+{
+    clear_calibration_screen();
     new_starting_position();
     manual_calibration = true;
     clear_all_buffers();
@@ -1702,26 +1723,7 @@ void position_calibration_exit_func1()
 }
 void position_calibration_exit_cancel()
 {
-    calibration_disp.set_cursor(0, 0);
-    clear(un_device_position_calibration, calibration_disp);
-    calibration_disp.set_cursor(4, 0);
-    clear(un_laser_angle, calibration_disp);
-    calibration_disp.set_cursor(6, 0);
-
-    clear(String(EEPROM::read<float>(eeprom_laser_angle)), calibration_disp);
-
-    calibration_disp.set_cursor(8, 0);
-    clear(un_azymuth, calibration_disp);
-    calibration_disp.set_cursor(10, 0);
-    clear(az_buff.disp, calibration_disp);
-    az_buff.clear_buffer();
-    calibration_disp.set_cursor(14, 0);
-    clear(un_azymuth, calibration_disp);
-    calibration_disp.set_cursor(14, 10);
-
-    clear(ra_buff.disp, calibration_disp);
-    ra_buff.clear_buffer();
-    calibration_disp.reset_cursor();
+    clear_calibration_screen();
     manual_calibration = false;
     clear_all_buffers();
     mode = INIT_PROCEDURE;
@@ -1731,6 +1733,14 @@ void turn_on_off_calibration()
     calibration = !calibration;
 
     RTC_calibration();
+}
+void position_calibration_exit_manual()
+{
+    clear_calibration_screen();
+    clear_all_buffers();
+    automatic_calibration = false;
+    mode = OFFSET_EDIT;
+    offset_edit_mode = offset_editing::MAGNETIC;
 }
 void position_calibration_display()
 
@@ -1760,8 +1770,49 @@ void position_calibration_display()
     calibration_disp.set_cursor(14, 10);
     ra_buff.disp = String(smoothHeadingDegrees);
     dynamic_print(calibration_disp, ra_buff);
+    calibration_disp.column = 0;
+    calibration_disp.next_row();
+    print(un_set_position_manually, calibration_disp);
+
     calibration_disp.reset_cursor();
-    remote_input_handler_selector(position_calibration_exit_func1, play, position_calibration_exit_cancel, zero);
+    remote_input_handler_selector(position_calibration_exit_func1, play, position_calibration_exit_cancel, zero, position_calibration_exit_manual, one);
+}
+void clear_manual_calibration_disp()
+{
+    calibration_disp.reset_cursor();
+    clear(un_use_compass_to_find_north, calibration_disp);
+    calibration_disp.next_row();
+    clear(un_if_you_want_to_calibrate_play, calibration_disp);
+    calibration_disp.next_row();
+    clear(un_exit_press, calibration_disp);
+}
+void manual_calibration_exit_confirm()
+{
+    clear_manual_calibration_disp();
+    new_starting_position();
+    manual_calibration = true;
+    automatic_calibration = false; // set to false to enable fully manual calibration
+    mode = GETTING_STAR_LOCATION;
+}
+void manual_calibration_exit_leave()
+{
+    clear_manual_calibration_disp();
+    manual_calibration = false;
+    automatic_calibration = true; // set to false to enable fully manual calibration
+    clear_all_buffers();
+
+    mode = INIT_PROCEDURE;
+}
+
+void manual_calibration_screen()
+{
+    calibration_disp.reset_cursor();
+    print(un_use_compass_to_find_north, calibration_disp);
+    calibration_disp.next_row();
+    print(un_if_you_want_to_calibrate_play, calibration_disp);
+    calibration_disp.next_row();
+    print(un_exit_press, calibration_disp);
+    remote_input_handler_selector(manual_calibration_exit_confirm, play, manual_calibration_exit_leave, zero);
 }
 void decodeIR_remote()
 {

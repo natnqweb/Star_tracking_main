@@ -176,73 +176,85 @@ void boot_init_exit_func4();
 void boot_init_procedure();
 #line 868 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void new_starting_position();
-#line 876 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 886 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 uint8_t decodeIRfun();
-#line 904 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 914 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void entering_dec_exit_handle();
-#line 918 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 928 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void entering_ra_exit_handle();
-#line 932 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 942 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_Ra_Dec();
-#line 957 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void edit_ra();
 #line 967 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void edit_ra();
+#line 977 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_dec();
-#line 980 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 990 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_select_remote_exit_play();
-#line 992 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1002 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_select_remote_exit_one();
-#line 1005 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1015 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_select_remote_exit_two();
-#line 1017 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1027 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_select();
-#line 1034 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1044 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void clear(String sentence, displayconfig &cnfg);
-#line 1038 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1048 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void print(String sentence, displayconfig &cnfg);
-#line 1042 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1052 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void dynamic_print(displayconfig &cnfg, buffers &buffs);
-#line 1098 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1108 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void clear_all();
-#line 1105 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1115 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 bool all_motors_ready_to_move();
-#line 1117 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-bool reset_ready_to_move_markers();
 #line 1127 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void safety_motor_position_control();
+bool reset_ready_to_move_markers();
 #line 1137 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void safety_motor_position_control();
+#line 1147 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void Az_engine();
-#line 1151 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1161 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void Alt_engine();
-#line 1177 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1187 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void input_offsets();
-#line 1210 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1220 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_disp_exit_procedure();
-#line 1223 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1235 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void exit_lat();
-#line 1234 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1246 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void exit_long();
-#line 1248 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1260 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_lat();
-#line 1258 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void edit_long();
 #line 1270 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void edit_long();
+#line 1282 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void remote_input_handler_str(void_func exitprint, String &result, uint8_t number, displayconfig &cnfg, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4);
-#line 1444 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1456 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void remote_input_handler_selector(void_func exitprint, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4, void_func exitprint5, uint8_t number5, void_func exitprint6, uint8_t number6);
-#line 1662 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1674 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void check_gps_accel_compass();
-#line 1668 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1680 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 bool check_if_pointing_at_north();
-#line 1676 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1688 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void clear_calibration_screen();
+#line 1716 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void position_calibration_exit_func1();
-#line 1703 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1724 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void position_calibration_exit_cancel();
-#line 1729 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1731 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void turn_on_off_calibration();
-#line 1735 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1737 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void position_calibration_exit_manual();
+#line 1745 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void position_calibration_display();
-#line 1766 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1780 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void clear_manual_calibration_disp();
+#line 1789 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void manual_calibration_exit_confirm();
+#line 1797 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void manual_calibration_exit_leave();
+#line 1807 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void manual_calibration_screen();
+#line 1817 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void decodeIR_remote();
 #line 4 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\main.ino"
 void setup();
@@ -799,7 +811,7 @@ void clear_all_buffers()
 void TFT_dispStr(String str, int column, int row, uint8_t textsize)
 {
 
-    str.toCharArray(printout1, str.length() + 2);
+    str.toCharArray(printout1, buffersize);
 
     TFTscreen.setTextSize(textsize);
     TFTscreen.setTextColor(HX8357_WHITE);
@@ -809,7 +821,7 @@ void TFT_dispStr(String str, int column, int row, uint8_t textsize)
 void TFT_clear(String strr, int column, int row, uint8_t textsize)
 {
 
-    strr.toCharArray(printout1, strr.length() + 2);
+    strr.toCharArray(printout1, buffersize);
     TFTscreen.setTextSize(textsize);
     TFTscreen.setTextColor(HX8357_BLACK);
     TFTscreen.setCursor(column, row);
@@ -997,10 +1009,20 @@ void boot_init_procedure()
 void new_starting_position()
 {
     //todo : define this constatns for motors they may differ significantly
-    starting_position_az = my_location.azymuth * constants::motor1_gear_ratio;
-    starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
-    motor1->set_position(starting_position_az);
-    motor2->set_position(starting_position_alt);
+    if (automatic_calibration)
+    {
+        starting_position_az = my_location.azymuth * constants::motor1_gear_ratio;
+        starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
+        motor1->set_position(starting_position_az);
+        motor2->set_position(starting_position_alt);
+    }
+    else
+    {
+        starting_position_az = offsets::magnetic_declination * constants::motor1_gear_ratio;
+        starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
+        motor1->set_position(starting_position_az);
+        motor2->set_position(starting_position_alt);
+    }
 }
 uint8_t decodeIRfun()
 {
@@ -1216,7 +1238,7 @@ void EEPROM::dynamic_print_eeprom(displayconfig &cnfg, T val, unsigned int addre
         print(String(val), cnfg);
         EEPROM::write(address, val);
     }
-    else if (!(EEPROM::read<T>(address) == val))
+    else if (EEPROM::read<T>(address) != val)
     {
 
         clear(String(EEPROM::read<T>(address)), cnfg);
@@ -1340,13 +1362,15 @@ void offset_disp_exit_procedure()
 {
     offset_edit_mode = offset_editing::TIME;
     offsets::magnetic_variation = input_MAG_DEC.toFloat();
+    offsets::magnetic_declination = input_MAG_DEC.toFloat();
     edit_magnetic_var.reset_cursor();
     clear(un_set_mag_declination, edit_magnetic_var);
     edit_magnetic_var.next_row();
     clear(un_magnetic_declination, edit_magnetic_var);
     edit_magnetic_var.next_row();
     clear(input_MAG_DEC, edit_magnetic_var);
-    mode = GETTING_STAR_LOCATION;
+
+    automatic_calibration ? mode = GETTING_STAR_LOCATION : mode = MANUAL_CALIBRATION;
 }
 #pragma region edit_lat_long_functions
 void exit_lat()
@@ -1802,7 +1826,7 @@ bool check_if_pointing_at_north()
     else
         return false;
 }
-void position_calibration_exit_func1()
+void clear_calibration_screen()
 {
     calibration_disp.set_cursor(0, 0);
     clear(un_device_position_calibration, calibration_disp);
@@ -1822,8 +1846,17 @@ void position_calibration_exit_func1()
     calibration_disp.set_cursor(14, 10);
 
     clear(ra_buff.disp, calibration_disp);
+
     ra_buff.clear_buffer();
+    calibration_disp.column = 0;
+    calibration_disp.next_row();
+    clear(un_set_position_manually, calibration_disp);
+
     calibration_disp.reset_cursor();
+}
+void position_calibration_exit_func1()
+{
+    clear_calibration_screen();
     new_starting_position();
     manual_calibration = true;
     clear_all_buffers();
@@ -1831,26 +1864,7 @@ void position_calibration_exit_func1()
 }
 void position_calibration_exit_cancel()
 {
-    calibration_disp.set_cursor(0, 0);
-    clear(un_device_position_calibration, calibration_disp);
-    calibration_disp.set_cursor(4, 0);
-    clear(un_laser_angle, calibration_disp);
-    calibration_disp.set_cursor(6, 0);
-
-    clear(String(EEPROM::read<float>(eeprom_laser_angle)), calibration_disp);
-
-    calibration_disp.set_cursor(8, 0);
-    clear(un_azymuth, calibration_disp);
-    calibration_disp.set_cursor(10, 0);
-    clear(az_buff.disp, calibration_disp);
-    az_buff.clear_buffer();
-    calibration_disp.set_cursor(14, 0);
-    clear(un_azymuth, calibration_disp);
-    calibration_disp.set_cursor(14, 10);
-
-    clear(ra_buff.disp, calibration_disp);
-    ra_buff.clear_buffer();
-    calibration_disp.reset_cursor();
+    clear_calibration_screen();
     manual_calibration = false;
     clear_all_buffers();
     mode = INIT_PROCEDURE;
@@ -1860,6 +1874,14 @@ void turn_on_off_calibration()
     calibration = !calibration;
 
     RTC_calibration();
+}
+void position_calibration_exit_manual()
+{
+    clear_calibration_screen();
+    clear_all_buffers();
+    automatic_calibration = false;
+    mode = OFFSET_EDIT;
+    offset_edit_mode = offset_editing::MAGNETIC;
 }
 void position_calibration_display()
 
@@ -1889,8 +1911,49 @@ void position_calibration_display()
     calibration_disp.set_cursor(14, 10);
     ra_buff.disp = String(smoothHeadingDegrees);
     dynamic_print(calibration_disp, ra_buff);
+    calibration_disp.column = 0;
+    calibration_disp.next_row();
+    print(un_set_position_manually, calibration_disp);
+
     calibration_disp.reset_cursor();
-    remote_input_handler_selector(position_calibration_exit_func1, play, position_calibration_exit_cancel, zero);
+    remote_input_handler_selector(position_calibration_exit_func1, play, position_calibration_exit_cancel, zero, position_calibration_exit_manual, one);
+}
+void clear_manual_calibration_disp()
+{
+    calibration_disp.reset_cursor();
+    clear(un_use_compass_to_find_north, calibration_disp);
+    calibration_disp.next_row();
+    clear(un_if_you_want_to_calibrate_play, calibration_disp);
+    calibration_disp.next_row();
+    clear(un_exit_press, calibration_disp);
+}
+void manual_calibration_exit_confirm()
+{
+    clear_manual_calibration_disp();
+    new_starting_position();
+    manual_calibration = true;
+    automatic_calibration = false; // set to false to enable fully manual calibration
+    mode = GETTING_STAR_LOCATION;
+}
+void manual_calibration_exit_leave()
+{
+    clear_manual_calibration_disp();
+    manual_calibration = false;
+    automatic_calibration = true; // set to false to enable fully manual calibration
+    clear_all_buffers();
+
+    mode = INIT_PROCEDURE;
+}
+
+void manual_calibration_screen()
+{
+    calibration_disp.reset_cursor();
+    print(un_use_compass_to_find_north, calibration_disp);
+    calibration_disp.next_row();
+    print(un_if_you_want_to_calibrate_play, calibration_disp);
+    calibration_disp.next_row();
+    print(un_exit_press, calibration_disp);
+    remote_input_handler_selector(manual_calibration_exit_confirm, play, manual_calibration_exit_leave, zero);
 }
 void decodeIR_remote()
 {
@@ -2005,6 +2068,7 @@ void loop()
     switch (mode)
     {
     case CALIBRATE_POSITION:
+        startup = false;
         position_calibration_display();
         break;
 
@@ -2056,6 +2120,9 @@ void loop()
         break;
     case OFFSET_EDIT:
         input_offsets();
+        break;
+    case MANUAL_CALIBRATION:
+        manual_calibration_screen();
         break;
 
     default:

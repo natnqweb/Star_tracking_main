@@ -35,6 +35,7 @@
 #define up 1
 #define down -1
 #define EMPTYSTRING ""
+#define buffersize 30
 #pragma region macros_debg
 
 #define DEBUG false // enable or disable debug messages
@@ -124,7 +125,8 @@ enum modes : const uint8_t
     MOVEMOTOR1 = 11,
     MOVEMOTOR2 = 12,
     DISPLAY_RESULTS = 13,
-    CALIBRATE_POSITION = 14
+    CALIBRATE_POSITION = 14,
+    MANUAL_CALIBRATION = 15
 
 };
 
@@ -177,6 +179,7 @@ namespace offsets
 {
     hrs timezone_offset = 1;        //UTC +2
     degs magnetic_variation = -6.5; // 7 degrees due to magnetic declination
+    degs magnetic_declination = 6.1;
     //degs altitude_offset = 0;
     // degs motor_position_offset = 0;
 };
@@ -257,6 +260,7 @@ bool entering_DEC = false, entering_RA = false, automatic_mode = true;
 bool continous_tracking = false;
 bool startup = true;
 bool print_boot_init_once = true;
+bool automatic_calibration = true;
 #pragma endregion booleans
 
 #pragma region sensors
@@ -290,7 +294,7 @@ void empty_function()
 }
 #pragma region main_functions
 // get hmc5883l readings and save them
-
+void manual_calibration_screen();
 void read_compass();
 // init procedure called at setup
 void initialize_();
