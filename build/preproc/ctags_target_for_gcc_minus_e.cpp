@@ -134,11 +134,10 @@ Adafruit_MPU6050 mpu;
 
 Adafruit_HX8357 TFTscreen = Adafruit_HX8357(cs, dc, rst);
 SkyMap startracker;
-motor _motor1(ENCA, ENCB, IN1, IN2);
-motor *motor1 = &_motor1;
+motor motor1(ENCA, ENCB, IN1, IN2);
 
-motor _motor2(ENCA2, ENCB2, IN1_2, IN2_2);
-motor *motor2 = &_motor2;
+motor motor2(ENCA2, ENCB2, IN1_2, IN2_2);
+
 IRrecv IR(IR_RECEIVE_PIN);
 
 Myposition my_location(50.03, 21.01); //location for tarnów
@@ -199,9 +198,9 @@ void read_compass()
     // Convert radians to degrees for readability.
 
     degs headingDegrees = heading * 180 / 
-# 159 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 158 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                          3.14159265358979323846 /* pi */
-# 159 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 158 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                              ;
 
     if (headingDegrees >= 1 && headingDegrees < 240)
@@ -279,10 +278,10 @@ void compass_init()
 void initialize_()
 {
     ;
-    motor1->init(constants::kp1, constants::ki1, constants::kd1);
-    motor2->init(constants::kp2, constants::ki2, constants::kd2);
-    motor1->limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
-    motor2->limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
+    motor1.init(constants::kp1, constants::ki1, constants::kd1);
+    motor2.init(constants::kp2, constants::ki2, constants::kd2);
+    motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
+    motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
     pinMode(Laser_pin, 0x1);
 
     rtc.begin();
@@ -378,8 +377,8 @@ void calculate_starposition()
         azymuth_target = star.azymuth * constants::motor1_gear_ratio;
         altitude_target = star.altitude * constants::motor2_gear_ratio;
 
-        // float diff1 = abs(star.azymuth - (motor1->get_position() / constants::motor1_gear_ratio));
-        // float diff2 = abs(star.altitude - (motor2->get_position() / constants::motor1_gear_ratio)); //angle diffrence betwen motor and star
+        // float diff1 = abs(star.azymuth - (motor1.get_position() / constants::motor1_gear_ratio));
+        // float diff2 = abs(star.altitude - (motor2.get_position() / constants::motor1_gear_ratio)); //angle diffrence betwen motor and star
         ready_to_move = true;
         if (all_motors_ready_to_move())
         {
@@ -578,7 +577,7 @@ void updateDisplay()
     /*     laser_angle_buff.disp = String(pointing_altitude);
 
     dynamic_print(mainscreen, laser_angle_buff); */
-# 534 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 533 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     EEPROM::dynamic_print_eeprom(mainscreen, pointing_altitude, 34);
 
     mainscreen.reset_cursor();
@@ -611,7 +610,7 @@ void updateDisplay()
     mainscreen.next_row(); //row 31
     print("kat", mainscreen); // row 31 column 0
     mainscreen.next_column(10); // row 31 column 10
-    motor1_ang_buff.disp = (String)(motor1->get_position() / constants::motor1_gear_ratio);
+    motor1_ang_buff.disp = (String)(motor1.get_position() / constants::motor1_gear_ratio);
     dynamic_print(mainscreen, motor1_ang_buff); // row 31 column 10
     mainscreen.reset_cursor();
     mainscreen.set_cursor(33, 0);
@@ -619,7 +618,7 @@ void updateDisplay()
     mainscreen.next_row(); // row 35 column 0
     print("kat", mainscreen); // row 35 column 0
     mainscreen.next_column(10); //row 35 column 10
-    motor2_ang_buff.disp = (String)(motor2->get_position() / constants::motor2_gear_ratio);
+    motor2_ang_buff.disp = (String)(motor2.get_position() / constants::motor2_gear_ratio);
     dynamic_print(mainscreen, motor2_ang_buff); //row 35 column 10
     mainscreen.reset_cursor(); //row 0 column 0
     mainscreen.next_row(8);
@@ -647,7 +646,7 @@ void updateDisplay()
     /*   _sec_buff.disp = String(int(SEKUNDA));
 
     dynamic_print(mainscreen, _sec_buff); */
-# 601 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 600 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     EEPROM::dynamic_print_eeprom(mainscreen, (int)SEKUNDA, 30);
     mainscreen.next_row();
     GPS_status ? _star_az_buff.disp = String(star.azymuth) : _star_az_buff.disp = "...";
@@ -666,7 +665,7 @@ void updateDisplay()
     /*     _time_buff.disp = (String)TIME;
 
     dynamic_print(mainscreen, _time_buff); */
-# 618 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 617 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     EEPROM::dynamic_print_eeprom(mainscreen, TIME, 39);
     // add time display
     int previous_column = mainscreen.column; //
@@ -740,10 +739,10 @@ void TFT_clear(String strr, int column, int row, uint8_t textsize)
 }
 void movemotors()
 {
-    motor1->set_target(azymuth_target);
-    motor2->set_target(altitude_target);
-    motor1->start();
-    motor2->start();
+    motor1.set_target(azymuth_target);
+    motor2.set_target(altitude_target);
+    motor1.start();
+    motor2.start();
 }
 #pragma region init_procedure
 void clear_exit_disp()
@@ -841,7 +840,10 @@ void boot_init_procedure()
 
     confirm = false;
     setmode = false;
-    remote_input_handler_selector(set_true_confirm, 0x43, boot_init_exit_func1, 0x9, boot_init_exit_func2, 0x16, boot_init_exit_func3, 0x15, boot_init_exit_func4, 0x7, boot_init_exit_tracking_mode, 0xC);
+    void_func exit_functions[6] = {set_true_confirm, boot_init_exit_func1, boot_init_exit_func2, boot_init_exit_func3, boot_init_exit_func4, boot_init_exit_tracking_mode};
+    uint8_t commands[6] = {0x43, 0x9, 0x16, 0x15, 0x7, 0xC};
+    size_t number_of_functions = sizeof(commands);
+    remote_input_handler_selector(exit_functions, commands, number_of_functions);
     if (confirm || setmode)
     {
 
@@ -924,15 +926,15 @@ void new_starting_position()
     {
         starting_position_az = my_location.azymuth * constants::motor1_gear_ratio;
         starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
-        motor1->set_position(starting_position_az);
-        motor2->set_position(starting_position_alt);
+        motor1.set_position(starting_position_az);
+        motor2.set_position(starting_position_alt);
     }
     else
     {
         starting_position_az = offsets::magnetic_declination * constants::motor1_gear_ratio;
         starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
-        motor1->set_position(starting_position_az);
-        motor2->set_position(starting_position_alt);
+        motor1.set_position(starting_position_az);
+        motor2.set_position(starting_position_alt);
     }
 }
 uint8_t decodeIRfun()
@@ -1023,7 +1025,10 @@ void edit_ra()
     boot_disp.row += 30;
     TFT_dispStr(input_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
-    remote_input_handler_str(entering_ra_exit_handle, input_RA, 0x43, deleteallinput);
+    uint8_t exit_commands[1] = {0x43};
+    void_func exit_functions[1] = {entering_ra_exit_handle};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_str(exit_functions, input_RA, exit_commands, deleteallinput, number_of_functions);
     boot_disp.reset_cursor();
 }
 void edit_dec()
@@ -1033,7 +1038,10 @@ void edit_dec()
     deleteallinput = boot_disp;
     TFT_dispStr(input_DEC, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
-    remote_input_handler_str(entering_dec_exit_handle, input_DEC, 0x43, deleteallinput);
+    uint8_t exit_commands[1] = {0x43};
+    void_func exit_functions[1] = {entering_dec_exit_handle};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_str(exit_functions, input_DEC, exit_commands, deleteallinput, number_of_functions);
     boot_disp.reset_cursor();
 }
 #pragma endregion editing_ra_dec
@@ -1088,7 +1096,10 @@ void offset_select() // todo: let user enter all offsets independently from this
     offsets_screen.next_row();
     print("wprowadz offset azymutu", offsets_screen);
     offsets_screen.reset_cursor();
-    remote_input_handler_selector(offset_select_remote_exit_one, 0xC, offset_select_remote_exit_one, 0x18, offset_select_remote_exit_play, 0x43);
+    void_func exit_func[3] = {offset_select_remote_exit_one, offset_select_remote_exit_one, offset_select_remote_exit_play};
+    uint8_t exit_commands[3] = {0xC, 0x18, 0x43};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_selector(exit_func, exit_commands, number_of_functions);
 }
 
 #pragma endregion offset_selectscrn
@@ -1171,7 +1182,7 @@ void dynamic_print_eeprom_float(displayconfig &cnfg, float val, unsigned int add
     }
 
 } */
-# 1092 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1103 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 template <class T>
 void EEPROM::dynamic_print_eeprom(displayconfig &cnfg, T val, unsigned int address)
 {
@@ -1214,27 +1225,27 @@ bool reset_ready_to_move_markers()
     tracking_finished = false;
     entering_RA = false;
     entering_DEC = false;
-    motor1->target_reached(true);
-    motor2->target_reached(true);
+    motor1.target_reached(true);
+    motor2.target_reached(true);
 }
 void safety_motor_position_control() // turn off motor if laser is to far up or down
 {
     if (pointing_altitude > 90 || pointing_altitude < -10 || star.altitude > 90 || star.altitude < -10)
     {
-        motor2->turn_off();
+        motor2.turn_off();
     }
     else
-        motor2->turn_on();
+        motor2.turn_on();
 }
 
 void Az_engine() //need to be in some standalone function cuz it is not attached to pin interuppt
 {
     az_motor_target_reached = false;
-    motor1->set_target(azymuth_target);
-    motor1->limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
-    motor1->start();
+    motor1.set_target(azymuth_target);
+    motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
+    motor1.start();
 
-    if (motor1->target_reached())
+    if (motor1.target_reached())
     {
         az_motor_target_reached = true;
 
@@ -1244,11 +1255,11 @@ void Az_engine() //need to be in some standalone function cuz it is not attached
 void Alt_engine()
 {
     alt_motor_target_reached = false;
-    motor2->set_target(altitude_target);
-    motor2->limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
-    motor2->start();
+    motor2.set_target(altitude_target);
+    motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
+    motor2.start();
 
-    if (motor2->target_reached())
+    if (motor2.target_reached())
     {
 
         alt_motor_target_reached = true;
@@ -1282,8 +1293,10 @@ void input_offsets()
         edit_magnetic_var.next_row();
         deleteallinput = edit_magnetic_var;
         print(input_MAG_DEC, edit_magnetic_var);
-
-        remote_input_handler_str(offset_disp_exit_procedure, input_MAG_DEC, 0x43, deleteallinput);
+        uint8_t exit_commands[1] = {0x43};
+        void_func exit_functions[1] = {offset_disp_exit_procedure};
+        size_t number_of_functions = sizeof(exit_commands);
+        remote_input_handler_str(exit_functions, input_MAG_DEC, exit_commands, deleteallinput, number_of_functions);
     case offset_editing::TIME:
         displayconfig edit_time;
 
@@ -1348,7 +1361,10 @@ void edit_lat()
     deleteallinput = lat_long_disp;
     print(input_lat, lat_long_disp);
     lat_long_disp.reset_cursor();
-    remote_input_handler_str(exit_lat, input_lat, 0x43, deleteallinput);
+    uint8_t exit_commands[1] = {0x43};
+    void_func exit_functions[1] = {exit_lat};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_str(exit_functions, input_lat, exit_commands, deleteallinput, number_of_functions);
 }
 void edit_long()
 {
@@ -1358,399 +1374,896 @@ void edit_long()
     deleteallinput = lat_long_disp;
     print(input_long, lat_long_disp);
     lat_long_disp.reset_cursor();
-    remote_input_handler_str(exit_long, input_long, 0x43, deleteallinput);
+    uint8_t exit_commands[1] = {0x43};
+    void_func exit_functions[1] = {exit_long};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_str(exit_functions, input_long, exit_commands, deleteallinput, number_of_functions);
 }
 #pragma endregion edit_lat_long_functions
 #pragma region Remote_control_functions
-void remote_input_handler_str(void_func exitprint, String &result, uint8_t number, displayconfig &cnfg, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4)
+const char *command_decoder(uint8_t command)
 {
-    switch (decodeIRfun())
+    const char *result = "";
+    switch (command)
     {
     case 0x16:
 
-        result += "0";
-        if (number == 0x16)
-            exitprint();
-        else if (number2 == 0x16)
-            exitprint2();
-        else if (number3 == 0x16)
-            exitprint3();
-        else if (number4 == 0x16)
-            exitprint4();
+        result = "0";
+
         break;
     case 0xC:
 
-        result += "1";
-        if (number == 0xC)
-            exitprint();
-        else if (number2 == 0xC)
-            exitprint2();
-        else if (number3 == 0xC)
-            exitprint3();
-        else if (number4 == 0xC)
-            exitprint4();
+        result = "1";
+
         break;
     case 0x18:
 
-        result += "2";
-        if (number == 0x18)
-            exitprint();
-        else if (number2 == 0x18)
-            exitprint2();
-        else if (number3 == 0x18)
-            exitprint3();
-        else if (number4 == 0x18)
-            exitprint4();
+        result = "2";
+
         break;
     case 0x5E:
 
-        result += "3";
-        if (number == 0x5E)
-            exitprint();
-        else if (number2 == 0x5E)
-            exitprint2();
-        else if (number3 == 0x5E)
-            exitprint3();
-        else if (number4 == 0x5E)
-            exitprint4();
+        result = "3";
+
         break;
     case 0x8:
 
-        result += "4";
-        if (number == 0x8)
-            exitprint();
-        else if (number2 == 0x8)
-            exitprint2();
-        else if (number3 == 0x8)
-            exitprint3();
-        else if (number4 == 0x8)
-            exitprint4();
+        result = "4";
+
         break;
     case 0x1C:
 
-        result += "5";
-        if (number == 0x1C)
-            exitprint();
-        else if (number2 == 0x1C)
-            exitprint2();
-        else if (number3 == 0x1C)
-            exitprint3();
-        else if (number4 == 0x1C)
-            exitprint4();
+        result = "5";
+
         break;
     case 0x5A:
 
-        result += "6";
-        if (number == 0x5A)
-            exitprint();
-        else if (number2 == 0x5A)
-            exitprint2();
-        else if (number3 == 0x5A)
-            exitprint3();
-        else if (number4 == 0x5A)
-            exitprint4();
+        result = "6";
+
         break;
     case 0x42:
 
-        result += "7";
-        if (number == 0x42)
-            exitprint();
-        else if (number2 == 0x42)
-            exitprint2();
-        else if (number3 == 0x42)
-            exitprint3();
-        else if (number4 == 0x42)
-            exitprint4();
+        result = "7";
+
         break;
     case 0x52:
 
-        result += "8";
-        if (number == 0x52)
-            exitprint();
-        else if (number2 == 0x52)
-            exitprint2();
-        else if (number3 == 0x52)
-            exitprint3();
-        else if (number4 == 0x52)
-            exitprint4();
+        result = "8";
+
         break;
     case 0x4A:
 
-        result += "9";
-        if (number == 0x4A)
-            exitprint();
-        else if (number2 == 0x4A)
-            exitprint2();
-        else if (number3 == 0x4A)
-            exitprint3();
-        else if (number4 == 0x4A)
-            exitprint4();
+        result = "9";
         break;
+
     case 0x9:
 
-        result += ".";
-        if (number == 0x9)
-            exitprint();
-        else if (number2 == 0x9)
-            exitprint2();
-        else if (number3 == 0x9)
-            exitprint3();
-        else if (number4 == 0x9)
-            exitprint4();
+        result = ".";
         break;
+
     case 0x43:
-        if (number == 0x43)
-            exitprint();
-        else if (number2 == 0x43)
-            exitprint2();
-        else if (number3 == 0x43)
-            exitprint3();
-        else if (number4 == 0x43)
-            exitprint4();
 
         break;
     case 0x15: // plus clears input line and input string
-        clear(result, cnfg);
-        result = "";
-        if (number == 0x15)
-            exitprint();
-        else if (number2 == 0x15)
-            exitprint2();
-        else if (number3 == 0x15)
-            exitprint3();
-        else if (number4 == 0x15)
-            exitprint4();
+        result = "clear";
 
         break;
     case 0x7:
-        result += "-";
-        if (number == 0x7)
-            exitprint();
-        else if (number2 == 0x7)
-            exitprint2();
-        else if (number3 == 0x7)
-            exitprint3();
-        else if (number4 == 0x7)
-            exitprint4();
+        result = "-";
 
         break;
     }
+    return result;
 }
-void remote_input_handler_selector(void_func exitprint, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4, void_func exitprint5, uint8_t number5, void_func exitprint6, uint8_t number6)
+void remote_input_handler_str(void_func *exitprint, String &result, uint8_t *number, displayconfig &cnfg, size_t size)
 {
-    switch (decodeIRfun())
+    uint8_t data = decodeIRfun();
+    if (data != 0x00)
     {
-    case 0x16:
+        result += command_decoder(data);
+        if (command_decoder(data) == "clear")
+        {
 
-        if (number == 0x16)
-            exitprint();
-        else if (number2 == 0x16)
-            exitprint2();
-        else if (number3 == 0x16)
-            exitprint3();
-        else if (number4 == 0x16)
-            exitprint4();
-        else if (number5 == 0x16)
-            exitprint5();
-        else if (number6 == 0x16)
-            exitprint6();
-        break;
-    case 0xC:
+            clear(result, cnfg);
+            result = "";
+        }
+        for (size_t i = 0; i < size; i++)
+        {
+            if (number[i] == data)
+            {
 
-        if (number == 0xC)
-            exitprint();
-        else if (number2 == 0xC)
-            exitprint2();
-        else if (number3 == 0xC)
-            exitprint3();
-        else if (number4 == 0xC)
-            exitprint4();
-        else if (number5 == 0xC)
-            exitprint5();
-        else if (number6 == 0xC)
-            exitprint6();
-        break;
-    case 0x18:
-
-        if (number == 0x18)
-            exitprint();
-        else if (number2 == 0x18)
-            exitprint2();
-        else if (number3 == 0x18)
-            exitprint3();
-        else if (number4 == 0x18)
-            exitprint4();
-        else if (number5 == 0x18)
-            exitprint5();
-        else if (number6 == 0x18)
-            exitprint6();
-        break;
-    case 0x5E:
-
-        if (number == 0x5E)
-            exitprint();
-        else if (number2 == 0x5E)
-            exitprint2();
-        else if (number3 == 0x5E)
-            exitprint3();
-        else if (number4 == 0x5E)
-            exitprint4();
-        else if (number5 == 0x5E)
-            exitprint5();
-        else if (number6 == 0x5E)
-            exitprint6();
-        break;
-    case 0x8:
-
-        if (number == 0x8)
-            exitprint();
-        else if (number2 == 0x8)
-            exitprint2();
-        else if (number3 == 0x8)
-            exitprint3();
-        else if (number4 == 0x8)
-            exitprint4();
-        else if (number5 == 0x8)
-            exitprint5();
-        else if (number6 == 0x8)
-            exitprint6();
-        break;
-    case 0x1C:
-
-        if (number == 0x1C)
-            exitprint();
-        else if (number2 == 0x1C)
-            exitprint2();
-        else if (number3 == 0x1C)
-            exitprint3();
-        else if (number4 == 0x1C)
-            exitprint4();
-        else if (number5 == 0x1C)
-            exitprint5();
-        else if (number6 == 0x1C)
-            exitprint6();
-        break;
-    case 0x5A:
-
-        if (number == 0x5A)
-            exitprint();
-        else if (number2 == 0x5A)
-            exitprint2();
-        else if (number3 == 0x5A)
-            exitprint3();
-        else if (number4 == 0x5A)
-            exitprint4();
-        else if (number5 == 0x5A)
-            exitprint5();
-        else if (number6 == 0x5A)
-            exitprint6();
-        break;
-    case 0x42:
-
-        if (number == 0x42)
-            exitprint();
-        else if (number2 == 0x42)
-            exitprint2();
-        else if (number3 == 0x42)
-            exitprint3();
-        else if (number4 == 0x42)
-            exitprint4();
-        else if (number5 == 0x42)
-            exitprint5();
-        else if (number6 == 0x42)
-            exitprint6();
-        break;
-    case 0x52:
-
-        if (number == 0x52)
-            exitprint();
-        else if (number2 == 0x52)
-            exitprint2();
-        else if (number3 == 0x52)
-            exitprint3();
-        else if (number4 == 0x52)
-            exitprint4();
-        else if (number5 == 0x52)
-            exitprint5();
-        else if (number6 == 0x52)
-            exitprint6();
-        break;
-    case 0x4A:
-
-        if (number == 0x4A)
-            exitprint();
-        else if (number2 == 0x4A)
-            exitprint2();
-        else if (number3 == 0x4A)
-            exitprint3();
-        else if (number4 == 0x4A)
-            exitprint4();
-        else if (number5 == 0x4A)
-            exitprint5();
-        else if (number6 == 0x4A)
-            exitprint6();
-        break;
-    case 0x9:
-
-        if (number == 0x9)
-            exitprint();
-        else if (number2 == 0x9)
-            exitprint2();
-        else if (number3 == 0x9)
-            exitprint3();
-        else if (number4 == 0x9)
-            exitprint4();
-        else if (number5 == 0x9)
-            exitprint5();
-        else if (number6 == 0x9)
-            exitprint6();
-        break;
-    case 0x43:
-        if (number == 0x43)
-            exitprint();
-        else if (number2 == 0x43)
-            exitprint2();
-        else if (number3 == 0x43)
-            exitprint3();
-        else if (number4 == 0x43)
-            exitprint4();
-        else if (number5 == 0x43)
-            exitprint5();
-        else if (number6 == 0x43)
-            exitprint6();
-
-        break;
-    case 0x15:
-        if (number == 0x15)
-            exitprint();
-        else if (number2 == 0x15)
-            exitprint2();
-        else if (number3 == 0x15)
-            exitprint3();
-        else if (number4 == 0x15)
-            exitprint4();
-        else if (number5 == 0x15)
-            exitprint5();
-        else if (number6 == 0x15)
-            exitprint6();
-
-        break;
-    case 0x7:
-        if (number == 0x7)
-            exitprint();
-        else if (number2 == 0x7)
-            exitprint2();
-        else if (number3 == 0x7)
-            exitprint3();
-        else if (number4 == 0x7)
-            exitprint4();
-        else if (number5 == 0x7)
-            exitprint5();
-        else if (number6 == 0x7)
-            exitprint6();
-
-        break;
+                exitprint[i]();
+                break;
+            }
+        }
     }
+
+    /*   switch (decodeIRfun())
+
+    {
+
+    case zero:
+
+
+
+        result += "0";
+
+        if (number == zero)
+
+            exitprint();
+
+        else if (number2 == zero)
+
+            exitprint2();
+
+        else if (number3 == zero)
+
+            exitprint3();
+
+        else if (number4 == zero)
+
+            exitprint4();
+
+        break;
+
+    case one:
+
+
+
+        result += "1";
+
+        if (number == one)
+
+            exitprint();
+
+        else if (number2 == one)
+
+            exitprint2();
+
+        else if (number3 == one)
+
+            exitprint3();
+
+        else if (number4 == one)
+
+            exitprint4();
+
+        break;
+
+    case two:
+
+
+
+        result += "2";
+
+        if (number == two)
+
+            exitprint();
+
+        else if (number2 == two)
+
+            exitprint2();
+
+        else if (number3 == two)
+
+            exitprint3();
+
+        else if (number4 == two)
+
+            exitprint4();
+
+        break;
+
+    case three:
+
+
+
+        result += "3";
+
+        if (number == three)
+
+            exitprint();
+
+        else if (number2 == three)
+
+            exitprint2();
+
+        else if (number3 == three)
+
+            exitprint3();
+
+        else if (number4 == three)
+
+            exitprint4();
+
+        break;
+
+    case four:
+
+
+
+        result += "4";
+
+        if (number == four)
+
+            exitprint();
+
+        else if (number2 == four)
+
+            exitprint2();
+
+        else if (number3 == four)
+
+            exitprint3();
+
+        else if (number4 == four)
+
+            exitprint4();
+
+        break;
+
+    case five:
+
+
+
+        result += "5";
+
+        if (number == five)
+
+            exitprint();
+
+        else if (number2 == five)
+
+            exitprint2();
+
+        else if (number3 == five)
+
+            exitprint3();
+
+        else if (number4 == five)
+
+            exitprint4();
+
+        break;
+
+    case six:
+
+
+
+        result += "6";
+
+        if (number == six)
+
+            exitprint();
+
+        else if (number2 == six)
+
+            exitprint2();
+
+        else if (number3 == six)
+
+            exitprint3();
+
+        else if (number4 == six)
+
+            exitprint4();
+
+        break;
+
+    case seven:
+
+
+
+        result += "7";
+
+        if (number == seven)
+
+            exitprint();
+
+        else if (number2 == seven)
+
+            exitprint2();
+
+        else if (number3 == seven)
+
+            exitprint3();
+
+        else if (number4 == seven)
+
+            exitprint4();
+
+        break;
+
+    case eight:
+
+
+
+        result += "8";
+
+        if (number == eight)
+
+            exitprint();
+
+        else if (number2 == eight)
+
+            exitprint2();
+
+        else if (number3 == eight)
+
+            exitprint3();
+
+        else if (number4 == eight)
+
+            exitprint4();
+
+        break;
+
+    case nine:
+
+
+
+        result += "9";
+
+        if (number == nine)
+
+            exitprint();
+
+        else if (number2 == nine)
+
+            exitprint2();
+
+        else if (number3 == nine)
+
+            exitprint3();
+
+        else if (number4 == nine)
+
+            exitprint4();
+
+        break;
+
+    case EQ:
+
+
+
+        result += ".";
+
+        if (number == EQ)
+
+            exitprint();
+
+        else if (number2 == EQ)
+
+            exitprint2();
+
+        else if (number3 == EQ)
+
+            exitprint3();
+
+        else if (number4 == EQ)
+
+            exitprint4();
+
+        break;
+
+    case play:
+
+        if (number == play)
+
+            exitprint();
+
+        else if (number2 == play)
+
+            exitprint2();
+
+        else if (number3 == play)
+
+            exitprint3();
+
+        else if (number4 == play)
+
+            exitprint4();
+
+
+
+        break;
+
+    case plus: // plus clears input line and input string
+
+        clear(result, cnfg);
+
+        result = EMPTYSTRING;
+
+        if (number == plus)
+
+            exitprint();
+
+        else if (number2 == plus)
+
+            exitprint2();
+
+        else if (number3 == plus)
+
+            exitprint3();
+
+        else if (number4 == plus)
+
+            exitprint4();
+
+
+
+        break;
+
+    case minus:
+
+        result += "-";
+
+        if (number == minus)
+
+            exitprint();
+
+        else if (number2 == minus)
+
+            exitprint2();
+
+        else if (number3 == minus)
+
+            exitprint3();
+
+        else if (number4 == minus)
+
+            exitprint4();
+
+
+
+        break;
+
+    } */
+# 1569 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+}
+void remote_input_handler_selector(void_func *exitprint, uint8_t *number, size_t size)
+{
+    uint8_t data2 = decodeIRfun();
+    if (data2 != 0x00)
+    {
+
+        for (size_t i = 0; i < size; i++)
+        {
+            if (number[i] == data2)
+            {
+
+                exitprint[i]();
+                break;
+            }
+        }
+    }
+
+    /*  switch (decodeIRfun())
+
+    {
+
+    case zero:
+
+
+
+        if (number == zero)
+
+            exitprint();
+
+        else if (number2 == zero)
+
+            exitprint2();
+
+        else if (number3 == zero)
+
+            exitprint3();
+
+        else if (number4 == zero)
+
+            exitprint4();
+
+        else if (number5 == zero)
+
+            exitprint5();
+
+        else if (number6 == zero)
+
+            exitprint6();
+
+        break;
+
+    case one:
+
+
+
+        if (number == one)
+
+            exitprint();
+
+        else if (number2 == one)
+
+            exitprint2();
+
+        else if (number3 == one)
+
+            exitprint3();
+
+        else if (number4 == one)
+
+            exitprint4();
+
+        else if (number5 == one)
+
+            exitprint5();
+
+        else if (number6 == one)
+
+            exitprint6();
+
+        break;
+
+    case two:
+
+
+
+        if (number == two)
+
+            exitprint();
+
+        else if (number2 == two)
+
+            exitprint2();
+
+        else if (number3 == two)
+
+            exitprint3();
+
+        else if (number4 == two)
+
+            exitprint4();
+
+        else if (number5 == two)
+
+            exitprint5();
+
+        else if (number6 == two)
+
+            exitprint6();
+
+        break;
+
+    case three:
+
+
+
+        if (number == three)
+
+            exitprint();
+
+        else if (number2 == three)
+
+            exitprint2();
+
+        else if (number3 == three)
+
+            exitprint3();
+
+        else if (number4 == three)
+
+            exitprint4();
+
+        else if (number5 == three)
+
+            exitprint5();
+
+        else if (number6 == three)
+
+            exitprint6();
+
+        break;
+
+    case four:
+
+
+
+        if (number == four)
+
+            exitprint();
+
+        else if (number2 == four)
+
+            exitprint2();
+
+        else if (number3 == four)
+
+            exitprint3();
+
+        else if (number4 == four)
+
+            exitprint4();
+
+        else if (number5 == four)
+
+            exitprint5();
+
+        else if (number6 == four)
+
+            exitprint6();
+
+        break;
+
+    case five:
+
+
+
+        if (number == five)
+
+            exitprint();
+
+        else if (number2 == five)
+
+            exitprint2();
+
+        else if (number3 == five)
+
+            exitprint3();
+
+        else if (number4 == five)
+
+            exitprint4();
+
+        else if (number5 == five)
+
+            exitprint5();
+
+        else if (number6 == five)
+
+            exitprint6();
+
+        break;
+
+    case six:
+
+
+
+        if (number == six)
+
+            exitprint();
+
+        else if (number2 == six)
+
+            exitprint2();
+
+        else if (number3 == six)
+
+            exitprint3();
+
+        else if (number4 == six)
+
+            exitprint4();
+
+        else if (number5 == six)
+
+            exitprint5();
+
+        else if (number6 == six)
+
+            exitprint6();
+
+        break;
+
+    case seven:
+
+
+
+        if (number == seven)
+
+            exitprint();
+
+        else if (number2 == seven)
+
+            exitprint2();
+
+        else if (number3 == seven)
+
+            exitprint3();
+
+        else if (number4 == seven)
+
+            exitprint4();
+
+        else if (number5 == seven)
+
+            exitprint5();
+
+        else if (number6 == seven)
+
+            exitprint6();
+
+        break;
+
+    case eight:
+
+
+
+        if (number == eight)
+
+            exitprint();
+
+        else if (number2 == eight)
+
+            exitprint2();
+
+        else if (number3 == eight)
+
+            exitprint3();
+
+        else if (number4 == eight)
+
+            exitprint4();
+
+        else if (number5 == eight)
+
+            exitprint5();
+
+        else if (number6 == eight)
+
+            exitprint6();
+
+        break;
+
+    case nine:
+
+
+
+        if (number == nine)
+
+            exitprint();
+
+        else if (number2 == nine)
+
+            exitprint2();
+
+        else if (number3 == nine)
+
+            exitprint3();
+
+        else if (number4 == nine)
+
+            exitprint4();
+
+        else if (number5 == nine)
+
+            exitprint5();
+
+        else if (number6 == nine)
+
+            exitprint6();
+
+        break;
+
+    case EQ:
+
+
+
+        if (number == EQ)
+
+            exitprint();
+
+        else if (number2 == EQ)
+
+            exitprint2();
+
+        else if (number3 == EQ)
+
+            exitprint3();
+
+        else if (number4 == EQ)
+
+            exitprint4();
+
+        else if (number5 == EQ)
+
+            exitprint5();
+
+        else if (number6 == EQ)
+
+            exitprint6();
+
+        break;
+
+    case play:
+
+        if (number == play)
+
+            exitprint();
+
+        else if (number2 == play)
+
+            exitprint2();
+
+        else if (number3 == play)
+
+            exitprint3();
+
+        else if (number4 == play)
+
+            exitprint4();
+
+        else if (number5 == play)
+
+            exitprint5();
+
+        else if (number6 == play)
+
+            exitprint6();
+
+
+
+        break;
+
+    case plus:
+
+        if (number == plus)
+
+            exitprint();
+
+        else if (number2 == plus)
+
+            exitprint2();
+
+        else if (number3 == plus)
+
+            exitprint3();
+
+        else if (number4 == plus)
+
+            exitprint4();
+
+        else if (number5 == plus)
+
+            exitprint5();
+
+        else if (number6 == plus)
+
+            exitprint6();
+
+
+
+        break;
+
+    case minus:
+
+        if (number == minus)
+
+            exitprint();
+
+        else if (number2 == minus)
+
+            exitprint2();
+
+        else if (number3 == minus)
+
+            exitprint3();
+
+        else if (number4 == minus)
+
+            exitprint4();
+
+        else if (number5 == minus)
+
+            exitprint5();
+
+        else if (number6 == minus)
+
+            exitprint6();
+
+
+
+        break;
+
+    } */
+# 1800 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 }
 #pragma endregion Remote_control_functions
 #pragma region Position_calibration
@@ -1858,7 +2371,10 @@ void position_calibration_display()
     print("1- ustaw urzadzenie recznie", calibration_disp);
 
     calibration_disp.reset_cursor();
-    remote_input_handler_selector(position_calibration_exit_func1, 0x43, position_calibration_exit_cancel, 0x16, position_calibration_exit_manual, 0xC);
+    void_func exit_func[3] = {position_calibration_exit_func1, position_calibration_exit_cancel, position_calibration_exit_manual};
+    uint8_t exit_commands[3] = {0x43, 0x16, 0xC};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_selector(exit_func, exit_commands, number_of_functions);
 }
 void clear_manual_calibration_disp()
 {
@@ -1895,14 +2411,20 @@ void manual_calibration_screen()
     print("aby kalibrowac wcisnij play", calibration_disp);
     calibration_disp.next_row();
     print("aby wyjsc wcisnij 0", calibration_disp);
-    remote_input_handler_selector(manual_calibration_exit_confirm, 0x43, manual_calibration_exit_leave, 0x16);
+    void_func exit_func[2] = {manual_calibration_exit_confirm, manual_calibration_exit_leave};
+    uint8_t exit_commands[2] = {0x43, 0x16};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_selector(exit_func, exit_commands, number_of_functions);
 }
 void decodeIR_remote()
 {
-    remote_input_handler_selector(go_to_main, 0x15, reset_all_go_to_main, 0x7, switch_laser, 0x16, turn_on_off_calibration, 0x18);
+    void_func exit_func[4] = {go_to_main, reset_all_go_to_main, switch_laser, turn_on_off_calibration};
+    uint8_t exit_commands[4] = {0x15, 0x7, 0x16, 0x18};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_selector(exit_func, exit_commands, number_of_functions);
 }
 #pragma endregion Position_calibration
-# 1906 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 2044 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 #pragma endregion functions
 # 1 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\main.ino"
 

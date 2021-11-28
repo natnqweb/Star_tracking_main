@@ -92,11 +92,10 @@ Adafruit_MPU6050 mpu;
 
 Adafruit_HX8357 TFTscreen = Adafruit_HX8357(cs, dc, rst);
 SkyMap startracker;
-motor _motor1(ENCA, ENCB, IN1, IN2);
-motor *motor1 = &_motor1;
+motor motor1(ENCA, ENCB, IN1, IN2);
 
-motor _motor2(ENCA2, ENCB2, IN1_2, IN2_2);
-motor *motor2 = &_motor2;
+motor motor2(ENCA2, ENCB2, IN1_2, IN2_2);
+
 IRrecv IR(IR_RECEIVE_PIN);
 
 Myposition my_location(50.03, 21.01); //location for tarnów
@@ -233,10 +232,10 @@ void compass_init()
 void initialize_()
 {
     start_debuging(constants::Serial_Baud);
-    motor1->init(constants::kp1, constants::ki1, constants::kd1);
-    motor2->init(constants::kp2, constants::ki2, constants::kd2);
-    motor1->limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
-    motor2->limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
+    motor1.init(constants::kp1, constants::ki1, constants::kd1);
+    motor2.init(constants::kp2, constants::ki2, constants::kd2);
+    motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
+    motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
     pinMode(Laser_pin, OUTPUT);
 
     rtc.begin();
@@ -332,8 +331,8 @@ void calculate_starposition()
         azymuth_target = star.azymuth * constants::motor1_gear_ratio;
         altitude_target = star.altitude * constants::motor2_gear_ratio;
 
-        // float diff1 = abs(star.azymuth - (motor1->get_position() / constants::motor1_gear_ratio));
-        // float diff2 = abs(star.altitude - (motor2->get_position() / constants::motor1_gear_ratio)); //angle diffrence betwen motor and star
+        // float diff1 = abs(star.azymuth - (motor1.get_position() / constants::motor1_gear_ratio));
+        // float diff2 = abs(star.altitude - (motor2.get_position() / constants::motor1_gear_ratio)); //angle diffrence betwen motor and star
         ready_to_move = true;
         if (all_motors_ready_to_move())
         {
@@ -563,7 +562,7 @@ void updateDisplay()
     mainscreen.next_row();        //row 31
     print(un_degree, mainscreen); // row 31 column 0
     mainscreen.next_column(10);   // row 31 column 10
-    motor1_ang_buff.disp = (String)(motor1->get_position() / constants::motor1_gear_ratio);
+    motor1_ang_buff.disp = (String)(motor1.get_position() / constants::motor1_gear_ratio);
     dynamic_print(mainscreen, motor1_ang_buff); // row 31 column 10
     mainscreen.reset_cursor();
     mainscreen.set_cursor(33, 0);
@@ -571,7 +570,7 @@ void updateDisplay()
     mainscreen.next_row();        // row 35 column 0
     print(un_degree, mainscreen); // row 35 column 0
     mainscreen.next_column(10);   //row 35 column 10
-    motor2_ang_buff.disp = (String)(motor2->get_position() / constants::motor2_gear_ratio);
+    motor2_ang_buff.disp = (String)(motor2.get_position() / constants::motor2_gear_ratio);
     dynamic_print(mainscreen, motor2_ang_buff); //row 35 column 10
     mainscreen.reset_cursor();                  //row 0 column 0
     mainscreen.next_row(8);
@@ -688,10 +687,10 @@ void TFT_clear(String strr, int column, int row, uint8_t textsize)
 }
 void movemotors()
 {
-    motor1->set_target(azymuth_target);
-    motor2->set_target(altitude_target);
-    motor1->start();
-    motor2->start();
+    motor1.set_target(azymuth_target);
+    motor2.set_target(altitude_target);
+    motor1.start();
+    motor2.start();
 }
 #pragma region init_procedure
 void clear_exit_disp()
@@ -789,7 +788,10 @@ void boot_init_procedure()
 
     confirm = false;
     setmode = false;
-    remote_input_handler_selector(set_true_confirm, play, boot_init_exit_func1, EQ, boot_init_exit_func2, zero, boot_init_exit_func3, plus, boot_init_exit_func4, minus, boot_init_exit_tracking_mode, one);
+    void_func exit_functions[6] = {set_true_confirm, boot_init_exit_func1, boot_init_exit_func2, boot_init_exit_func3, boot_init_exit_func4, boot_init_exit_tracking_mode};
+    uint8_t commands[6] = {play, EQ, zero, plus, minus, one};
+    size_t number_of_functions = sizeof(commands);
+    remote_input_handler_selector(exit_functions, commands, number_of_functions);
     if (confirm || setmode)
     {
 
@@ -872,15 +874,15 @@ void new_starting_position()
     {
         starting_position_az = my_location.azymuth * constants::motor1_gear_ratio;
         starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
-        motor1->set_position(starting_position_az);
-        motor2->set_position(starting_position_alt);
+        motor1.set_position(starting_position_az);
+        motor2.set_position(starting_position_alt);
     }
     else
     {
         starting_position_az = offsets::magnetic_declination * constants::motor1_gear_ratio;
         starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
-        motor1->set_position(starting_position_az);
-        motor2->set_position(starting_position_alt);
+        motor1.set_position(starting_position_az);
+        motor2.set_position(starting_position_alt);
     }
 }
 uint8_t decodeIRfun()
@@ -971,7 +973,10 @@ void edit_ra()
     boot_disp.row += 30;
     TFT_dispStr(input_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
-    remote_input_handler_str(entering_ra_exit_handle, input_RA, play, deleteallinput);
+    uint8_t exit_commands[1] = {play};
+    void_func exit_functions[1] = {entering_ra_exit_handle};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_str(exit_functions, input_RA, exit_commands, deleteallinput, number_of_functions);
     boot_disp.reset_cursor();
 }
 void edit_dec()
@@ -981,7 +986,10 @@ void edit_dec()
     deleteallinput = boot_disp;
     TFT_dispStr(input_DEC, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
-    remote_input_handler_str(entering_dec_exit_handle, input_DEC, play, deleteallinput);
+    uint8_t exit_commands[1] = {play};
+    void_func exit_functions[1] = {entering_dec_exit_handle};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_str(exit_functions, input_DEC, exit_commands, deleteallinput, number_of_functions);
     boot_disp.reset_cursor();
 }
 #pragma endregion editing_ra_dec
@@ -1036,7 +1044,10 @@ void offset_select() // todo: let user enter all offsets independently from this
     offsets_screen.next_row();
     print(un_enter_az_offset, offsets_screen);
     offsets_screen.reset_cursor();
-    remote_input_handler_selector(offset_select_remote_exit_one, one, offset_select_remote_exit_one, two, offset_select_remote_exit_play, play);
+    void_func exit_func[3] = {offset_select_remote_exit_one, offset_select_remote_exit_one, offset_select_remote_exit_play};
+    uint8_t exit_commands[3] = {one, two, play};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_selector(exit_func, exit_commands, number_of_functions);
 }
 
 #pragma endregion offset_selectscrn
@@ -1131,27 +1142,27 @@ bool reset_ready_to_move_markers()
     tracking_finished = false;
     entering_RA = false;
     entering_DEC = false;
-    motor1->target_reached(true);
-    motor2->target_reached(true);
+    motor1.target_reached(true);
+    motor2.target_reached(true);
 }
 void safety_motor_position_control() // turn off motor if laser is to far up or down
 {
     if (pointing_altitude > 90 || pointing_altitude < -10 || star.altitude > 90 || star.altitude < -10)
     {
-        motor2->turn_off();
+        motor2.turn_off();
     }
     else
-        motor2->turn_on();
+        motor2.turn_on();
 }
 
 void Az_engine() //need to be in some standalone function cuz it is not attached to pin interuppt
 {
     az_motor_target_reached = false;
-    motor1->set_target(azymuth_target);
-    motor1->limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
-    motor1->start();
+    motor1.set_target(azymuth_target);
+    motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
+    motor1.start();
 
-    if (motor1->target_reached())
+    if (motor1.target_reached())
     {
         az_motor_target_reached = true;
 
@@ -1161,11 +1172,11 @@ void Az_engine() //need to be in some standalone function cuz it is not attached
 void Alt_engine()
 {
     alt_motor_target_reached = false;
-    motor2->set_target(altitude_target);
-    motor2->limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
-    motor2->start();
+    motor2.set_target(altitude_target);
+    motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
+    motor2.start();
 
-    if (motor2->target_reached())
+    if (motor2.target_reached())
     {
 
         alt_motor_target_reached = true;
@@ -1199,8 +1210,10 @@ void input_offsets()
         edit_magnetic_var.next_row();
         deleteallinput = edit_magnetic_var;
         print(input_MAG_DEC, edit_magnetic_var);
-
-        remote_input_handler_str(offset_disp_exit_procedure, input_MAG_DEC, play, deleteallinput);
+        uint8_t exit_commands[1] = {play};
+        void_func exit_functions[1] = {offset_disp_exit_procedure};
+        size_t number_of_functions = sizeof(exit_commands);
+        remote_input_handler_str(exit_functions, input_MAG_DEC, exit_commands, deleteallinput, number_of_functions);
     case offset_editing::TIME:
         displayconfig edit_time;
 
@@ -1265,7 +1278,10 @@ void edit_lat()
     deleteallinput = lat_long_disp;
     print(input_lat, lat_long_disp);
     lat_long_disp.reset_cursor();
-    remote_input_handler_str(exit_lat, input_lat, play, deleteallinput);
+    uint8_t exit_commands[1] = {play};
+    void_func exit_functions[1] = {exit_lat};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_str(exit_functions, input_lat, exit_commands, deleteallinput, number_of_functions);
 }
 void edit_long()
 {
@@ -1275,13 +1291,111 @@ void edit_long()
     deleteallinput = lat_long_disp;
     print(input_long, lat_long_disp);
     lat_long_disp.reset_cursor();
-    remote_input_handler_str(exit_long, input_long, play, deleteallinput);
+    uint8_t exit_commands[1] = {play};
+    void_func exit_functions[1] = {exit_long};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_str(exit_functions, input_long, exit_commands, deleteallinput, number_of_functions);
 }
 #pragma endregion edit_lat_long_functions
 #pragma region Remote_control_functions
-void remote_input_handler_str(void_func exitprint, String &result, uint8_t number, displayconfig &cnfg, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4)
+const char *command_decoder(uint8_t command)
 {
-    switch (decodeIRfun())
+    const char *result = EMPTYSTRING;
+    switch (command)
+    {
+    case zero:
+
+        result = "0";
+
+        break;
+    case one:
+
+        result = "1";
+
+        break;
+    case two:
+
+        result = "2";
+
+        break;
+    case three:
+
+        result = "3";
+
+        break;
+    case four:
+
+        result = "4";
+
+        break;
+    case five:
+
+        result = "5";
+
+        break;
+    case six:
+
+        result = "6";
+
+        break;
+    case seven:
+
+        result = "7";
+
+        break;
+    case eight:
+
+        result = "8";
+
+        break;
+    case nine:
+
+        result = "9";
+        break;
+
+    case EQ:
+
+        result = ".";
+        break;
+
+    case play:
+
+        break;
+    case plus: // plus clears input line and input string
+        result = "clear";
+
+        break;
+    case minus:
+        result = "-";
+
+        break;
+    }
+    return result;
+}
+void remote_input_handler_str(void_func *exitprint, String &result, uint8_t *number, displayconfig &cnfg, size_t size)
+{
+    uint8_t data = decodeIRfun();
+    if (data != no_command)
+    {
+        result += command_decoder(data);
+        if (command_decoder(data) == "clear")
+        {
+
+            clear(result, cnfg);
+            result = EMPTYSTRING;
+        }
+        for (size_t i = 0; i < size; i++)
+        {
+            if (number[i] == data)
+            {
+
+                exitprint[i]();
+                break;
+            }
+        }
+    }
+
+    /*   switch (decodeIRfun())
     {
     case zero:
 
@@ -1451,11 +1565,26 @@ void remote_input_handler_str(void_func exitprint, String &result, uint8_t numbe
             exitprint4();
 
         break;
-    }
+    } */
 }
-void remote_input_handler_selector(void_func exitprint, uint8_t number, void_func exitprint2, uint8_t number2, void_func exitprint3, uint8_t number3, void_func exitprint4, uint8_t number4, void_func exitprint5, uint8_t number5, void_func exitprint6, uint8_t number6)
+void remote_input_handler_selector(void_func *exitprint, uint8_t *number, size_t size)
 {
-    switch (decodeIRfun())
+    uint8_t data2 = decodeIRfun();
+    if (data2 != no_command)
+    {
+
+        for (size_t i = 0; i < size; i++)
+        {
+            if (number[i] == data2)
+            {
+
+                exitprint[i]();
+                break;
+            }
+        }
+    }
+
+    /*  switch (decodeIRfun())
     {
     case zero:
 
@@ -1667,7 +1796,7 @@ void remote_input_handler_selector(void_func exitprint, uint8_t number, void_fun
             exitprint6();
 
         break;
-    }
+    } */
 }
 #pragma endregion Remote_control_functions
 #pragma region Position_calibration
@@ -1775,7 +1904,10 @@ void position_calibration_display()
     print(un_set_position_manually, calibration_disp);
 
     calibration_disp.reset_cursor();
-    remote_input_handler_selector(position_calibration_exit_func1, play, position_calibration_exit_cancel, zero, position_calibration_exit_manual, one);
+    void_func exit_func[3] = {position_calibration_exit_func1, position_calibration_exit_cancel, position_calibration_exit_manual};
+    uint8_t exit_commands[3] = {play, zero, one};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_selector(exit_func, exit_commands, number_of_functions);
 }
 void clear_manual_calibration_disp()
 {
@@ -1812,11 +1944,17 @@ void manual_calibration_screen()
     print(un_if_you_want_to_calibrate_play, calibration_disp);
     calibration_disp.next_row();
     print(un_exit_press, calibration_disp);
-    remote_input_handler_selector(manual_calibration_exit_confirm, play, manual_calibration_exit_leave, zero);
+    void_func exit_func[2] = {manual_calibration_exit_confirm, manual_calibration_exit_leave};
+    uint8_t exit_commands[2] = {play, zero};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_selector(exit_func, exit_commands, number_of_functions);
 }
 void decodeIR_remote()
 {
-    remote_input_handler_selector(go_to_main, plus, reset_all_go_to_main, minus, switch_laser, zero, turn_on_off_calibration, two);
+    void_func exit_func[4] = {go_to_main, reset_all_go_to_main, switch_laser, turn_on_off_calibration};
+    uint8_t exit_commands[4] = {plus, minus, zero, two};
+    size_t number_of_functions = sizeof(exit_commands);
+    remote_input_handler_selector(exit_func, exit_commands, number_of_functions);
 }
 #pragma endregion Position_calibration
 #if DEBUG
@@ -1824,16 +1962,16 @@ void decodeIR_remote()
 void debug_motors()
 {
 
-    /*   motor2->set_target(710);
-    motor2->limit(120, 255);
-    motor2->start(); */
-    motor1->set_target(100);
-    motor1->limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
-    motor1->start();
+    /*   motor2.set_target(710);
+    motor2.limit(120, 255);
+    motor2.start(); */
+    motor1.set_target(100);
+    motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
+    motor1.start();
     if (logtimer.timer(1000))
     {
-        LOG(motor1->get_position());
-        if (motor1->target_reached())
+        LOG(motor1.get_position());
+        if (motor1.target_reached())
         {
             LOG("done");
         }
@@ -1860,7 +1998,7 @@ void debug_motors()
     //debug_motor_display.reset_cursor();
     // print("position:", debug_motor_display);
     // debug_motor_display.next_column(15);
-    // debugbuffer.disp = String(motor2->get_position());
+    // debugbuffer.disp = String(motor2.get_position());
     // dynamic_print(debug_motor_display, debugbuffer);
 }
 void debug_rtc()

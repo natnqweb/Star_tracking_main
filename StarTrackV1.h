@@ -328,7 +328,7 @@ void edit_long();
 void position_calibration_display();
 #pragma endregion main_functions
 void turn_on_off_calibration();
-void movemotors();
+
 void init_accel();
 void clearDisplay();
 void TFT_dispStr(String str, int column, int row, uint8_t textsize = 1);
@@ -359,12 +359,14 @@ namespace EEPROM
     void dynamic_print_eeprom(displayconfig &, T, unsigned int);
 };
 // this functions saves in string every clicked button and performs exitfnct when irremote input matches expected command can take up to 3 functions
-void remote_input_handler_str(void_func, String &, uint8_t, displayconfig &, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0);
+//void remote_input_handler_str(void_func, String &, uint8_t, displayconfig &, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0);
 // function that takes void functions as parameters and performs whats inside them only if ir reemote decodes given command can take up to 3 functions
-void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0, void_func exitprint5 = empty_function, uint8_t number5 = 0, void_func exitprint6 = empty_function, uint8_t number6 = 0);
+//void remote_input_handler_selector(void_func, uint8_t, void_func exitprint2 = empty_function, uint8_t number2 = 0, void_func exitprint3 = empty_function, uint8_t number3 = 0, void_func exitprint4 = empty_function, uint8_t number4 = 0, void_func exitprint5 = empty_function, uint8_t number5 = 0, void_func exitprint6 = empty_function, uint8_t number6 = 0);
 //code specific for debuging purposes only if debug not true this code is not visible for compiler
 // // true if target  position is reached and false if not
-
+void remote_input_handler_str(void_func *, String &, uint8_t *, displayconfig &, size_t);
+void remote_input_handler_selector(void_func *, uint8_t *, size_t);
+const char *command_decoder(uint8_t);
 bool all_motors_ready_to_move();
 bool reset_ready_to_move_markers();
 bool check_if_pointing_at_north();
