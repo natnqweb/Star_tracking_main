@@ -1,5 +1,6 @@
 # 1 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 # 2 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 2
+
 /* todo ::
 
         1)try to move motors to correct position
@@ -81,7 +82,7 @@
         
 
  */
-# 43 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 45 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 #pragma region constructor_definitions
 void displayconfig::next_row(int how_many_rows_further, uint8_t pixels)
 {
@@ -125,8 +126,8 @@ Star::Star(degs azymuth, degs altitude, degs right_ascension, degs declination)
 TinyGPSPlus gps;
 Time t;
 DS3231 rtc(SDA, SCL);
-uEEPROMLib _EEPROM(0x57 /*eeprom  i2c_address*/);
-uEEPROMLib *eeprom = &_EEPROM;
+uEEPROMLib eeprom(0x57 /*eeprom  i2c_address*/);
+
 Simpletimer accel_callback_timer;
 Simpletimer display_callback_timer;
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(1132); //added custon id  1132
@@ -144,23 +145,25 @@ Myposition my_location(50.03, 21.01); //location for tarnów
 Star star(0, 0, 101.52, -16.7424); //Sirius ra and dec at start
 
 #pragma endregion constructors
-#pragma region functions
 #pragma region eeprom
 template <class T>
 void EEPROM::write(unsigned int address, T value)
 {
-    if (!eeprom->eeprom_write(address, value))
+    if (!eeprom.eeprom_write(address, value))
         ;
 }
 template <class T>
 T EEPROM::read(unsigned int address)
 {
     T temprorary_storage = 0;
-    eeprom->eeprom_read<T>(address, &temprorary_storage);
+    eeprom.eeprom_read<T>(address, &temprorary_storage);
     return temprorary_storage;
 }
 
 #pragma endregion eeprom
+#pragma region functions
+
+#pragma region calculations_and_sensors
 void laser(bool on_off)
 {
     digitalWrite(Laser_pin, on_off);
@@ -198,9 +201,9 @@ void read_compass()
     // Convert radians to degrees for readability.
 
     degs headingDegrees = heading * 180 / 
-# 158 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 162 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                          3.14159265358979323846 /* pi */
-# 158 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 162 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                              ;
 
     if (headingDegrees >= 1 && headingDegrees < 240)
@@ -338,18 +341,18 @@ void calculate_starposition()
     day = (float)t.date;
     month = (float)t.mon;
     year = (float)t.year;
-    if ((gps.location.lat() != 0) || (gps.location.lng() != 0))
+    if (gps.location.isValid())
     {
         if (automatic_mode)
         {
             my_location.latitude = gps.location.lat();
             my_location.longitude = gps.location.lng();
-            EEPROM::write(10, my_location.latitude);
-            EEPROM::write(15, my_location.longitude);
+            EEPROM::write(EEPROM::addresses::lat, my_location.latitude);
+            EEPROM::write(EEPROM::addresses::longitude, my_location.longitude);
         }
         GPS_status = true;
     }
-
+    ;
     ;
     MIN = (float)t.min;
     HOUR = (float)t.hour;
@@ -424,6 +427,9 @@ void updateAccel()
     ;
     //}
 }
+#pragma endregion calculations_and_sensors
+
+#pragma region mainscreen
 void clearDisplay()
 {
 
@@ -455,7 +461,7 @@ void clearDisplay()
     mainscreen.next_column(18);
 
     //clear(laser_angle_buff.disp, mainscreen);
-    clear(String(EEPROM::read<float>(34)), mainscreen);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::laser_angle)), mainscreen);
 
     mainscreen.reset_cursor();
     mainscreen.next_row();
@@ -507,7 +513,7 @@ void clearDisplay()
     clear(_lat_buff.disp, mainscreen);
     mainscreen.next_row();
     //clear(_sec_buff.disp, mainscreen);
-    clear(String(EEPROM::read<int>(30)), mainscreen);
+    clear(String(EEPROM::read<int>(EEPROM::addresses::second)), mainscreen);
     mainscreen.next_row();
 
     clear(_star_az_buff.disp, mainscreen);
@@ -521,7 +527,7 @@ void clearDisplay()
     mainscreen.next_row();
     clear(String(t.date), mainscreen);
     mainscreen.next_row();
-    clear(String(EEPROM::read<float>(39)), mainscreen);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::time_utc)), mainscreen);
     // dodanaj wyświetlanie czasu
     int previous_column = mainscreen.column; //
     mainscreen.next_row();
@@ -577,8 +583,8 @@ void updateDisplay()
     /*     laser_angle_buff.disp = String(pointing_altitude);
 
     dynamic_print(mainscreen, laser_angle_buff); */
-# 533 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-    EEPROM::dynamic_print_eeprom(mainscreen, pointing_altitude, 34);
+# 540 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    EEPROM::dynamic_print_eeprom(mainscreen, pointing_altitude, EEPROM::addresses::laser_angle);
 
     mainscreen.reset_cursor();
     mainscreen.next_row();
@@ -635,19 +641,19 @@ void updateDisplay()
     dynamic_print(mainscreen, visibility_buffer);
     mainscreen.reset_cursor();
 
-    GPS_status ? _long_buff.disp = String(my_location.longitude) : _long_buff.disp = "brak gps";
+    gps.location.isValid() ? _long_buff.disp = String(my_location.longitude) : _long_buff.disp = "brak gps";
     // results
     mainscreen.set_cursor(0, 15);
     dynamic_print(mainscreen, _long_buff);
     mainscreen.next_row();
-    GPS_status ? _lat_buff.disp = String(my_location.latitude) : _lat_buff.disp = "brak gps";
+    gps.location.isValid() ? _lat_buff.disp = String(my_location.latitude) : _lat_buff.disp = "brak gps";
     dynamic_print(mainscreen, _lat_buff);
     mainscreen.next_row();
     /*   _sec_buff.disp = String(int(SEKUNDA));
 
     dynamic_print(mainscreen, _sec_buff); */
-# 600 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-    EEPROM::dynamic_print_eeprom(mainscreen, (int)SEKUNDA, 30);
+# 607 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    EEPROM::dynamic_print_eeprom(mainscreen, (int)SEKUNDA, EEPROM::addresses::second);
     mainscreen.next_row();
     GPS_status ? _star_az_buff.disp = String(star.azymuth) : _star_az_buff.disp = "...";
     dynamic_print(mainscreen, _star_az_buff);
@@ -665,8 +671,8 @@ void updateDisplay()
     /*     _time_buff.disp = (String)TIME;
 
     dynamic_print(mainscreen, _time_buff); */
-# 617 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-    EEPROM::dynamic_print_eeprom(mainscreen, TIME, 39);
+# 624 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    EEPROM::dynamic_print_eeprom(mainscreen, TIME, EEPROM::addresses::time_utc);
     // add time display
     int previous_column = mainscreen.column; //
     mainscreen.next_row();
@@ -685,7 +691,7 @@ void updateDisplay()
     //gps time
     mainscreen.next_row();
     mainscreen.column = 0;
-    gps.time.second() != 0 ? _calibrate_buff.disp = "{1}" : _calibrate_buff.disp = "{0}";
+    gps.time.isValid() ? _calibrate_buff.disp = "{1}" : _calibrate_buff.disp = "{0}";
     dynamic_print(mainscreen, _calibrate_buff);
     //
     //
@@ -693,6 +699,7 @@ void updateDisplay()
 
     //}
 }
+#pragma endregion mainscreen
 void clear_all_buffers()
 {
 
@@ -763,16 +770,16 @@ void clear_exit_disp()
     int prev_column = boot_init_disp.column;
     clear("ostatnia lokalizacja", boot_init_disp);
     boot_init_disp.next_column(34);
-    clear(String(EEPROM::read<float>(10)), boot_init_disp);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::lat)), boot_init_disp);
     boot_init_disp.next_column(12);
-    clear(String(EEPROM::read<float>(15)), boot_init_disp);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::longitude)), boot_init_disp);
     boot_init_disp.column = prev_column;
     boot_init_disp.next_row();
     clear("ostatnia gwiazda", boot_init_disp);
     boot_init_disp.next_column(34);
-    clear(String(EEPROM::read<float>(20)), boot_init_disp);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::ra)), boot_init_disp);
     boot_init_disp.next_column(12);
-    clear(String(EEPROM::read<float>(25)), boot_init_disp);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::dec)), boot_init_disp);
     boot_init_disp.set_cursor(36, 0);
     clear("1-", boot_init_disp);
     boot_init_disp.set_cursor(36, 4);
@@ -870,16 +877,16 @@ void boot_init_procedure()
             print("ostatnia lokalizacja", boot_init_disp);
             int prev_column = boot_init_disp.column;
             boot_init_disp.next_column(34);
-            print(String(EEPROM::read<float>(10)), boot_init_disp);
+            print(String(EEPROM::read<float>(EEPROM::addresses::lat)), boot_init_disp);
             boot_init_disp.next_column(12);
-            print(String(EEPROM::read<float>(15)), boot_init_disp);
+            print(String(EEPROM::read<float>(EEPROM::addresses::longitude)), boot_init_disp);
             boot_init_disp.column = prev_column;
             boot_init_disp.next_row();
             print("ostatnia gwiazda", boot_init_disp);
             boot_init_disp.next_column(34);
-            print(String(EEPROM::read<float>(20)), boot_init_disp);
+            print(String(EEPROM::read<float>(EEPROM::addresses::ra)), boot_init_disp);
             boot_init_disp.next_column(12);
-            print(String(EEPROM::read<float>(25)), boot_init_disp);
+            print(String(EEPROM::read<float>(EEPROM::addresses::dec)), boot_init_disp);
 
             //display recent search
 
@@ -921,7 +928,7 @@ void boot_init_procedure()
 #pragma endregion init_procedure
 void new_starting_position()
 {
-    //todo : define this constatns for motors they may differ significantly
+    //todo : define this constatns for motors they may differ significantly // done
     if (automatic_calibration)
     {
         starting_position_az = my_location.azymuth * constants::motor1_gear_ratio;
@@ -973,7 +980,7 @@ void entering_dec_exit_handle()
     TFT_clear(input_DEC, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
     star.declination = input_DEC.toFloat();
-    EEPROM::write(25, star.declination);
+    EEPROM::write(EEPROM::addresses::dec, star.declination);
     entering_DEC = true;
     entering_RA ? mode = INIT_PROCEDURE : mode = EDIT_RA;
     if (mode == INIT_PROCEDURE)
@@ -987,7 +994,7 @@ void entering_ra_exit_handle()
     TFT_clear(input_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
     star.right_ascension = input_RA.toFloat();
-    EEPROM::write(20, star.right_ascension);
+    EEPROM::write(EEPROM::addresses::ra, star.right_ascension);
     entering_RA = true;
     entering_DEC ? mode = INIT_PROCEDURE : mode = EDIT_DEC;
     if (mode == INIT_PROCEDURE)
@@ -1182,7 +1189,7 @@ void dynamic_print_eeprom_float(displayconfig &cnfg, float val, unsigned int add
     }
 
 } */
-# 1103 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1111 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 template <class T>
 void EEPROM::dynamic_print_eeprom(displayconfig &cnfg, T val, unsigned int address)
 {
@@ -1335,7 +1342,7 @@ void exit_lat()
     lat_long_disp.next_row(3);
     clear(input_lat, lat_long_disp);
     my_location.latitude = input_lat.toFloat();
-    EEPROM::write(10, my_location.latitude);
+    EEPROM::write(EEPROM::addresses::lat, my_location.latitude);
     lat_long_disp.reset_cursor();
     mode = EDIT_LONG;
 }
@@ -1346,7 +1353,7 @@ void exit_long()
     lat_long_disp.next_row(3);
     clear(input_long, lat_long_disp);
     my_location.longitude = input_long.toFloat();
-    EEPROM::write(15, my_location.longitude);
+    EEPROM::write(EEPROM::addresses::longitude, my_location.longitude);
     lat_long_disp.reset_cursor();
     automatic_mode = false;
     GPS_status = true;
@@ -1819,7 +1826,7 @@ void remote_input_handler_str(void_func *exitprint, String &result, uint8_t *num
         break;
 
     } */
-# 1569 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1577 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 }
 void remote_input_handler_selector(void_func *exitprint, uint8_t *number, size_t size)
 {
@@ -2263,7 +2270,7 @@ void remote_input_handler_selector(void_func *exitprint, uint8_t *number, size_t
         break;
 
     } */
-# 1800 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1808 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 }
 #pragma endregion Remote_control_functions
 #pragma region Position_calibration
@@ -2289,7 +2296,7 @@ void clear_calibration_screen()
     clear("kat_lasera", calibration_disp);
     calibration_disp.set_cursor(6, 0);
 
-    clear(String(EEPROM::read<float>(34)), calibration_disp);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::laser_angle)), calibration_disp);
 
     calibration_disp.set_cursor(8, 0);
     clear("azymut" /*short from universal azymuth*/, calibration_disp);
@@ -2348,7 +2355,7 @@ void position_calibration_display()
     print("kat_lasera", calibration_disp);
     calibration_disp.set_cursor(6, 0);
 
-    EEPROM::dynamic_print_eeprom(calibration_disp, pointing_altitude, 34);
+    EEPROM::dynamic_print_eeprom(calibration_disp, pointing_altitude, EEPROM::addresses::laser_angle);
     calibration_disp.set_cursor(8, 0);
     print("azymut" /*short from universal azymuth*/, calibration_disp);
     calibration_disp.set_cursor(10, 0);
@@ -2424,7 +2431,7 @@ void decodeIR_remote()
     remote_input_handler_selector(exit_func, exit_commands, number_of_functions);
 }
 #pragma endregion Position_calibration
-# 2044 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 2052 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 #pragma endregion functions
 # 1 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\main.ino"
 

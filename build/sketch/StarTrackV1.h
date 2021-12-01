@@ -20,15 +20,6 @@
 
 #pragma endregion includes
 #pragma region definitions
-#pragma region eeprom_variables
-#define eeprom_lat_address 10
-#define eeprom_long_address 15
-#define eeprom_ra_address 20
-#define eeprom_dec_address 25
-#define eeprom_second_address 30
-#define eeprom_laser_angle 34
-#define eeprom_time_utc 39
-#pragma endregion eeprom_variables
 
 #define right 1
 #define left -1
@@ -352,6 +343,17 @@ void safety_motor_position_control();
 
 namespace EEPROM
 {
+    enum addresses : const uint8_t
+    {
+        lat = 10,
+        longitude = 15,
+        ra = 20,
+        dec = 25,
+        second = 30,
+        laser_angle = 34,
+        time_utc = 39
+
+    };
     template <class T>
     T read(unsigned int);
     template <class T>

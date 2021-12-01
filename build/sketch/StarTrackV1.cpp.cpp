@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #line 1 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 #include "StarTrackV1.h"
+
 /* todo ::
         1)try to move motors to correct position
         allign with north
@@ -42,6 +43,7 @@
         
         
  */
+
 #pragma region constructor_definitions
 void displayconfig::next_row(int how_many_rows_further, uint8_t pixels)
 {
@@ -85,8 +87,8 @@ Star::Star(degs azymuth, degs altitude, degs right_ascension, degs declination)
 TinyGPSPlus gps;
 Time t;
 DS3231 rtc(SDA, SCL);
-uEEPROMLib _EEPROM(eeprom_address);
-uEEPROMLib *eeprom = &_EEPROM;
+uEEPROMLib eeprom(eeprom_address);
+
 Simpletimer accel_callback_timer;
 Simpletimer display_callback_timer;
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(1132); //added custon id  1132
@@ -104,164 +106,166 @@ Myposition my_location(50.03, 21.01); //location for tarnów
 Star star(0, 0, 101.52, -16.7424);    //Sirius ra and dec at start
 
 #pragma endregion constructors
-#pragma region functions
 #pragma region eeprom
 template <class T>
 void EEPROM::write(unsigned int address, T value)
 {
-    if (!eeprom->eeprom_write(address, value))
+    if (!eeprom.eeprom_write(address, value))
         LOG("eeprom write failed");
 }
 template <class T>
 T EEPROM::read(unsigned int address)
 {
     T temprorary_storage = 0;
-    eeprom->eeprom_read<T>(address, &temprorary_storage);
+    eeprom.eeprom_read<T>(address, &temprorary_storage);
     return temprorary_storage;
 }
 
 #pragma endregion eeprom
-#line 122 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#pragma region functions
+
+#pragma region calculations_and_sensors
+#line 126 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void laser(bool on_off);
-#line 128 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 132 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void read_compass();
-#line 186 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 190 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void RTC_calibration();
-#line 199 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 203 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void init_accel();
-#line 218 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 222 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void compass_init();
-#line 232 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 236 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void initialize_();
-#line 258 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 262 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void switch_laser();
-#line 263 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 267 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void reset_all_go_to_main();
-#line 271 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 275 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void go_to_main();
-#line 278 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 282 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void readGPS();
-#line 288 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 292 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void calculate_starposition();
-#line 353 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 357 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void updateAccel();
-#line 381 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 388 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void clearDisplay();
-#line 500 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 507 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void updateDisplay();
-#line 644 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 652 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void clear_all_buffers();
-#line 669 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 677 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void TFT_dispStr(String str, int column, int row, uint8_t textsize);
-#line 679 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 687 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void TFT_clear(String strr, int column, int row, uint8_t textsize);
-#line 688 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void movemotors();
 #line 696 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void movemotors();
+#line 704 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void clear_exit_disp();
-#line 742 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 750 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void boot_init_exit_tracking_mode();
-#line 755 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 763 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void boot_init_exit_func1();
-#line 761 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 769 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void set_true_confirm();
-#line 767 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 775 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void boot_init_exit_func2();
-#line 773 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 781 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void boot_init_exit_func3();
-#line 779 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 787 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void boot_init_exit_func4();
-#line 785 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 793 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void boot_init_procedure();
-#line 870 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 878 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void new_starting_position();
-#line 888 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 896 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 uint8_t decodeIRfun();
-#line 916 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 924 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void entering_dec_exit_handle();
-#line 930 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 938 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void entering_ra_exit_handle();
-#line 944 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 952 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_Ra_Dec();
-#line 969 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 977 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_ra();
-#line 982 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 990 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_dec();
-#line 998 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1006 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_select_remote_exit_play();
-#line 1010 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1018 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_select_remote_exit_one();
-#line 1023 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1031 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_select_remote_exit_two();
-#line 1035 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1043 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_select();
-#line 1055 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void clear(String sentence, displayconfig &cnfg);
-#line 1059 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void print(String sentence, displayconfig &cnfg);
 #line 1063 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void clear(String sentence, displayconfig &cnfg);
+#line 1067 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void print(String sentence, displayconfig &cnfg);
+#line 1071 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void dynamic_print(displayconfig &cnfg, buffers &buffs);
-#line 1119 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1127 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void clear_all();
-#line 1126 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1134 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 bool all_motors_ready_to_move();
-#line 1138 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1146 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 bool reset_ready_to_move_markers();
-#line 1148 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1156 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void safety_motor_position_control();
-#line 1158 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1166 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void Az_engine();
-#line 1172 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1180 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void Alt_engine();
-#line 1198 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1206 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void input_offsets();
-#line 1233 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1241 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_disp_exit_procedure();
-#line 1248 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1256 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void exit_lat();
-#line 1259 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1267 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void exit_long();
-#line 1273 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1281 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_lat();
-#line 1286 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1294 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_long();
-#line 1301 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1309 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 const char * command_decoder(uint8_t command);
-#line 1375 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1383 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void remote_input_handler_str(void_func *exitprint, String &result, uint8_t *number, displayconfig &cnfg, size_t size);
-#line 1570 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1578 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void remote_input_handler_selector(void_func *exitprint, uint8_t *number, size_t size);
-#line 1803 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1811 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void check_gps_accel_compass();
-#line 1809 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-bool check_if_pointing_at_north();
 #line 1817 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+bool check_if_pointing_at_north();
+#line 1825 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void clear_calibration_screen();
-#line 1845 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void position_calibration_exit_func1();
 #line 1853 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void position_calibration_exit_func1();
+#line 1861 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void position_calibration_exit_cancel();
-#line 1860 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1868 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void turn_on_off_calibration();
-#line 1866 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void position_calibration_exit_manual();
 #line 1874 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void position_calibration_exit_manual();
+#line 1882 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void position_calibration_display();
-#line 1912 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1920 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void clear_manual_calibration_disp();
-#line 1921 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void manual_calibration_exit_confirm();
 #line 1929 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void manual_calibration_exit_confirm();
+#line 1937 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void manual_calibration_exit_leave();
-#line 1939 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1947 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void manual_calibration_screen();
-#line 1952 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1960 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void decodeIR_remote();
 #line 4 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\main.ino"
 void setup();
 #line 13 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\main.ino"
 void loop();
-#line 122 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 126 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void laser(bool on_off)
 {
     digitalWrite(Laser_pin, on_off);
@@ -435,18 +439,18 @@ void calculate_starposition()
     day = (float)t.date;
     month = (float)t.mon;
     year = (float)t.year;
-    if ((gps.location.lat() != 0) || (gps.location.lng() != 0))
+    if (gps.location.isValid())
     {
         if (automatic_mode)
         {
             my_location.latitude = gps.location.lat();
             my_location.longitude = gps.location.lng();
-            EEPROM::write(eeprom_lat_address, my_location.latitude);
-            EEPROM::write(eeprom_long_address, my_location.longitude);
+            EEPROM::write(EEPROM::addresses::lat, my_location.latitude);
+            EEPROM::write(EEPROM::addresses::longitude, my_location.longitude);
         }
         GPS_status = true;
     }
-
+    LOG("LONGITUDE:");
     LOG(my_location.longitude);
     MIN = (float)t.min;
     HOUR = (float)t.hour;
@@ -521,6 +525,9 @@ void updateAccel()
     LOG(pointing_altitude);
     //}
 }
+#pragma endregion calculations_and_sensors
+
+#pragma region mainscreen
 void clearDisplay()
 {
 
@@ -552,7 +559,7 @@ void clearDisplay()
     mainscreen.next_column(18);
 
     //clear(laser_angle_buff.disp, mainscreen);
-    clear(String(EEPROM::read<float>(eeprom_laser_angle)), mainscreen);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::laser_angle)), mainscreen);
 
     mainscreen.reset_cursor();
     mainscreen.next_row();
@@ -604,7 +611,7 @@ void clearDisplay()
     clear(_lat_buff.disp, mainscreen);
     mainscreen.next_row();
     //clear(_sec_buff.disp, mainscreen);
-    clear(String(EEPROM::read<int>(eeprom_second_address)), mainscreen);
+    clear(String(EEPROM::read<int>(EEPROM::addresses::second)), mainscreen);
     mainscreen.next_row();
 
     clear(_star_az_buff.disp, mainscreen);
@@ -618,7 +625,7 @@ void clearDisplay()
     mainscreen.next_row();
     clear(String(t.date), mainscreen);
     mainscreen.next_row();
-    clear(String(EEPROM::read<float>(eeprom_time_utc)), mainscreen);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::time_utc)), mainscreen);
     // dodanaj wyświetlanie czasu
     int previous_column = mainscreen.column; //
     mainscreen.next_row();
@@ -673,7 +680,7 @@ void updateDisplay()
     mainscreen.next_column(18);
     /*     laser_angle_buff.disp = String(pointing_altitude);
     dynamic_print(mainscreen, laser_angle_buff); */
-    EEPROM::dynamic_print_eeprom(mainscreen, pointing_altitude, eeprom_laser_angle);
+    EEPROM::dynamic_print_eeprom(mainscreen, pointing_altitude, EEPROM::addresses::laser_angle);
 
     mainscreen.reset_cursor();
     mainscreen.next_row();
@@ -730,17 +737,17 @@ void updateDisplay()
     dynamic_print(mainscreen, visibility_buffer);
     mainscreen.reset_cursor();
 
-    GPS_status ? _long_buff.disp = String(my_location.longitude) : _long_buff.disp = un_no_gps;
+    gps.location.isValid() ? _long_buff.disp = String(my_location.longitude) : _long_buff.disp = un_no_gps;
     // results
     mainscreen.set_cursor(0, 15);
     dynamic_print(mainscreen, _long_buff);
     mainscreen.next_row();
-    GPS_status ? _lat_buff.disp = String(my_location.latitude) : _lat_buff.disp = un_no_gps;
+    gps.location.isValid() ? _lat_buff.disp = String(my_location.latitude) : _lat_buff.disp = un_no_gps;
     dynamic_print(mainscreen, _lat_buff);
     mainscreen.next_row();
     /*   _sec_buff.disp = String(int(SEKUNDA));
     dynamic_print(mainscreen, _sec_buff); */
-    EEPROM::dynamic_print_eeprom(mainscreen, (int)SEKUNDA, eeprom_second_address);
+    EEPROM::dynamic_print_eeprom(mainscreen, (int)SEKUNDA, EEPROM::addresses::second);
     mainscreen.next_row();
     GPS_status ? _star_az_buff.disp = String(star.azymuth) : _star_az_buff.disp = "...";
     dynamic_print(mainscreen, _star_az_buff);
@@ -757,7 +764,7 @@ void updateDisplay()
     mainscreen.next_row();
     /*     _time_buff.disp = (String)TIME;
     dynamic_print(mainscreen, _time_buff); */
-    EEPROM::dynamic_print_eeprom(mainscreen, TIME, eeprom_time_utc);
+    EEPROM::dynamic_print_eeprom(mainscreen, TIME, EEPROM::addresses::time_utc);
     // add time display
     int previous_column = mainscreen.column; //
     mainscreen.next_row();
@@ -776,7 +783,7 @@ void updateDisplay()
     //gps time
     mainscreen.next_row();
     mainscreen.column = 0;
-    gps.time.second() != 0 ? _calibrate_buff.disp = un_can_calibrate : _calibrate_buff.disp = un_cant_calibrate;
+    gps.time.isValid() ? _calibrate_buff.disp = un_can_calibrate : _calibrate_buff.disp = un_cant_calibrate;
     dynamic_print(mainscreen, _calibrate_buff);
     //
     //
@@ -784,6 +791,7 @@ void updateDisplay()
 
     //}
 }
+#pragma endregion mainscreen
 void clear_all_buffers()
 {
 
@@ -854,16 +862,16 @@ void clear_exit_disp()
     int prev_column = boot_init_disp.column;
     clear(un_recent_location, boot_init_disp);
     boot_init_disp.next_column(34);
-    clear(String(EEPROM::read<float>(eeprom_lat_address)), boot_init_disp);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::lat)), boot_init_disp);
     boot_init_disp.next_column(12);
-    clear(String(EEPROM::read<float>(eeprom_long_address)), boot_init_disp);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::longitude)), boot_init_disp);
     boot_init_disp.column = prev_column;
     boot_init_disp.next_row();
     clear(un_recently_tracked_star, boot_init_disp);
     boot_init_disp.next_column(34);
-    clear(String(EEPROM::read<float>(eeprom_ra_address)), boot_init_disp);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::ra)), boot_init_disp);
     boot_init_disp.next_column(12);
-    clear(String(EEPROM::read<float>(eeprom_dec_address)), boot_init_disp);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::dec)), boot_init_disp);
     boot_init_disp.set_cursor(36, 0);
     clear("1-", boot_init_disp);
     boot_init_disp.set_cursor(36, 4);
@@ -961,16 +969,16 @@ void boot_init_procedure()
             print(un_recent_location, boot_init_disp);
             int prev_column = boot_init_disp.column;
             boot_init_disp.next_column(34);
-            print(String(EEPROM::read<float>(eeprom_lat_address)), boot_init_disp);
+            print(String(EEPROM::read<float>(EEPROM::addresses::lat)), boot_init_disp);
             boot_init_disp.next_column(12);
-            print(String(EEPROM::read<float>(eeprom_long_address)), boot_init_disp);
+            print(String(EEPROM::read<float>(EEPROM::addresses::longitude)), boot_init_disp);
             boot_init_disp.column = prev_column;
             boot_init_disp.next_row();
             print(un_recently_tracked_star, boot_init_disp);
             boot_init_disp.next_column(34);
-            print(String(EEPROM::read<float>(eeprom_ra_address)), boot_init_disp);
+            print(String(EEPROM::read<float>(EEPROM::addresses::ra)), boot_init_disp);
             boot_init_disp.next_column(12);
-            print(String(EEPROM::read<float>(eeprom_dec_address)), boot_init_disp);
+            print(String(EEPROM::read<float>(EEPROM::addresses::dec)), boot_init_disp);
 
             //display recent search
 
@@ -1012,7 +1020,7 @@ void boot_init_procedure()
 #pragma endregion init_procedure
 void new_starting_position()
 {
-    //todo : define this constatns for motors they may differ significantly
+    //todo : define this constatns for motors they may differ significantly // done
     if (automatic_calibration)
     {
         starting_position_az = my_location.azymuth * constants::motor1_gear_ratio;
@@ -1064,7 +1072,7 @@ void entering_dec_exit_handle()
     TFT_clear(input_DEC, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
     star.declination = input_DEC.toFloat();
-    EEPROM::write(eeprom_dec_address, star.declination);
+    EEPROM::write(EEPROM::addresses::dec, star.declination);
     entering_DEC = true;
     entering_RA ? mode = INIT_PROCEDURE : mode = EDIT_RA;
     if (mode == INIT_PROCEDURE)
@@ -1078,7 +1086,7 @@ void entering_ra_exit_handle()
     TFT_clear(input_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.reset_cursor();
     star.right_ascension = input_RA.toFloat();
-    EEPROM::write(eeprom_ra_address, star.right_ascension);
+    EEPROM::write(EEPROM::addresses::ra, star.right_ascension);
     entering_RA = true;
     entering_DEC ? mode = INIT_PROCEDURE : mode = EDIT_DEC;
     if (mode == INIT_PROCEDURE)
@@ -1395,7 +1403,7 @@ void exit_lat()
     lat_long_disp.next_row(3);
     clear(input_lat, lat_long_disp);
     my_location.latitude = input_lat.toFloat();
-    EEPROM::write(eeprom_lat_address, my_location.latitude);
+    EEPROM::write(EEPROM::addresses::lat, my_location.latitude);
     lat_long_disp.reset_cursor();
     mode = EDIT_LONG;
 }
@@ -1406,7 +1414,7 @@ void exit_long()
     lat_long_disp.next_row(3);
     clear(input_long, lat_long_disp);
     my_location.longitude = input_long.toFloat();
-    EEPROM::write(eeprom_long_address, my_location.longitude);
+    EEPROM::write(EEPROM::addresses::longitude, my_location.longitude);
     lat_long_disp.reset_cursor();
     automatic_mode = false;
     GPS_status = true;
@@ -1965,7 +1973,7 @@ void clear_calibration_screen()
     clear(un_laser_angle, calibration_disp);
     calibration_disp.set_cursor(6, 0);
 
-    clear(String(EEPROM::read<float>(eeprom_laser_angle)), calibration_disp);
+    clear(String(EEPROM::read<float>(EEPROM::addresses::laser_angle)), calibration_disp);
 
     calibration_disp.set_cursor(8, 0);
     clear(un_azymuth, calibration_disp);
@@ -2024,7 +2032,7 @@ void position_calibration_display()
     print(un_laser_angle, calibration_disp);
     calibration_disp.set_cursor(6, 0);
 
-    EEPROM::dynamic_print_eeprom(calibration_disp, pointing_altitude, eeprom_laser_angle);
+    EEPROM::dynamic_print_eeprom(calibration_disp, pointing_altitude, EEPROM::addresses::laser_angle);
     calibration_disp.set_cursor(8, 0);
     print(un_azymuth, calibration_disp);
     calibration_disp.set_cursor(10, 0);
