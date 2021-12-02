@@ -99,9 +99,10 @@ motor motor1(ENCA, ENCB, IN1, IN2);
 motor motor2(ENCA2, ENCB2, IN1_2, IN2_2);
 
 IRrecv IR(IR_RECEIVE_PIN);
-
-Myposition my_location(50.03, 21.01); //location for tarnów
-Star star(0, 0, 101.52, -16.7424);    //Sirius ra and dec at start
+//location for tarnów 50.03 longitude 21.01 latitude
+Myposition my_location(50.03, 21.01);
+//Sirius ra and dec at start
+Star star(0, 0, 101.52, -16.7424);
 
 #pragma endregion constructors
 #pragma region eeprom
@@ -131,9 +132,6 @@ void laser(bool on_off)
 
 void read_compass()
 {
-
-    // if (compass_timer.timer(refresh::compass_refresh_rate))
-    // {
 
     float magnetic_x = 0;
     float magnetic_y = 0;
@@ -185,7 +183,6 @@ void read_compass()
     LOG("Heading (degrees): ");
     LOG(headingDegrees);
     my_location.azymuth = headingDegrees;
-    //  }
 }
 void RTC_calibration()
 {
@@ -506,9 +503,10 @@ void clearDisplay()
 }
 void updateDisplay()
 {
-    // if (displaytimer.timer(refresh::TFT_refresh_rate))
-    // {
     LOG("display updated");
+    /*   
+      ------------------------------------------------display variable name---------------------------------------------------------------------------
+    */
     mainscreen.reset_cursor();
     print(un_long, mainscreen);
     mainscreen.set_cursor(2, 0);
@@ -527,34 +525,62 @@ void updateDisplay()
     print(un_day, mainscreen);
     mainscreen.next_row();
     print(un_time_utc, mainscreen);
+    /*   
+      ------------------------------------------------end of display variable name---------------------------------------------------------------------------
+    */
+    /*   
+      ------------------------------------------------display if star was found or not visible or not ---------------------------------------------------------------------------
+    */
     mainscreen.set_cursor(31, 23);
     if (mode == DISPLAY_RESULTS)
         print(un_star_found, mainscreen);
     mainscreen.reset_cursor();
-    //other method
+    /*   
+      ------------------------------------------------ end of display if star was found or not visible or not ---------------------------------------------------------------------------
+    */
+    /*   
+      ------------------------------------------------print accelerometer information cursor set on column 31 row 0 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.next_column(31);
     print(un_laser_angle, mainscreen);
+    //go to column 49 row 0
     mainscreen.next_column(18);
-    /*     laser_angle_buff.disp = String(pointing_altitude);
-    dynamic_print(mainscreen, laser_angle_buff); */
     EEPROM::dynamic_print_eeprom(mainscreen, pointing_altitude, EEPROM::addresses::laser_angle);
-
+    /*   
+      ------------------------------------------------end of print accelerometer information  -------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    /*   
+      ------------------------------------------------display  magnetometer information cursor set on column 31, row 2 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.reset_cursor();
     mainscreen.next_row();
     mainscreen.next_column(31);
     print(un_azymuth, mainscreen);
     mainscreen.next_column(18);
     az_buff.disp = String(my_location.azymuth);
-    dynamic_print(mainscreen, az_buff);
 
+    dynamic_print(mainscreen, az_buff);
+    /*   
+      ------------------------------------------------end of display  magnetometer -------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    //cursor set to 0,0
     mainscreen.reset_cursor();
+    /*   
+      ------------------------------------------------display stars right ascension on row 4 and column 31 and its value on row 4 column 49 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.next_row(4);
     mainscreen.next_column(31);
     print(un_right_ascension, mainscreen);
     mainscreen.next_column(18);
     ra_buff.disp = (String)star.right_ascension;
     dynamic_print(mainscreen, ra_buff);
+    /*   
+      ------------------------------------------------ end of display stars right ascension  -------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
 
+    /*   
+      ------------------------------------------------display stars declination row 6 column 31 and its value on row 6 column 49 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.reset_cursor();
     mainscreen.next_row(6);
     mainscreen.next_column(31);
@@ -562,8 +588,13 @@ void updateDisplay()
     mainscreen.next_column(18);
     dec_buff.disp = (String)star.declination;
     dynamic_print(mainscreen, dec_buff);
-
+    /*   
+      ------------------------------------------------end of display stars declination row 6 column 31 and its value on row 6 column 49 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.reset_cursor();
+    /*   
+      ------------------------------------------------display motors data row 29 column 0 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.next_row(29);
     print(un_motor1, mainscreen); // row 29 column 0
     mainscreen.next_row();        //row 31
@@ -579,7 +610,13 @@ void updateDisplay()
     mainscreen.next_column(10);   //row 35 column 10
     motor2_ang_buff.disp = (String)(motor2.get_position() / constants::motor2_gear_ratio);
     dynamic_print(mainscreen, motor2_ang_buff); //row 35 column 10
+                                                /*   
+      ------------------------------------------------end of display motors data  -------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.reset_cursor();                  //row 0 column 0
+                                                /*   
+      ------------------------------------------------display if star is visible or not row 8 column 31-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.next_row(8);
     mainscreen.next_column(31);
     print(un_star_visibility, mainscreen);
@@ -592,8 +629,14 @@ void updateDisplay()
         visibility_buffer.disp = un_no_satelites;
 
     dynamic_print(mainscreen, visibility_buffer);
+    /*   
+      ------------------------------------------------ end of display if star is visible or not row 8 column 31-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.reset_cursor();
-
+    /*   
+      ------------------------------------------------display GPS data row 0 column 15-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    // if gps location is valid then display location if else display no gps info
     gps.location.isValid() ? _long_buff.disp = String(my_location.longitude) : _long_buff.disp = un_no_gps;
     // results
     mainscreen.set_cursor(0, 15);
@@ -601,33 +644,88 @@ void updateDisplay()
     mainscreen.next_row();
     gps.location.isValid() ? _lat_buff.disp = String(my_location.latitude) : _lat_buff.disp = un_no_gps;
     dynamic_print(mainscreen, _lat_buff);
+    /*   
+      ------------------------------------------------end of display GPS data -------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    /*   
+      ------------------------------------------------display seconds value on column 15 row 4-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.next_row();
     /*   _sec_buff.disp = String(int(SEKUNDA));
     dynamic_print(mainscreen, _sec_buff); */
     EEPROM::dynamic_print_eeprom(mainscreen, (int)SEKUNDA, EEPROM::addresses::second);
+    /*   
+      ------------------------------------------------end of display seconds value on column 15 row 4-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    /*   
+      ------------------------------------------------display star.azymuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.next_row();
     GPS_status ? _star_az_buff.disp = String(star.azymuth) : _star_az_buff.disp = "...";
     dynamic_print(mainscreen, _star_az_buff);
+    /*   
+      ------------------------------------------------end of display star.azymuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    /*   
+      ------------------------------------------------display star.altitude value on column 15 row 8-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.next_row();
     GPS_status ? _star_alt_buff.disp = String(star.altitude) : _star_alt_buff.disp = "...";
     dynamic_print(mainscreen, _star_alt_buff);
+    /*   
+      ------------------------------------------------end of display star.altitude value on column 15 row 8-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    /*   
+      ------------------------------------------------display year value on column 15 row 10-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.next_row();
 
     print(String(t.year), mainscreen);
+    /*   
+      ------------------------------------------------end of display year value on column 15 row 10-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    /*   
+      ------------------------------------------------display month value on column 15 row 12-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.next_row();
     print(String(t.mon), mainscreen);
+    /*   
+      ------------------------------------------------end of display month value on column 15 row 12-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    /*   
+      ------------------------------------------------display day value on column 15 row 14-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.next_row();
     print(String(t.date), mainscreen);
+    /*   
+      ------------------------------------------------end of display day value on column 15 row 14-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    /*   
+      ------------------------------------------------display time_utc value on column 15 row 16-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.next_row();
     /*     _time_buff.disp = (String)TIME;
     dynamic_print(mainscreen, _time_buff); */
     EEPROM::dynamic_print_eeprom(mainscreen, TIME, EEPROM::addresses::time_utc);
-    // add time display
+
+    /*   
+      ------------------------------------------------end of display time_utc value on column 15 row 16-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    /*   
+      ------------------------------------------------display local time name on column 0 row 18-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    // save previous cursor column
     int previous_column = mainscreen.column; //
     mainscreen.next_row();
     mainscreen.column = 0;
 
     print(un_local_time, mainscreen);
+    /*   
+      ------------------------------------------------end of display local time name on column 0 row 18-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    /*   
+      ------------------------------------------------display local time value on column 20 row 18-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.column = previous_column;
     mainscreen.next_column(5);
 
@@ -637,13 +735,21 @@ void updateDisplay()
 
     _local_time_buff.disp = String(disps);
     dynamic_print(mainscreen, _local_time_buff);
-    //gps time
+    /*   
+      ------------------------------------------------end of display local time value on column 20 row 18-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
+    /*   
+      ------------------------------------------------display if ready to calibrate data on column 0 row 20-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     mainscreen.next_row();
     mainscreen.column = 0;
     gps.time.isValid() ? _calibrate_buff.disp = un_can_calibrate : _calibrate_buff.disp = un_cant_calibrate;
     dynamic_print(mainscreen, _calibrate_buff);
+    /*   
+      ------------------------------------------------end of display if ready to calibrate data on column 0 row 20-------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     //
-    //
+    // set cursor to 0.0
     mainscreen.reset_cursor();
 
     //}
@@ -900,7 +1006,7 @@ uint8_t decodeIRfun()
     if (IR.decode())
     {
 
-        for (auto command : pilot_commands) //(int i = 0; i < sizeof(pilot_commands); i++)
+        for (auto command : pilot_commands)
         {
             if (IR.decodedIRData.command == command)
             {

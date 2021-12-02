@@ -1,5 +1,11 @@
 #include "StarTrackV1.h"
-//all rights reserved by Natan Lisowski
+/*
+All rights reserved by Natan Lisowski
+GIT: @natnqweb 
+Email: natanlisowski@gmail.com 
+
+
+*/
 
 void setup()
 {

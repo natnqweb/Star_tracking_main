@@ -140,9 +140,10 @@ motor motor1(ENCA, ENCB, IN1, IN2);
 motor motor2(ENCA2, ENCB2, IN1_2, IN2_2);
 
 IRrecv IR(IR_RECEIVE_PIN);
-
-Myposition my_location(50.03, 21.01); //location for tarnów
-Star star(0, 0, 101.52, -16.7424); //Sirius ra and dec at start
+//location for tarnów 50.03 longitude 21.01 latitude
+Myposition my_location(50.03, 21.01);
+//Sirius ra and dec at start
+Star star(0, 0, 101.52, -16.7424);
 
 #pragma endregion constructors
 #pragma region eeprom
@@ -173,9 +174,6 @@ void laser(bool on_off)
 void read_compass()
 {
 
-    // if (compass_timer.timer(refresh::compass_refresh_rate))
-    // {
-
     float magnetic_x = 0;
     float magnetic_y = 0;
     for (int i = 0; i < constants::number_of_measurements; i++)
@@ -201,9 +199,9 @@ void read_compass()
     // Convert radians to degrees for readability.
 
     degs headingDegrees = heading * 180 / 
-# 162 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 160 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                          3.14159265358979323846 /* pi */
-# 162 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 160 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                              ;
 
     if (headingDegrees >= 1 && headingDegrees < 240)
@@ -230,7 +228,6 @@ void read_compass()
     ;
     ;
     my_location.azymuth = headingDegrees;
-    //  }
 }
 void RTC_calibration()
 {
@@ -551,9 +548,13 @@ void clearDisplay()
 }
 void updateDisplay()
 {
-    // if (displaytimer.timer(refresh::TFT_refresh_rate))
-    // {
     ;
+    /*   
+
+      ------------------------------------------------display variable name---------------------------------------------------------------------------
+
+    */
+# 510 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.reset_cursor();
     print("dlug.", mainscreen);
     mainscreen.set_cursor(2, 0);
@@ -572,36 +573,91 @@ void updateDisplay()
     print("dzien", mainscreen);
     mainscreen.next_row();
     print("czas UTC", mainscreen);
+    /*   
+
+      ------------------------------------------------end of display variable name---------------------------------------------------------------------------
+
+    */
+# 531 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------display if star was found or not visible or not ---------------------------------------------------------------------------
+
+    */
+# 534 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.set_cursor(31, 23);
     if (mode == DISPLAY_RESULTS)
         print("znaleziono gwiazde", mainscreen);
     mainscreen.reset_cursor();
-    //other method
+    /*   
+
+      ------------------------------------------------ end of display if star was found or not visible or not ---------------------------------------------------------------------------
+
+    */
+# 541 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------print accelerometer information cursor set on column 31 row 0 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 544 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_column(31);
     print("kat_lasera", mainscreen);
+    //go to column 49 row 0
     mainscreen.next_column(18);
-    /*     laser_angle_buff.disp = String(pointing_altitude);
-
-    dynamic_print(mainscreen, laser_angle_buff); */
-# 540 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     EEPROM::dynamic_print_eeprom(mainscreen, pointing_altitude, EEPROM::addresses::laser_angle);
+    /*   
 
+      ------------------------------------------------end of print accelerometer information  -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 552 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------display  magnetometer information cursor set on column 31, row 2 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 555 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.reset_cursor();
     mainscreen.next_row();
     mainscreen.next_column(31);
     print("azymut" /*short from universal azymuth*/, mainscreen);
     mainscreen.next_column(18);
     az_buff.disp = String(my_location.azymuth);
-    dynamic_print(mainscreen, az_buff);
 
+    dynamic_print(mainscreen, az_buff);
+    /*   
+
+      ------------------------------------------------end of display  magnetometer -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 566 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    //cursor set to 0,0
     mainscreen.reset_cursor();
+    /*   
+
+      ------------------------------------------------display stars right ascension on row 4 and column 31 and its value on row 4 column 49 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 571 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row(4);
     mainscreen.next_column(31);
     print("rektascensja", mainscreen);
     mainscreen.next_column(18);
     ra_buff.disp = (String)star.right_ascension;
     dynamic_print(mainscreen, ra_buff);
+    /*   
 
+      ------------------------------------------------ end of display stars right ascension  -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 581 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------display stars declination row 6 column 31 and its value on row 6 column 49 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 584 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.reset_cursor();
     mainscreen.next_row(6);
     mainscreen.next_column(31);
@@ -609,8 +665,19 @@ void updateDisplay()
     mainscreen.next_column(18);
     dec_buff.disp = (String)star.declination;
     dynamic_print(mainscreen, dec_buff);
+    /*   
 
+      ------------------------------------------------end of display stars declination row 6 column 31 and its value on row 6 column 49 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 594 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.reset_cursor();
+    /*   
+
+      ------------------------------------------------display motors data row 29 column 0 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 598 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row(29);
     print("silnik 1", mainscreen); // row 29 column 0
     mainscreen.next_row(); //row 31
@@ -626,7 +693,19 @@ void updateDisplay()
     mainscreen.next_column(10); //row 35 column 10
     motor2_ang_buff.disp = (String)(motor2.get_position() / constants::motor2_gear_ratio);
     dynamic_print(mainscreen, motor2_ang_buff); //row 35 column 10
+                                                /*   
+
+      ------------------------------------------------end of display motors data  -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 616 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.reset_cursor(); //row 0 column 0
+                                                /*   
+
+      ------------------------------------------------display if star is visible or not row 8 column 31-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 620 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row(8);
     mainscreen.next_column(31);
     print("widocznosc gwiazdy:", mainscreen);
@@ -639,8 +718,20 @@ void updateDisplay()
         visibility_buffer.disp = "brak satelit";
 
     dynamic_print(mainscreen, visibility_buffer);
-    mainscreen.reset_cursor();
+    /*   
 
+      ------------------------------------------------ end of display if star is visible or not row 8 column 31-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 635 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    mainscreen.reset_cursor();
+    /*   
+
+      ------------------------------------------------display GPS data row 0 column 15-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 639 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    // if gps location is valid then display location if else display no gps info
     gps.location.isValid() ? _long_buff.disp = String(my_location.longitude) : _long_buff.disp = "brak gps";
     // results
     mainscreen.set_cursor(0, 15);
@@ -648,37 +739,146 @@ void updateDisplay()
     mainscreen.next_row();
     gps.location.isValid() ? _lat_buff.disp = String(my_location.latitude) : _lat_buff.disp = "brak gps";
     dynamic_print(mainscreen, _lat_buff);
+    /*   
+
+      ------------------------------------------------end of display GPS data -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 650 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------display seconds value on column 15 row 4-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 653 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     /*   _sec_buff.disp = String(int(SEKUNDA));
 
     dynamic_print(mainscreen, _sec_buff); */
-# 607 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 656 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     EEPROM::dynamic_print_eeprom(mainscreen, (int)SEKUNDA, EEPROM::addresses::second);
+    /*   
+
+      ------------------------------------------------end of display seconds value on column 15 row 4-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 660 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------display star.azymuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 663 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     GPS_status ? _star_az_buff.disp = String(star.azymuth) : _star_az_buff.disp = "...";
     dynamic_print(mainscreen, _star_az_buff);
+    /*   
+
+      ------------------------------------------------end of display star.azymuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 669 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------display star.altitude value on column 15 row 8-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 672 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     GPS_status ? _star_alt_buff.disp = String(star.altitude) : _star_alt_buff.disp = "...";
     dynamic_print(mainscreen, _star_alt_buff);
+    /*   
+
+      ------------------------------------------------end of display star.altitude value on column 15 row 8-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 678 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------display year value on column 15 row 10-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 681 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
 
     print(String(t.year), mainscreen);
+    /*   
+
+      ------------------------------------------------end of display year value on column 15 row 10-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 687 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------display month value on column 15 row 12-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 690 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     print(String(t.mon), mainscreen);
+    /*   
+
+      ------------------------------------------------end of display month value on column 15 row 12-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 695 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------display day value on column 15 row 14-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 698 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     print(String(t.date), mainscreen);
+    /*   
+
+      ------------------------------------------------end of display day value on column 15 row 14-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 703 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------display time_utc value on column 15 row 16-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 706 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     /*     _time_buff.disp = (String)TIME;
 
     dynamic_print(mainscreen, _time_buff); */
-# 624 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 709 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     EEPROM::dynamic_print_eeprom(mainscreen, TIME, EEPROM::addresses::time_utc);
-    // add time display
+
+    /*   
+
+      ------------------------------------------------end of display time_utc value on column 15 row 16-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 714 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------display local time name on column 0 row 18-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 717 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    // save previous cursor column
     int previous_column = mainscreen.column; //
     mainscreen.next_row();
     mainscreen.column = 0;
 
     print("czas lokalny", mainscreen);
+    /*   
+
+      ------------------------------------------------end of display local time name on column 0 row 18-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 726 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------display local time value on column 20 row 18-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 729 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.column = previous_column;
     mainscreen.next_column(5);
 
@@ -688,13 +888,30 @@ void updateDisplay()
 
     _local_time_buff.disp = String(disps);
     dynamic_print(mainscreen, _local_time_buff);
-    //gps time
+    /*   
+
+      ------------------------------------------------end of display local time value on column 20 row 18-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 741 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    /*   
+
+      ------------------------------------------------display if ready to calibrate data on column 0 row 20-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 744 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     mainscreen.column = 0;
     gps.time.isValid() ? _calibrate_buff.disp = "{1}" : _calibrate_buff.disp = "{0}";
     dynamic_print(mainscreen, _calibrate_buff);
+    /*   
+
+      ------------------------------------------------end of display if ready to calibrate data on column 0 row 20-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    */
+# 751 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     //
-    //
+    // set cursor to 0.0
     mainscreen.reset_cursor();
 
     //}
@@ -951,7 +1168,7 @@ uint8_t decodeIRfun()
     if (IR.decode())
     {
 
-        for (auto command : pilot_commands) //(int i = 0; i < sizeof(pilot_commands); i++)
+        for (auto command : pilot_commands)
         {
             if (IR.decodedIRData.command == command)
             {
@@ -1189,7 +1406,7 @@ void dynamic_print_eeprom_float(displayconfig &cnfg, float val, unsigned int add
     }
 
 } */
-# 1111 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1217 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 template <class T>
 void EEPROM::dynamic_print_eeprom(displayconfig &cnfg, T val, unsigned int address)
 {
@@ -1826,7 +2043,7 @@ void remote_input_handler_str(void_func *exitprint, String &result, uint8_t *num
         break;
 
     } */
-# 1577 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1683 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 }
 void remote_input_handler_selector(void_func *exitprint, uint8_t *number, size_t size)
 {
@@ -2270,7 +2487,7 @@ void remote_input_handler_selector(void_func *exitprint, uint8_t *number, size_t
         break;
 
     } */
-# 1808 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1914 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 }
 #pragma endregion Remote_control_functions
 #pragma region Position_calibration
@@ -2431,12 +2648,24 @@ void decodeIR_remote()
     remote_input_handler_selector(exit_func, exit_commands, number_of_functions);
 }
 #pragma endregion Position_calibration
-# 2052 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 2158 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 #pragma endregion functions
 # 1 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\main.ino"
 
-//all rights reserved by Natan Lisowski
+/*
 
+All rights reserved by Natan Lisowski
+
+GIT: @natnqweb 
+
+Email: natanlisowski@gmail.com 
+
+
+
+
+
+*/
+# 10 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\main.ino"
 void setup()
 {
 

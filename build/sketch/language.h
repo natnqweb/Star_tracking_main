@@ -1,5 +1,6 @@
 #line 1 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\language.h"
 #pragma once
+
 #define pl "polish"
 //#define eng "english" //uncomment this line and comment line 2 to change language
 #pragma region polish
