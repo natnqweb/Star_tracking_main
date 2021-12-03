@@ -1,9 +1,11 @@
 
 #pragma once
 
-/* 
-@natnqweb
-*/
+/**
+ * @author @b Natan @b Lisowski @github: @b @natnqweb   @email: @c pythonboardsbeta@gmail.com
+ * @brief StarTracker header file it contains function prototypes as well as all includes and definitions
+ * @brief this file contains all function descriptions and details 
+ */
 #ifndef StarTrackV1_h
 #define StarTrackV1_h
 #pragma region includes
@@ -32,7 +34,9 @@
 #define EMPTYSTRING ""
 #define buffersize 30
 #pragma region macros_debg
-
+/**
+ * IF DEBUG IS SET TO TRUE IT TURNS ON ALL SERIAL.PRINTLNS AND FUNCTIONS SPECIFIC TO DEBUGING
+ */
 #define DEBUG false // enable or disable debug messages
 #ifndef DEBUG
 #define DEBUG false
@@ -106,29 +110,29 @@ enum pins : const uint8_t
 };
 enum modes : const uint8_t
 { // program modes
-    /* MODE : SETTINGS
+    /** MODE : SETTINGS
     this mode when selected takes user to edditing Right ascension and declination interface where user inputs
     star data
     */
     SETTINGS = 1,
-    /* MODE : MAIN
+    /** MODE : MAIN
     this mode when selected takes user to edditing Right ascension and declination interface where user inputs
     star data
     */
     MAIN = 0,
-    /* MODE : GETTING_STAR_LOCATION
+    /** MODE : GETTING_STAR_LOCATION
     this mode is responsible for performing all astronomical calculations 
     */
     GETTING_STAR_LOCATION = 2,
     TRACKING_MODE = 3,
-    /* MODE : INIT_PROCEDURE
-    this mode contains initialization procedure for startracker, 
-    it performs operations like:
-    -instruction display
-    -boot_procedure 
-    -go to offset_edit screen
-    -previous search information
-    -etc.
+    /** MODE : INIT_PROCEDURE
+    *this mode contains initialization procedure for startracker, 
+    *it performs operations like:
+    *-instruction display
+    *-boot_procedure 
+    *-go to offset_edit screen
+    *-previous search information
+    *-etc.
     */
     INIT_PROCEDURE = 4,
     OFFSET_EDIT = 5,
@@ -139,16 +143,16 @@ enum modes : const uint8_t
     EDIT_LONG = 10,
     MOVEMOTOR1 = 11,
     MOVEMOTOR2 = 12,
-    /* MODE : DISPLAY_RESULTS
-    after moving to motors to destination position display results mode is activated
+    /** MODE : DISPLAY_RESULTS
+    *after moving to motors to destination position display results mode is activated
     */
     DISPLAY_RESULTS = 13,
-    /* MODE : CALIBRATE_POSITION 
-    this is calibration procedure it is neccesary to calibrate your position at start
+    /** MODE : CALIBRATE_POSITION 
+    *this is calibration procedure it is neccesary to calibrate your position at start
     */
     CALIBRATE_POSITION = 14,
-    /* MODE : MANUAL_CALIBRATION 
-    mode displays information about manual calibration and let you chose magnetic declinatiojn offset
+    /** MODE : MANUAL_CALIBRATION 
+    *mode displays information about manual calibration and let you chose magnetic declinatiojn offset
     */
     MANUAL_CALIBRATION = 15
 
@@ -164,7 +168,7 @@ enum states : bool
 #pragma endregion enumerations
 #pragma region structures
 
-/* structure created so buffers can be easly erased and stored information for TFT display  */
+/** structure created so buffers can be easly erased and stored information for TFT display  */
 struct buffers
 {
     String buff;
@@ -198,19 +202,47 @@ struct displayconfig
     int column = 0;
     //default textsize is 2
     uint8_t textsize = 2;
-    /*  changes row to row directly under the current cursor postion 
-   only if its empty, if user provides data it moves cursor number of given rows*/
+    /**
+     
+     * @attention moves TFT display cursor
+     * @param how_many_rows_further-this parameter is responsible for number of rows to go if 
+     * @param pixels - this is parameter is responsible for information about how many pixel one char takes
+     * @brief Function inside struct displayconfig that is responisble for moving cursor vertically .if   this parameter is positive then it means that rows go down so from row 0 0 that is on top to row 2 than is under row 0 
+     * @date 03.12.2021
+    */
     void next_row(int how_many_rows_further = 2, uint8_t pixels = 8);
-    /* go to column one char away from current cursor position to right */
+    /**
+     
+     * @attention moves TFT display cursor
+     * @param how_many_columns-this parameter is responsible for number of columns to move
+     * @param pixels - this is parameter is responsible for information about how many pixel one char takes
+     * @brief Function inside struct displayconfig that is responisble for moving cursor vertically .if this parameter is positive then it means that columns move to right if negative columns move to left
+     * @date 03.12.2021
+    */
     void next_column(int how_many_columns = 1, uint8_t pixels = 8);
-    /* sets cursor to 0,0 */
+    /**
+     * @brief reset cursor
+     * @param no_parameters this function doesn't take any parameters
+     * @date 03.12.2021
+    */
     void reset_cursor();
-    /* set row and collumn to given location*/
+    /** Function set_cursor(int row, int column, uint8_t pixels = 8):
+     * its job is setting cursor to selected position on tft screen 
+     * works something like liquidcrystal library setCursor(x y) function
+     * 
+     * @param row - this parameter is responsible for setting cursor vertically
+     * @param column - this parameter is responsible for setting cursor horizontally
+     * 
+     * 
+    */
     void set_cursor(int row, int column, uint8_t pixels = 8);
 };
+
 #pragma endregion structures
 #pragma region namespaces
-/* most important offsets */
+/**
+ * @brief most important offsets
+ */
 namespace offsets
 {
     hrs timezone_offset = 1;        //UTC +2
@@ -370,22 +402,36 @@ void turn_on_off_calibration();
 void init_accel();
 //this function clears everything what's inside the updateDisplay function
 void clearDisplay();
-/* this function displays any string data on TFT display 
-default values:
-TFT_dispStr(String String_to_display, int cursor_column, int cursor_row, uint8_t textsize = 1);
+/** 
+ * @brief function displays string data on TFT display:
+* TFT_dispStr(String str, int column, int row, uint8_t textsize = 1);
+* @param strr - this is a string massange to clear from TFT display
+* @param column - column on tft its x vector
+* @param row - row on tft  translate to y vector
+* @param textsize 
+* @return nothing
 */
 void TFT_dispStr(String str, int column, int row, uint8_t textsize = 1);
-/* function used to clear previously displayed string
-default values:
-TFT_clear(String String_to_display, int cursor_column, int cursor_row, uint8_t textsize = 1);
+/** 
+ * @brief function used to clear previously displayed string default values:
+* TFT_clear(String String_to_display, int cursor_column, int cursor_row, uint8_t textsize = 1);
+* @param strr - this is a string massange to clear from TFT display
+* @param column - column on tft its x vector
+* @param row - row on tft  translate to y vector
+* @param textsize 
+* @return nothing
 */
 void TFT_clear(String strr, int column, int row, uint8_t textsize = 1);
 //main function that preforms astronomy calculations based on current time and location
 void check_gps_accel_compass();
-/*  function that makes user input from remote possible
-this function returns recognized command if command is not recognized it returns no_command
-no_command is defined as 0 
-*/
+/**
+ * @brief function that makes user input from remote possible
+*this function returns recognized command if command is not recognized it returns no_command
+*no_command is defined as 0 
+ * 
+ * @return decoded command type:uint8_t
+ * 
+ */
 uint8_t decodeIRfun();
 
 // when value changes refresh display clear previous displayed value and print new one
@@ -410,30 +456,63 @@ namespace EEPROM
         time_utc = 39
 
     };
+    /**
+     * @brief reads data to eeprom
+     * @param address address where variable lives inside eeprom
+     * @tparam T this is any type of data so you can provide anything float int string etc.
+     * @return any data type
+     */
     template <class T>
-    //returns data from eeprom it can be any type
     T read(unsigned int);
+    /**
+     * @brief writes data to eeprom
+     * 
+     * @tparam T this is any type of data so you can provide anything float int string etc.
+     * @param uint eeprom address of variable
+     */
     template <class T>
-    //writes any data type to eeprom
     void write(unsigned int, T);
+    /**
+     * @brief dynamic print function responsible for printing data on tft from eeprom
+     * 
+     * @tparam T this is any type of data so you can provide anything float int string etc.
+     * @param uint eeprom address of variable
+     * @param displayconfig this is displayconfig stuct it contains info about cursor location etc.
+     */
     template <class T>
-    //this function is using eeprom as buffer for printing non constant data
     void dynamic_print_eeprom(displayconfig &, T, unsigned int);
 };
-/* this function handles input data from IR remote,
-it is important to recive data in edit modes for example offsets and this function handles not only input strings but 
-also exit functions that should be feeded as [] with the given size
-example: 
-uint8_t exit_command[3]={one,two,three};// command decoded from ir reciever
-size_t number_of_commands=sizeof(exit_command);
-void_func exit_functions[3]={first_exit_function,second_exit_function,third_exit_function};
-remote_input_handler_str(exit_functions,input_string,exit_command,displayconfigbuffer,number_of_commands);
-under this circumstances first_exit_function will be performed wehn command one was decoded,
-or second_exit_function will be performed if command "two" was decoded and so on...
+/** 
+ * @brief this function handles input data from IR remote,
+ *it is important to recive data in edit modes for example offsets and this function handles not only input strings but 
+ *also exit functions that should be feeded as [] with the given size
+ *example: 
+ *uint8_t exit_command[3]={one,two,three};// command decoded from ir reciever
+ *size_t number_of_commands=sizeof(exit_command);
+ *void_func exit_functions[3]={first_exit_function,second_exit_function,third_exit_function};
+ *remote_input_handler_str(exit_functions,input_string,exit_command,displayconfigbuffer,number_of_commands);
+ *under this circumstances first_exit_function will be performed wehn command one was decoded,
+ *or second_exit_function will be performed if command "two" was decoded and so on...
+ * @param void_func* example of input : void_func exit_functions[3]={first_exit_function,second_exit_function,third_exit_function};
+ * @param String& - it takes existing string variable by refernce to insert to it a char from remote
+ * @param uint8_t* - example of potential input : uint8_t exit_command[3]={one,two,three};
+ * @param displayconfig& cnfg takes already declared screen configuration so it can clear displayed input data
+ * @param size_t numbert of commands example: size_t number_of_commands=sizeof(exit_command); its basically number of possible exit functions
+
 */
 void remote_input_handler_str(void_func *, String &, uint8_t *, displayconfig &, size_t);
+/**
+ * @brief this function handles exit functions and perfroms exit function when it is matching exit command
+ * @param void_func* example of input : void_func exit_functions[3]={first_exit_function,second_exit_function,third_exit_function};
+ * @param uint8_t* - example of potential input : uint8_t exit_command[3]={one,two,three};
+ * @param size_t numbert of commands example: size_t number_of_commands=sizeof(exit_command); its basically number of possible exit functions
+ */
 void remote_input_handler_selector(void_func *, uint8_t *, size_t);
-//command  decoder transforms decoded command to equivalent const char*
+/**
+ * @brief function translates decoded command into const char *
+ * 
+ * @return const char*  for example when decoded comand == 0xC (one) function returns "1"
+ */
 const char *command_decoder(uint8_t);
 bool all_motors_ready_to_move();
 bool reset_ready_to_move_markers();
