@@ -67,11 +67,25 @@ void displayconfig::set_cursor(int row, int column, uint8_t pixels = 8)
     this->row = (pixels * row);
     this->column = (pixels * column);
 }
-
-void buffers::clear_buffer()
+template <>
+void buffers<String>::clear_buffer()
 {
+
     buff = EMPTYSTRING;
 }
+template <>
+void buffers<float>::clear_buffer()
+{
+
+    buff = 0;
+}
+template <>
+void buffers<const char *>::clear_buffer()
+{
+
+    buff = EMPTYSTRING;
+}
+
 Myposition::Myposition(degs latitude, degs longitude, degs azymuth)
 {
     this->latitude = latitude;
@@ -578,7 +592,7 @@ void updateDisplay()
     mainscreen.next_column(31);
     print(un_right_ascension, mainscreen);
     mainscreen.next_column(18);
-    ra_buff.disp = (String)star.right_ascension;
+    ra_buff.disp = star.right_ascension;
     dynamic_print(mainscreen, ra_buff);
     /*   
       ------------------------------------------------ end of display stars right ascension  -------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -592,7 +606,7 @@ void updateDisplay()
     mainscreen.next_column(31);
     print(un_declination, mainscreen);
     mainscreen.next_column(18);
-    dec_buff.disp = (String)star.declination;
+    dec_buff.disp = star.declination;
     dynamic_print(mainscreen, dec_buff);
     /*   
       ------------------------------------------------end of display stars declination row 6 column 31 and its value on row 6 column 49 -------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -606,7 +620,7 @@ void updateDisplay()
     mainscreen.next_row();        //row 31
     print(un_degree, mainscreen); // row 31 column 0
     mainscreen.next_column(10);   // row 31 column 10
-    motor1_ang_buff.disp = (String)(motor1.get_position() / constants::motor1_gear_ratio);
+    motor1_ang_buff.disp = (motor1.get_position() / constants::motor1_gear_ratio);
     dynamic_print(mainscreen, motor1_ang_buff); // row 31 column 10
     mainscreen.reset_cursor();
     mainscreen.set_cursor(33, 0);
@@ -614,7 +628,7 @@ void updateDisplay()
     mainscreen.next_row();        // row 35 column 0
     print(un_degree, mainscreen); // row 35 column 0
     mainscreen.next_column(10);   //row 35 column 10
-    motor2_ang_buff.disp = (String)(motor2.get_position() / constants::motor2_gear_ratio);
+    motor2_ang_buff.disp = (motor2.get_position() / constants::motor2_gear_ratio);
     dynamic_print(mainscreen, motor2_ang_buff); //row 35 column 10
                                                 /*   
       ------------------------------------------------end of display motors data  -------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -773,11 +787,11 @@ void clear_all_buffers()
     motor2_ang_buff.clear_buffer();
     // _time_buff.clear_buffer();
     _lat_buff.clear_buffer();
-    _day_buff.clear_buffer();
+
     _long_buff.clear_buffer();
     _star_alt_buff.clear_buffer();
     _star_az_buff.clear_buffer();
-    _year_buff.clear_buffer();
+
     // _sec_buff.clear_buffer();
     _calibrate_buff.clear_buffer();
     // dodanaj wyświetlanie czasu
@@ -1199,14 +1213,22 @@ void print(T sentence, displayconfig &cnfg)
 {
     TFT_dispStr(sentence, cnfg.column, cnfg.row, cnfg.textsize);
 }
-void dynamic_print(displayconfig &cnfg, buffers &buffs)
+template <class T>
+void dynamic_print(displayconfig &cnfg, buffers<T> &buffs)
 {
-    if (!buffs.disp.equals(buffs.buff))
+    if (buffs.disp != buffs.buff)
     {
         clear(buffs.buff, cnfg);
         buffs.buff = buffs.disp;
         print(buffs.buff, cnfg);
     }
+
+    /*    if (!buffs.disp.equals(buffs.buff))
+    {
+        clear(buffs.buff, cnfg);
+        buffs.buff = buffs.disp;
+        print(buffs.buff, cnfg);
+    } */
 }
 /* void dynamic_print_eeprom_int(displayconfig &cnfg, int val, unsigned int address)
 {

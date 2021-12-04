@@ -169,11 +169,12 @@ enum states : bool
 #pragma region structures
 
 /** structure created so buffers can be easly erased and stored information for TFT display  */
-
+template <class T>
 struct buffers
 {
-    String buff;
-    String disp;
+    T buff;
+    T disp;
+
     void clear_buffer();
 };
 //struct to store location specific information
@@ -308,7 +309,10 @@ String input_RA, input_DEC, input_lat, input_long;
 float azymuth_target = 0, altitude_target = 0;
 // char printout1[30]; //uint buffer 240bits 30 bytes
 
-buffers ra_buff, dec_buff, az_buff, visibility_buffer, motor1_ang_buff, motor2_ang_buff, _long_buff, _lat_buff, _day_buff, _year_buff, _star_az_buff, _star_alt_buff, _local_time_buff, _calibrate_buff;
+buffers<float> ra_buff, dec_buff, motor1_ang_buff, motor2_ang_buff;
+
+buffers<String> visibility_buffer, _star_az_buff, _star_alt_buff, _long_buff, _lat_buff, _calibrate_buff, az_buff, _local_time_buff;
+
 //string buffer
 #pragma endregion buffers
 #pragma region booleans
@@ -438,7 +442,8 @@ void check_gps_accel_compass();
 uint8_t decodeIRfun();
 
 // when value changes refresh display clear previous displayed value and print new one
-void dynamic_print(displayconfig &, buffers &);
+template <class T>
+void dynamic_print(displayconfig &, buffers<T> &);
 template <class T>
 void print(T, displayconfig &); //this custom function for printing it takes dislayconfig as a parameter to control where the disp cursor is
 template <class T>
