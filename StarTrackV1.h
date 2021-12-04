@@ -169,6 +169,7 @@ enum states : bool
 #pragma region structures
 
 /** structure created so buffers can be easly erased and stored information for TFT display  */
+
 struct buffers
 {
     String buff;
@@ -305,7 +306,7 @@ float previous_azymuth, previous_altitude;
 String input_MAG_DEC;
 String input_RA, input_DEC, input_lat, input_long;
 float azymuth_target = 0, altitude_target = 0;
-char printout1[30]; //uint buffer 240bits 30 bytes
+// char printout1[30]; //uint buffer 240bits 30 bytes
 
 buffers ra_buff, dec_buff, az_buff, visibility_buffer, motor1_ang_buff, motor2_ang_buff, _long_buff, _lat_buff, _day_buff, _year_buff, _star_az_buff, _star_alt_buff, _local_time_buff, _calibrate_buff;
 //string buffer
@@ -403,25 +404,27 @@ void init_accel();
 //this function clears everything what's inside the updateDisplay function
 void clearDisplay();
 /** 
- * @brief function displays string data on TFT display:
-* TFT_dispStr(String str, int column, int row, uint8_t textsize = 1);
-* @param strr - this is a string massange to clear from TFT display
+* @brief function displays string data on TFT display:
+* @tparam T it can be any type
+* @param message - this is a string massange to clear from TFT display
 * @param column - column on tft its x vector
 * @param row - row on tft  translate to y vector
 * @param textsize 
 * @return nothing
 */
-void TFT_dispStr(String str, int column, int row, uint8_t textsize = 1);
+template <class T>
+void TFT_dispStr(T message, int column, int row, uint8_t textsize = 1);
 /** 
  * @brief function used to clear previously displayed string default values:
-* TFT_clear(String String_to_display, int cursor_column, int cursor_row, uint8_t textsize = 1);
-* @param strr - this is a string massange to clear from TFT display
+*  @tparam T it can be any type
+* @param message - this is a string massange to clear from TFT display
 * @param column - column on tft its x vector
 * @param row - row on tft  translate to y vector
 * @param textsize 
 * @return nothing
 */
-void TFT_clear(String strr, int column, int row, uint8_t textsize = 1);
+template <class T>
+void TFT_clear(T message, int column, int row, uint8_t textsize = 1);
 //main function that preforms astronomy calculations based on current time and location
 void check_gps_accel_compass();
 /**
@@ -436,8 +439,10 @@ uint8_t decodeIRfun();
 
 // when value changes refresh display clear previous displayed value and print new one
 void dynamic_print(displayconfig &, buffers &);
-void print(String, displayconfig &); //this custom function for printing it takes dislayconfig as a parameter to control where the disp cursor is
-void clear(String, displayconfig &);
+template <class T>
+void print(T, displayconfig &); //this custom function for printing it takes dislayconfig as a parameter to control where the disp cursor is
+template <class T>
+void clear(T, displayconfig &);
 void compass_init();
 void new_starting_position();
 void safety_motor_position_control();

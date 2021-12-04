@@ -1,12 +1,15 @@
 #include "StarTrackV1.h"
-/*
+/**
 All rights reserved by Natan Lisowski
 GIT: @natnqweb 
 Email: natanlisowski@gmail.com 
 
 
 */
-
+/**
+ * @author @b Natan @b Lisowski @github: @b @natnqweb   @email: @c pythonboardsbeta@gmail.com
+ * 
+ * */
 void setup()
 {
 

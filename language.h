@@ -1,4 +1,8 @@
 #pragma once
+/**
+ * @author @b Natan @b Lisowski @github: @b @natnqweb   @email: @c pythonboardsbeta@gmail.com
+ * 
+ * */
 #define pl "polish"
 //#define eng "english" //uncomment this line and comment line 2 to change language
 #pragma region polish
