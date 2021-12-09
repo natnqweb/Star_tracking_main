@@ -114,9 +114,9 @@ Adafruit_MPU6050 mpu;
 
 Adafruit_HX8357 *TFTscreen = new Adafruit_HX8357(cs, dc, rst);
 SkyMap *startracker = new SkyMap;
-motor motor1(ENCA, ENCB, IN1, IN2);
+motor motor1 = motor(ENCA, ENCB, IN1, IN2);
 
-motor motor2(ENCA2, ENCB2, IN1_2, IN2_2);
+motor motor2 = motor(ENCA2, ENCB2, IN1_2, IN2_2);
 
 IRrecv IR(IR_RECEIVE_PIN);
 //location for tarnów 50.03 longitude 21.01 latitude
@@ -357,7 +357,10 @@ void calculate_starposition()
         ready_to_move = true;
         if (all_motors_ready_to_move())
         {
-
+            motor1.set_target(azymuth_target);
+            motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
+            motor2.set_target(altitude_target);
+            motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
             mode = MOVEMOTOR1;
             laser(on);
         }
@@ -404,6 +407,7 @@ void updateAccel()
 #pragma region mainscreen
 void clearDisplay()
 {
+    displayconfig mainscreen;
 
     mainscreen.reset_cursor();
     clear(un_long, mainscreen);
@@ -527,6 +531,7 @@ void updateDisplay()
     /*   
       ------------------------------------------------display variable name---------------------------------------------------------------------------
     */
+    displayconfig mainscreen;
     mainscreen.reset_cursor();
     print(un_long, mainscreen);
     mainscreen.set_cursor(2, 0);
@@ -846,6 +851,7 @@ void movemotors()
 #pragma region init_procedure
 void clear_exit_disp()
 {
+    displayconfig boot_init_disp;
     boot_init_disp.reset_cursor();
     clear(un_instruction, boot_init_disp);
     boot_init_disp.next_row();
@@ -935,6 +941,7 @@ void boot_init_exit_func4()
 }
 void boot_init_procedure()
 {
+    displayconfig boot_init_disp;
     boot_init_disp.reset_cursor();
 
     confirm = false;
@@ -1066,7 +1073,7 @@ uint8_t decodeIRfun()
 #pragma region editing_ra_dec
 void entering_dec_exit_handle()
 {
-
+    displayconfig boot_disp;
     TFT_clear(un_enter_star_dec, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.row += 30;
     TFT_clear(input_DEC, boot_disp.column, boot_disp.row, boot_disp.textsize);
@@ -1080,7 +1087,7 @@ void entering_dec_exit_handle()
 }
 void entering_ra_exit_handle()
 {
-
+    displayconfig boot_disp;
     TFT_clear(un_enter_star_ra, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.row += 30;
     TFT_clear(input_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
@@ -1094,6 +1101,7 @@ void entering_ra_exit_handle()
 }
 void edit_Ra_Dec() // todo : make interface for entering Ra and Dec after booting *done
 {
+    displayconfig boot_disp;
     boot_disp.reset_cursor();
 
     TFT_dispStr(un_setting_1_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
@@ -1119,6 +1127,7 @@ void edit_Ra_Dec() // todo : make interface for entering Ra and Dec after bootin
 }
 void edit_ra()
 {
+    displayconfig boot_disp;
     TFT_dispStr(un_enter_star_ra, boot_disp.column, boot_disp.row, boot_disp.textsize);
 
     boot_disp.row += 30;
@@ -1132,6 +1141,7 @@ void edit_ra()
 }
 void edit_dec()
 {
+    displayconfig boot_disp;
     TFT_dispStr(un_enter_star_dec, boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.row += 30;
     deleteallinput = boot_disp;
@@ -1315,8 +1325,6 @@ void safety_motor_position_control() // turn off motor if laser is to far up or 
 void Az_engine() //need to be in some standalone function cuz it is not attached to pin interuppt
 {
     az_motor_target_reached = false;
-    motor1.set_target(azymuth_target);
-    motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
     motor1.start();
 
     if (motor1.target_reached())
@@ -1329,8 +1337,6 @@ void Az_engine() //need to be in some standalone function cuz it is not attached
 void Alt_engine()
 {
     alt_motor_target_reached = false;
-    motor2.set_target(altitude_target);
-    motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
     motor2.start();
 
     if (motor2.target_reached())
@@ -1359,6 +1365,7 @@ void input_offsets()
     {
 
     case offset_editing::MAGNETIC:
+        displayconfig edit_magnetic_var;
         edit_magnetic_var.reset_cursor();
 
         print(un_set_mag_declination, edit_magnetic_var);
@@ -1389,6 +1396,7 @@ void input_offsets()
 }
 void offset_disp_exit_procedure()
 {
+    displayconfig edit_magnetic_var;
     offset_edit_mode = offset_editing::TIME;
     offsets::magnetic_variation = input_MAG_DEC.toFloat();
     offsets::magnetic_declination = input_MAG_DEC.toFloat();
@@ -1405,6 +1413,7 @@ void offset_disp_exit_procedure()
 // function is called when coresponding command is decoded and then mode exits and performs this task
 void exit_lat()
 {
+    displayconfig lat_long_disp;
     lat_long_disp.reset_cursor();
     clear(un_enter_latitude, lat_long_disp);
     lat_long_disp.next_row(3);
@@ -1417,6 +1426,7 @@ void exit_lat()
 // function is called when coresponding command is decoded and then mode exits and performs this task
 void exit_long()
 {
+    displayconfig lat_long_disp;
     lat_long_disp.reset_cursor();
     clear(un_enter_longitude, lat_long_disp);
     lat_long_disp.next_row(3);
@@ -1432,7 +1442,7 @@ void exit_long()
 /* edit_latitude screen in here you input your actuall latitude when gps is not available */
 void edit_lat()
 {
-
+    displayconfig lat_long_disp;
     print(un_enter_latitude, lat_long_disp);
     lat_long_disp.next_row(3);
     deleteallinput = lat_long_disp;
@@ -1446,7 +1456,7 @@ void edit_lat()
 /* edit_latitude screen in here you input your actuall longitude when gps is not available */
 void edit_long()
 {
-
+    displayconfig lat_long_disp;
     print(un_enter_longitude, lat_long_disp);
     lat_long_disp.next_row(3);
     deleteallinput = lat_long_disp;

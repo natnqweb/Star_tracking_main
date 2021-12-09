@@ -342,12 +342,9 @@ sensor_t compass_hmcl;
 #pragma endregion sensors
 #pragma region displayconfig
 //displayconfiguration structure it contains information about cursor position
-displayconfig mainscreen;
-displayconfig boot_init_disp;
-displayconfig boot_disp;
-displayconfig edit_magnetic_var;
+
 displayconfig offsets_screen;
-displayconfig lat_long_disp;
+
 displayconfig deleteallinput;
 displayconfig star_visibility_disp;
 displayconfig calibration_disp;
