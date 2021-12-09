@@ -3,63 +3,63 @@
  * @author @b Natan @b Lisowski @github: @b @natnqweb   @email: @c pythonboardsbeta@gmail.com
  * 
  * */
-#define pl "polish"
+#define pl F("polish")
 //#define eng "english" //uncomment this line and comment line 2 to change language
 #pragma region polish
 #ifdef pl
-#define un_azymuth "azymut" //short from universal azymuth
-#define un_altitude "wysokosc"
-#define un_declination "deklinacja"
-#define un_right_ascension "rektascensja"
-#define un_year "rok"
-#define un_month "miesiac"
-#define un_time_utc "czas UTC"
-#define un_day "dzien"
-#define un_calibration "kalibracja"
-#define un_laser_angle "kat_lasera"
-#define un_second "sekunda"
-#define un_dev_AZ "Azym.urz."
-#define un_eq "EQ-"
-#define un_lat "szer."
-#define un_long "dlug."
-#define un_set_mag_declination "Ustw.mag.deklinacje"
-#define un_magnetic_declination "magnetyczna deklinacja"
-#define un_your_location "twoja lok."
-#define un_submit_continue "potwierdz/kontynuuj"
-#define un_star_location "wsp. gwiazdy"
-#define un_instruction "instrukcja:"
-#define un_setting_1_RA "1- RA"
-#define un_setting_2_DEC "2- DEC"
-#define un_setting_play "play- zakoncz"
-#define un_enter_star_ra "wprowadz rektascensje gwiazdy"
-#define un_enter_star_dec "wprowadz deklinacje gwiazdy"
-#define un_enter_latitude "wprowadz szerokosc geograficzna"
-#define un_enter_longitude "wprowadz dlugosc geograficzna"
-#define un_enter_accel_offset "wprowadz offset akcelerometru"
-#define un_enter_az_offset "wprowadz offset azymutu"
-#define un_star_visibility "widocznosc gwiazdy:"
-#define un_visible "widoczna"
-#define un_unvisible "nie widoczna"
-#define un_motor1 "silnik 1"
-#define un_motor2 "silnik 2"
-#define un_degree "kat"
-#define un_device_position_calibration "kalibracja pozycji urzadzenia"
-#define un_pointing_at_north "gotowe, wskazujesz polnoc"
-#define un_not_pointing_at_north "nie wskazujesz polnocy"
-#define un_start_tracking_continously "zacznij sledzic gwiazde"
-#define un_star_found "znaleziono gwiazde"
-#define un_no_gps "brak gps"
-#define un_no_satelites "brak satelit"
-#define un_local_time "czas lokalny"
-#define un_time_from_gps "czas gps"
-#define un_can_calibrate "{1}"
-#define un_cant_calibrate "{0}"
-#define un_recent_location "ostatnia lokalizacja"
-#define un_recently_tracked_star "ostatnia gwiazda"
-#define un_set_position_manually "1- ustaw urzadzenie recznie"
-#define un_if_you_want_to_calibrate_play "aby kalibrowac wcisnij play"
-#define un_exit_press "aby wyjsc wcisnij 0"
-#define un_use_compass_to_find_north "uzyj busoli i wskaz polnoc"
+#define un_azymuth F("azymut") //short from universal azymuth
+#define un_altitude F("wysokosc")
+#define un_declination F("deklinacja")
+#define un_right_ascension F("rektascensja")
+#define un_year F("rok")
+#define un_month F("miesiac")
+#define un_time_utc F("czas UTC")
+#define un_day F("dzien")
+#define un_calibration F("kalibracja")
+#define un_laser_angle F("kat_lasera")
+#define un_second F("sekunda")
+#define un_dev_AZ F("Azym.urz.")
+#define un_eq F("EQ-")
+#define un_lat F("szer.")
+#define un_long F("dlug.")
+#define un_set_mag_declination F("Ustw.mag.deklinacje")
+#define un_magnetic_declination F("magnetyczna deklinacja")
+#define un_your_location F("twoja lok.")
+#define un_submit_continue F("potwierdz/kontynuuj")
+#define un_star_location F("wsp. gwiazdy")
+#define un_instruction F("instrukcja:")
+#define un_setting_1_RA F("1- RA")
+#define un_setting_2_DEC F("2- DEC")
+#define un_setting_play F("play- zakoncz")
+#define un_enter_star_ra F("wprowadz rektascensje gwiazdy")
+#define un_enter_star_dec F("wprowadz deklinacje gwiazdy")
+#define un_enter_latitude F("wprowadz szerokosc geograficzna")
+#define un_enter_longitude F("wprowadz dlugosc geograficzna")
+#define un_enter_accel_offset F("wprowadz offset akcelerometru")
+#define un_enter_az_offset F("wprowadz offset azymutu")
+#define un_star_visibility F("widocznosc gwiazdy:")
+#define un_visible F("widoczna")
+#define un_unvisible F("nie widoczna")
+#define un_motor1 F("silnik 1")
+#define un_motor2 F("silnik 2")
+#define un_degree F("kat")
+#define un_device_position_calibration F("kalibracja pozycji urzadzenia")
+#define un_pointing_at_north F("gotowe, wskazujesz polnoc")
+#define un_not_pointing_at_north F("nie wskazujesz polnocy")
+#define un_start_tracking_continously F("zacznij sledzic gwiazde")
+#define un_star_found F("znaleziono gwiazde")
+#define un_no_gps F("brak gps")
+#define un_no_satelites F("brak satelit")
+#define un_local_time F("czas lokalny")
+#define un_time_from_gps F("czas gps")
+#define un_can_calibrate F("{1}")
+#define un_cant_calibrate F("{0}")
+#define un_recent_location F("ostatnia lokalizacja")
+#define un_recently_tracked_star F("ostatnia gwiazda")
+#define un_set_position_manually F("1- ustaw urzadzenie recznie")
+#define un_if_you_want_to_calibrate_play F("aby kalibrowac wcisnij play")
+#define un_exit_press F("aby wyjsc wcisnij 0")
+#define un_use_compass_to_find_north F("uzyj busoli i wskaz polnoc")
 #endif
 #pragma endregion polish
 #pragma region english

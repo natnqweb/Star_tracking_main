@@ -114,8 +114,8 @@ Simpletimer display_callback_timer;
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(1132); //added custon id  1132
 Adafruit_MPU6050 mpu;
 
-Adafruit_HX8357 TFTscreen = Adafruit_HX8357(cs, dc, rst);
-SkyMap startracker;
+Adafruit_HX8357 *TFTscreen = new Adafruit_HX8357(cs, dc, rst);
+SkyMap *startracker = new SkyMap;
 motor motor1(ENCA, ENCB, IN1, IN2);
 
 motor motor2(ENCA2, ENCB2, IN1_2, IN2_2);
@@ -226,27 +226,25 @@ template <class T>void clear(T sentence, displayconfig &cnfg);
 template <class T>void print(T sentence, displayconfig &cnfg);
 #line 1215 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 template <class T>void dynamic_print(displayconfig &cnfg, buffers<T> &buffs);
-#line 1280 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void clear_all();
-#line 1287 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1283 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 bool all_motors_ready_to_move();
-#line 1299 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1295 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 bool reset_ready_to_move_markers();
-#line 1309 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1305 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void safety_motor_position_control();
-#line 1319 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1315 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void Az_engine();
-#line 1333 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1329 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void Alt_engine();
-#line 1359 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1355 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void input_offsets();
-#line 1394 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1390 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_disp_exit_procedure();
-#line 1409 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1406 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void exit_lat();
-#line 1420 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1418 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void exit_long();
-#line 1434 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1433 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_lat();
 #line 1447 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_long();
@@ -310,7 +308,7 @@ void read_compass()
     //magnetic_x += compass_event.magnetic.x;
     // magnetic_y += compass_event.magnetic.y;
     float heading = atan2(magnetic_y, magnetic_x);
-    heading += startracker.deg2rad(offsets::magnetic_variation);
+    heading += startracker->deg2rad(offsets::magnetic_variation);
 
     if (heading < 0)
         heading += 2 * PI;
@@ -406,9 +404,9 @@ void initialize_()
     IR.begin(IR_RECEIVE_PIN, false);
     Serial3.begin(constants::GPSBaud);
 
-    TFTscreen.begin();
-    TFTscreen.fillScreen(HX8357_BLACK);
-    TFTscreen.setRotation(3);
+    TFTscreen->begin();
+    TFTscreen->fillScreen(HX8357_BLACK);
+    TFTscreen->setRotation(3);
 
     IR.decodeNEC();
 
@@ -472,26 +470,26 @@ void calculate_starposition()
     MIN = (float)t.min;
     HOUR = (float)t.hour;
     SEKUNDA = (float)t.sec;
-    TIME = startracker.Hh_mm_ss2UTC(HOUR,
-                                    MIN,
-                                    SEKUNDA,
-                                    offsets::timezone_offset);
+    TIME = startracker->Hh_mm_ss2UTC(HOUR,
+                                     MIN,
+                                     SEKUNDA,
+                                     offsets::timezone_offset);
     // star.right_ascension = 101.52;
     // star.declination = -16.7424;
     if (GPS_status)
     {
 
-        startracker.update(my_location.latitude,
-                           my_location.longitude,
-                           star.declination,
-                           star.right_ascension,
-                           year,
-                           month,
-                           day,
-                           TIME);
+        startracker->update(my_location.latitude,
+                            my_location.longitude,
+                            star.declination,
+                            star.right_ascension,
+                            year,
+                            month,
+                            day,
+                            TIME);
 
-        star.azymuth = startracker.get_star_Azymuth();
-        star.altitude = startracker.get_star_Altitude();
+        star.azymuth = startracker->get_star_Azymuth();
+        star.altitude = startracker->get_star_Altitude();
         azymuth_target = star.azymuth * constants::motor1_gear_ratio;
         altitude_target = star.altitude * constants::motor2_gear_ratio;
 
@@ -786,7 +784,7 @@ void updateDisplay()
     mainscreen.next_row();
     if (GPS_status)
 
-        startracker.IsVisible() ? visibility_buffer.disp = un_visible : visibility_buffer.disp = un_unvisible;
+        startracker->IsVisible() ? visibility_buffer.disp = un_visible : visibility_buffer.disp = un_unvisible;
 
     else
         visibility_buffer.disp = un_no_satelites;
@@ -956,10 +954,10 @@ template <class T>
 void TFT_dispStr(T message, int column, int row, uint8_t textsize)
 {
 
-    TFTscreen.setTextSize(textsize);
-    TFTscreen.setTextColor(HX8357_WHITE);
-    TFTscreen.setCursor(column, row);
-    TFTscreen.print(message);
+    TFTscreen->setTextSize(textsize);
+    TFTscreen->setTextColor(HX8357_WHITE);
+    TFTscreen->setCursor(column, row);
+    TFTscreen->print(message);
 }
 /** 
  * @brief function used to clear previously displayed string default values:
@@ -974,10 +972,10 @@ template <class T>
 void TFT_clear(T message, int column, int row, uint8_t textsize)
 {
 
-    TFTscreen.setTextSize(textsize);
-    TFTscreen.setTextColor(HX8357_BLACK);
-    TFTscreen.setCursor(column, row);
-    TFTscreen.print(message);
+    TFTscreen->setTextSize(textsize);
+    TFTscreen->setTextColor(HX8357_BLACK);
+    TFTscreen->setCursor(column, row);
+    TFTscreen->print(message);
 }
 void movemotors()
 {
@@ -1186,7 +1184,7 @@ uint8_t decodeIRfun()
     if (IR.decode())
     {
 
-        for (auto command : pilot_commands)
+        for (auto &command : pilot_commands)
         {
             if (IR.decodedIRData.command == command)
             {
@@ -1420,17 +1418,13 @@ void EEPROM::dynamic_print_eeprom(displayconfig &cnfg, T val, unsigned int addre
         print((val), cnfg);
     }
 }
-void clear_all()
-{
-    TFTscreen.fillScreen(HX8357_BLACK);
-}
 
 #pragma endregion display_function
 #pragma region motor_control_functions
 bool all_motors_ready_to_move()
 {
 
-    if ((az_motor_target_reached == false) && (alt_motor_target_reached == false) && (startracker.IsVisible() == true) && (tracking_finished == false))
+    if ((az_motor_target_reached == false) && (alt_motor_target_reached == false) && (startracker->IsVisible() == true) && (tracking_finished == false))
     {
         return true;
     }
@@ -1549,6 +1543,7 @@ void offset_disp_exit_procedure()
     automatic_calibration ? mode = GETTING_STAR_LOCATION : mode = MANUAL_CALIBRATION;
 }
 #pragma region edit_lat_long_functions
+// function is called when coresponding command is decoded and then mode exits and performs this task
 void exit_lat()
 {
     lat_long_disp.reset_cursor();
@@ -1560,6 +1555,7 @@ void exit_lat()
     lat_long_disp.reset_cursor();
     mode = EDIT_LONG;
 }
+// function is called when coresponding command is decoded and then mode exits and performs this task
 void exit_long()
 {
     lat_long_disp.reset_cursor();
@@ -1574,6 +1570,7 @@ void exit_long()
     clear_all_buffers();
     mode = INIT_PROCEDURE;
 }
+/* edit_latitude screen in here you input your actuall latitude when gps is not available */
 void edit_lat()
 {
 
@@ -1587,6 +1584,7 @@ void edit_lat()
     size_t number_of_functions = sizeof(exit_commands);
     remote_input_handler_str(exit_functions, input_lat, exit_commands, deleteallinput, number_of_functions);
 }
+/* edit_latitude screen in here you input your actuall longitude when gps is not available */
 void edit_long()
 {
 

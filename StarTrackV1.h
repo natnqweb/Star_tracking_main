@@ -43,8 +43,8 @@
 #endif
 #if DEBUG == true
 
-#define LOG(x) Serial.println(x)          //send debug message to serial port
-#define start_debuging(y) Serial.begin(y) //enable serial port with y baud
+#define LOG(x) Serial.println(F(x))          //send debug message to serial port
+#define start_debuging(y) Serial.begin(F(y)) //enable serial port with y baud
 #else
 #define LOG(x)
 #define start_debuging(y)
@@ -355,7 +355,7 @@ displayconfig calibration_disp;
 #pragma endregion variables
 #pragma region custom_typedefs
 typedef void (*void_func)(void);
-typedef void (*exit_print)(String, displayconfig &);
+
 #pragma endregion custom_typedefs
 #pragma region function_prototypes
 // its just an empty function that do nothing
@@ -363,7 +363,7 @@ void empty_function()
 {
 }
 #pragma region main_functions
-// get hmc5883l readings and save them
+// calibrate device set its heading to north in order to corectly configure starting position
 void manual_calibration_screen();
 /* read data from compass take measurment and then calculate mean of it 
 after that this function create another type of data called smooth reading for not precise but smooth data about current heading */
