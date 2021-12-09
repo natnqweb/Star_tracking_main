@@ -131,15 +131,15 @@ void buffers<const char *>::clear_buffer()
     buff = "";
 }
 
-Myposition::Myposition(degs latitude, degs longitude, degs azymuth)
+Myposition::Myposition(degs latitude, degs longitude, degs azimuth)
 {
     this->latitude = latitude;
     this->longitude = longitude;
-    this->azymuth = azymuth;
+    this->azimuth = azimuth;
 }
-Star::Star(degs azymuth, degs altitude, degs right_ascension, degs declination)
+Star::Star(degs azimuth, degs altitude, degs right_ascension, degs declination)
 {
-    this->azymuth = azymuth;
+    this->azimuth = azimuth;
     this->altitude = altitude;
     this->right_ascension = right_ascension;
     this->declination = declination;
@@ -251,7 +251,7 @@ void read_compass()
 
     ;
     ;
-    my_location.azymuth = headingDegrees;
+    my_location.azimuth = headingDegrees;
 }
 void RTC_calibration()
 {
@@ -396,17 +396,17 @@ void calculate_starposition()
                             day,
                             TIME);
 
-        star.azymuth = startracker->get_star_Azymuth();
+        star.azimuth = startracker->get_star_Azimuth();
         star.altitude = startracker->get_star_Altitude();
-        azymuth_target = star.azymuth * constants::motor1_gear_ratio;
+        azimuth_target = star.azimuth * constants::motor1_gear_ratio;
         altitude_target = star.altitude * constants::motor2_gear_ratio;
 
-        // float diff1 = abs(star.azymuth - (motor1.get_position() / constants::motor1_gear_ratio));
+        // float diff1 = abs(star.azimuth - (motor1.get_position() / constants::motor1_gear_ratio));
         // float diff2 = abs(star.altitude - (motor2.get_position() / constants::motor1_gear_ratio)); //angle diffrence betwen motor and star
         ready_to_move = true;
         if (all_motors_ready_to_move())
         {
-            motor1.set_target(azymuth_target);
+            motor1.set_target(azimuth_target);
             motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
             motor2.set_target(altitude_target);
             motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
@@ -497,7 +497,7 @@ void clearDisplay()
 # 419 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
 # 419 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-         )) /*short from universal azymuth*/, mainscreen);
+         )) /*short from universal azimuth*/, mainscreen);
     mainscreen.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
 # 421 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
@@ -587,7 +587,7 @@ void clearDisplay()
 # 445 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
 # 445 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-         )) /*short from universal azymuth*/, mainscreen);
+         )) /*short from universal azimuth*/, mainscreen);
     mainscreen.next_column(18);
     clear(az_buff.disp, mainscreen);
 
@@ -783,7 +783,7 @@ void updateDisplay()
 # 542 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
 # 542 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-         )) /*short from universal azymuth*/, mainscreen);
+         )) /*short from universal azimuth*/, mainscreen);
     mainscreen.next_row();
     print((reinterpret_cast<const __FlashStringHelper *>(
 # 544 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
@@ -906,9 +906,9 @@ void updateDisplay()
 # 583 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
 # 583 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-         )) /*short from universal azymuth*/, mainscreen);
+         )) /*short from universal azimuth*/, mainscreen);
     mainscreen.next_column(18);
-    az_buff.disp = String(my_location.azymuth);
+    az_buff.disp = String(my_location.azimuth);
 
     dynamic_print(mainscreen, az_buff);
     /*   
@@ -1146,16 +1146,16 @@ void updateDisplay()
 # 685 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
-      ------------------------------------------------display star.azymuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
+      ------------------------------------------------display star.azimuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
 # 688 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
-    GPS_status ? _star_az_buff.disp = String(star.azymuth) : _star_az_buff.disp = "...";
+    GPS_status ? _star_az_buff.disp = String(star.azimuth) : _star_az_buff.disp = "...";
     dynamic_print(mainscreen, _star_az_buff);
     /*   
 
-      ------------------------------------------------end of display star.azymuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
+      ------------------------------------------------end of display star.azimuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
 # 694 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
@@ -1403,7 +1403,7 @@ void TFT_clear(T message, int column, int row, uint8_t textsize)
 }
 void movemotors()
 {
-    motor1.set_target(azymuth_target);
+    motor1.set_target(azimuth_target);
     motor2.set_target(altitude_target);
     motor1.start();
     motor2.start();
@@ -1734,7 +1734,7 @@ void new_starting_position()
     //todo : define this constatns for motors they may differ significantly // done
     if (automatic_calibration)
     {
-        starting_position_az = my_location.azymuth * constants::motor1_gear_ratio;
+        starting_position_az = my_location.azimuth * constants::motor1_gear_ratio;
         starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
         motor1.set_position(starting_position_az);
         motor2.set_position(starting_position_alt);
@@ -3377,7 +3377,7 @@ void clear_calibration_screen()
 # 1999 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
 # 1999 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-         )) /*short from universal azymuth*/, calibration_disp);
+         )) /*short from universal azimuth*/, calibration_disp);
     calibration_disp.set_cursor(10, 0);
     clear(az_buff.disp, calibration_disp);
     az_buff.clear_buffer();
@@ -3390,7 +3390,7 @@ void clear_calibration_screen()
 # 2004 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
 # 2004 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-         )) /*short from universal azymuth*/, calibration_disp);
+         )) /*short from universal azimuth*/, calibration_disp);
     calibration_disp.set_cursor(14, 10);
 
     clear(ra_buff.disp, calibration_disp);
@@ -3475,7 +3475,7 @@ void position_calibration_display()
 # 2057 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
 # 2057 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-         )) /*short from universal azymuth*/, calibration_disp);
+         )) /*short from universal azimuth*/, calibration_disp);
     calibration_disp.set_cursor(10, 0);
     if (check_if_pointing_at_north())
     {
@@ -3511,7 +3511,7 @@ void position_calibration_display()
 # 2069 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
 # 2069 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-         )) /*short from universal azymuth*/, calibration_disp);
+         )) /*short from universal azimuth*/, calibration_disp);
     calibration_disp.set_cursor(14, 10);
     ra_buff.disp = (smoothHeadingDegrees);
     dynamic_print(calibration_disp, ra_buff);
@@ -3671,7 +3671,7 @@ void loop()
     {
         decodeIR_remote();
     }
-    switch (*&mode)
+    switch (mode)
     {
     case CALIBRATE_POSITION:
         startup = false;

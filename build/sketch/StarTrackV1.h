@@ -183,19 +183,19 @@ struct Myposition
 {
     float latitude;
     float longitude;
-    float azymuth;
+    float azimuth;
     /* constructor */
-    Myposition(degs latitude = 0, degs longitude = 0, degs azymuth = 0);
+    Myposition(degs latitude = 0, degs longitude = 0, degs azimuth = 0);
 };
 //struct to store Star specific information
 struct Star
 {
-    degs azymuth;
+    degs azimuth;
     degs altitude;
     degs right_ascension; //must be in degrees
     degs declination;     //must be in degrees
     /* constructor */
-    Star(degs azymuth = 0, degs altitude = 0, degs right_ascension = 0, degs declination = 0); //must be in degrees
+    Star(degs azimuth = 0, degs altitude = 0, degs right_ascension = 0, degs declination = 0); //must be in degrees
 };
 /* display configuration structure its job is to store information about cursor in specific screen 
 it contains data about cursor and textsize, it makes navigation on screen easier*/
@@ -304,10 +304,10 @@ Simpletimer logtimer;
 #endif
 #pragma region buffers
 //buffers
-float previous_azymuth, previous_altitude;
+float previous_azimuth, previous_altitude;
 String input_MAG_DEC;
 String input_RA, input_DEC, input_lat, input_long;
-float azymuth_target = 0, altitude_target = 0;
+float azimuth_target = 0, altitude_target = 0;
 // char printout1[30]; //uint buffer 240bits 30 bytes
 
 buffers<float> ra_buff, dec_buff, motor1_ang_buff, motor2_ang_buff;
@@ -382,7 +382,7 @@ void updateDisplay();
 void laser(bool on_off);
 // main functions that handles calculations and decide whenever startracking is posible
 void calculate_starposition();
-// function take target to follow and getting it by reference . for azymuth motor
+// function take target to follow and getting it by reference . for azimuth motor
 void Az_engine();
 // function take target to follow and getting it by reference . for altitude motor
 void Alt_engine();

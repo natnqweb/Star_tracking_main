@@ -8,7 +8,7 @@
 //#define eng "english" //uncomment this line and comment line 2 to change language
 #pragma region polish
 #ifdef pl
-#define un_azymuth F("azymut") //short from universal azymuth
+#define un_azimuth F("azymut") //short from universal azimuth
 #define un_altitude F("wysokosc")
 #define un_declination F("deklinacja")
 #define un_right_ascension F("rektascensja")
@@ -65,59 +65,59 @@
 #pragma endregion polish
 #pragma region english
 #ifdef eng
-#define un_azymuth "azymuth" //short from universal azymuth
-#define un_altitude "altitude"
-#define un_declination "declination"
-#define un_right_ascension "right asc."
-#define un_year "year"
-#define un_time_utc "UTC"
-#define un_day "day"
-#define un_calibration "calibration"
-#define un_laser_angle "laser angle"
-#define un_second "second"
-#define un_dev_AZ "dev Az."
-#define un_eq "EQ-"
-#define un_month "month"
-#define un_lat "lat."
-#define un_long "long."
-#define un_set_mag_declination "set mag. declination"
-#define un_your_location "location"
-#define un_submit_continue "confirm/continue"
-#define un_star_location "star.loc."
-#define un_instruction "instruction:"
-#define un_setting_1_RA "1- RA"
-#define un_setting_2_DEC "2- DEC"
-#define un_setting_play "play- finish"
-#define un_enter_star_ra "enter Star RA"
-#define un_enter_star_dec "enter Star Dec"
-#define un_enter_latitude "enter your latitude"
-#define un_enter_longitude "enter your longitude"
-#define un_enter_accel_offset "enter accel offset"
-#define un_enter_az_offset "enter azymuth offset"
-#define un_magnetic_declination "magnetic declination"
-#define un_star_visibility "star visibility"
-#define un_visible "visible"
-#define un_unvisible "not visible"
-#define un_motor1 "motor 1"
-#define un_motor2 "motor 2"
-#define un_degree "degree"
-#define un_device_position_calibration "device position calibration"
-#define un_pointing_at_north "ready, poining at north"
-#define un_not_pointing_at_north "not pointing at north"
-#define un_start_tracking_continously "start star tracking"
-#define un_star_found "star found"
-#define un_no_gps "no gps"
-#define un_no_satelites "no satelites"
-#define un_local_time "local time"
-#define un_time_from_gps "gps time"
-#define un_can_calibrate "{1}"
-#define un_cant_calibrate "{0}"
-#define un_recent_location "recent location"
-#define un_recently_tracked_star "recent star"
-#define un_set_position_manually "1- set device position manually"
-#define un_use_compass_to_find_north "use compass to find north"
-#define un_if_you_want_to_calibrate_play "to continue press play"
-#define un_exit_press "to exit plress 0"
+#define un_azimuth F("azimuth") //short from universal azimuth
+#define un_altitude F("altitude")
+#define un_declination F("declination")
+#define un_right_ascension F("right asc.")
+#define un_year F("year")
+#define un_time_utc F("UTC")
+#define un_day F("day")
+#define un_calibration F("calibration")
+#define un_laser_angle F("laser angle")
+#define un_second F("second")
+#define un_dev_AZ F("dev Az.")
+#define un_eq F("EQ-")
+#define un_month F("month")
+#define un_lat F("lat.")
+#define un_long F("long.")
+#define un_set_mag_declination F("set mag. declination")
+#define un_your_location F("location")
+#define un_submit_continue F("confirm/continue")
+#define un_star_location F("star.loc.")
+#define un_instruction F("instruction:")
+#define un_setting_1_RA F("1- RA")
+#define un_setting_2_DEC F("2- DEC")
+#define un_setting_play F("play- finish")
+#define un_enter_star_ra F("enter Star RA")
+#define un_enter_star_dec F("enter Star Dec")
+#define un_enter_latitude F("enter your latitude")
+#define un_enter_longitude F("enter your longitude")
+#define un_enter_accel_offset F("enter accel offset")
+#define un_enter_az_offset F("enter azimuth offset")
+#define un_magnetic_declination F("magnetic declination")
+#define un_star_visibility F("star visibility")
+#define un_visible F("visible")
+#define un_unvisible F("not visible")
+#define un_motor1 F("motor 1")
+#define un_motor2 F("motor 2")
+#define un_degree F("degree")
+#define un_device_position_calibration F("device position calibration")
+#define un_pointing_at_north F("ready, poining at north")
+#define un_not_pointing_at_north F("not pointing at north")
+#define un_start_tracking_continously F("start star tracking")
+#define un_star_found F("star found")
+#define un_no_gps F("no gps")
+#define un_no_satelites F("no satelites")
+#define un_local_time F("local time")
+#define un_time_from_gps F("gps time")
+#define un_can_calibrate F("{1}")
+#define un_cant_calibrate F("{0}"))
+#define un_recent_location F("recent location")
+#define un_recently_tracked_star F("recent star")
+#define un_set_position_manually F("1- set device position manually")
+#define un_use_compass_to_find_north F("use compass to find north")
+#define un_if_you_want_to_calibrate_play F("to continue press play")
+#define un_exit_press F("to exit plress 0")
 #endif
 
 #pragma endregion english

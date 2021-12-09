@@ -88,15 +88,15 @@ void buffers<const char *>::clear_buffer()
     buff = EMPTYSTRING;
 }
 
-Myposition::Myposition(degs latitude, degs longitude, degs azymuth)
+Myposition::Myposition(degs latitude, degs longitude, degs azimuth)
 {
     this->latitude = latitude;
     this->longitude = longitude;
-    this->azymuth = azymuth;
+    this->azimuth = azimuth;
 }
-Star::Star(degs azymuth, degs altitude, degs right_ascension, degs declination)
+Star::Star(degs azimuth, degs altitude, degs right_ascension, degs declination)
 {
-    this->azymuth = azymuth;
+    this->azimuth = azimuth;
     this->altitude = altitude;
     this->right_ascension = right_ascension;
     this->declination = declination;
@@ -343,7 +343,7 @@ void read_compass()
 
     LOG("Heading (degrees): ");
     LOG(headingDegrees);
-    my_location.azymuth = headingDegrees;
+    my_location.azimuth = headingDegrees;
 }
 void RTC_calibration()
 {
@@ -488,17 +488,17 @@ void calculate_starposition()
                             day,
                             TIME);
 
-        star.azymuth = startracker->get_star_Azymuth();
+        star.azimuth = startracker->get_star_Azimuth();
         star.altitude = startracker->get_star_Altitude();
-        azymuth_target = star.azymuth * constants::motor1_gear_ratio;
+        azimuth_target = star.azimuth * constants::motor1_gear_ratio;
         altitude_target = star.altitude * constants::motor2_gear_ratio;
 
-        // float diff1 = abs(star.azymuth - (motor1.get_position() / constants::motor1_gear_ratio));
+        // float diff1 = abs(star.azimuth - (motor1.get_position() / constants::motor1_gear_ratio));
         // float diff2 = abs(star.altitude - (motor2.get_position() / constants::motor1_gear_ratio)); //angle diffrence betwen motor and star
         ready_to_move = true;
         if (all_motors_ready_to_move())
         {
-            motor1.set_target(azymuth_target);
+            motor1.set_target(azimuth_target);
             motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
             motor2.set_target(altitude_target);
             motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
@@ -557,7 +557,7 @@ void clearDisplay()
     mainscreen.next_row();
     clear(un_second, mainscreen);
     mainscreen.next_row();
-    clear(un_azymuth, mainscreen);
+    clear(un_azimuth, mainscreen);
     mainscreen.next_row();
     clear(un_altitude, mainscreen);
     mainscreen.next_row();
@@ -583,7 +583,7 @@ void clearDisplay()
     mainscreen.reset_cursor();
     mainscreen.next_row();
     mainscreen.next_column(31);
-    clear(un_azymuth, mainscreen);
+    clear(un_azimuth, mainscreen);
     mainscreen.next_column(18);
     clear(az_buff.disp, mainscreen);
 
@@ -680,7 +680,7 @@ void updateDisplay()
     mainscreen.next_row();
     print(un_second, mainscreen);
     mainscreen.next_row();
-    print(un_azymuth, mainscreen);
+    print(un_azimuth, mainscreen);
     mainscreen.next_row();
     print(un_altitude, mainscreen);
     mainscreen.next_row();
@@ -721,9 +721,9 @@ void updateDisplay()
     mainscreen.reset_cursor();
     mainscreen.next_row();
     mainscreen.next_column(31);
-    print(un_azymuth, mainscreen);
+    print(un_azimuth, mainscreen);
     mainscreen.next_column(18);
-    az_buff.disp = String(my_location.azymuth);
+    az_buff.disp = String(my_location.azimuth);
 
     dynamic_print(mainscreen, az_buff);
     /*   
@@ -824,13 +824,13 @@ void updateDisplay()
       ------------------------------------------------end of display seconds value on column 15 row 4-------------------------------------------------------------------------------------------------------------------------------------------------------------
     */
     /*   
-      ------------------------------------------------display star.azymuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
+      ------------------------------------------------display star.azimuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
     */
     mainscreen.next_row();
-    GPS_status ? _star_az_buff.disp = String(star.azymuth) : _star_az_buff.disp = "...";
+    GPS_status ? _star_az_buff.disp = String(star.azimuth) : _star_az_buff.disp = "...";
     dynamic_print(mainscreen, _star_az_buff);
     /*   
-      ------------------------------------------------end of display star.azymuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
+      ------------------------------------------------end of display star.azimuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
     */
     /*   
       ------------------------------------------------display star.altitude value on column 15 row 8-------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -984,7 +984,7 @@ void TFT_clear(T message, int column, int row, uint8_t textsize)
 }
 void movemotors()
 {
-    motor1.set_target(azymuth_target);
+    motor1.set_target(azimuth_target);
     motor2.set_target(altitude_target);
     motor1.start();
     motor2.start();
@@ -1171,7 +1171,7 @@ void new_starting_position()
     //todo : define this constatns for motors they may differ significantly // done
     if (automatic_calibration)
     {
-        starting_position_az = my_location.azymuth * constants::motor1_gear_ratio;
+        starting_position_az = my_location.azimuth * constants::motor1_gear_ratio;
         starting_position_alt = pointing_altitude * constants::motor2_gear_ratio;
         motor1.set_position(starting_position_az);
         motor2.set_position(starting_position_alt);
@@ -2137,12 +2137,12 @@ void clear_calibration_screen()
     clear((EEPROM::read<float>(EEPROM::addresses::laser_angle)), calibration_disp);
 
     calibration_disp.set_cursor(8, 0);
-    clear(un_azymuth, calibration_disp);
+    clear(un_azimuth, calibration_disp);
     calibration_disp.set_cursor(10, 0);
     clear(az_buff.disp, calibration_disp);
     az_buff.clear_buffer();
     calibration_disp.set_cursor(14, 0);
-    clear(un_azymuth, calibration_disp);
+    clear(un_azimuth, calibration_disp);
     calibration_disp.set_cursor(14, 10);
 
     clear(ra_buff.disp, calibration_disp);
@@ -2195,7 +2195,7 @@ void position_calibration_display()
 
     EEPROM::dynamic_print_eeprom(calibration_disp, pointing_altitude, EEPROM::addresses::laser_angle);
     calibration_disp.set_cursor(8, 0);
-    print(un_azymuth, calibration_disp);
+    print(un_azimuth, calibration_disp);
     calibration_disp.set_cursor(10, 0);
     if (check_if_pointing_at_north())
     {
@@ -2207,7 +2207,7 @@ void position_calibration_display()
     }
     dynamic_print(calibration_disp, az_buff);
     calibration_disp.set_cursor(14, 0);
-    print(un_azymuth, calibration_disp);
+    print(un_azimuth, calibration_disp);
     calibration_disp.set_cursor(14, 10);
     ra_buff.disp = (smoothHeadingDegrees);
     dynamic_print(calibration_disp, ra_buff);
@@ -2383,7 +2383,7 @@ void loop()
     {
         decodeIR_remote();
     }
-    switch (*&mode)
+    switch (mode)
     {
     case CALIBRATE_POSITION:
         startup = false;
