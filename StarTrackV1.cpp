@@ -3,48 +3,6 @@
  * @author @b Natan @b Lisowski @github: @b @natnqweb   @email: @c pythonboardsbeta@gmail.com
  * 
  * */
-/* todo ::
-        1)try to move motors to correct position
-        allign with north
-        and allign with measured star position
-        first of all i need to estimate how many encoder pulses it takes to move 360
-        2)get user input from ir remote  //currently working on
-        - user need to input few things for example // done partialy
-        -right Ascension of star and declination of star // done
-        - second thing is offsets for example magnetic declination ( only if we keep using magnetometer) currently im not convinced it will work
-        3) add function to handle ir remote input 1 function that will replace all switch cases -- cuurrently working on ---- done! 
-            done  18/10/2021
-
-        current work progress: currently we have user input specificly we get some offsets and user now can input star Ra and Declination values from
-        he cab take them from skymap cli app that is avaliable on github natnqweb 
-        work on day : 22.10.2021 :
-            working on adding debug modes for motors to estimate number of pulses for 360 degrees turn and then calculating gear ratio to adjust
-            "allign " with accel and magnetometer
-            deleted sirius pointer and replaced it with struct star that was unnecessary pointer
-            finally detected parameters for both motors and inserted them into code 
-            also added manual latitude and longitude input by user
-            23.10.2021 :
-            added language support english and polish currently are supported
-            added exit from displayfunction and clear screen and empty buffer to structure to free existing buffer
-            26.10.2021 :
-             addded notification about star visibility to  displayupdate mainsreen
-             also updated skymap with new function called IsVisible() that retruns ture if start is visible at positive value altitude
-             27.10.2021:
-             added starting angle diplay on mainscreen display for both motors
-             added functions to allign with star and move both motors to correct position
-             31.10.2021:
-             throwing out some unused functions and making further improvements may add something to display
-             currently working on adding actual tracking feature where device is continusly tracking star
-             05.11.2021:
-             breakthrough ! added  functions and now everything is working properly
-            12.11.2021:
-            added local time display
-
-
-        
-        
- */
-
 #pragma region constructor_definitions
 void displayconfig::next_row(int how_many_rows_further, uint8_t pixels)
 {
