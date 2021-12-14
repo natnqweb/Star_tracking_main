@@ -29,7 +29,6 @@ c:\Users\Admin\Documents\Arduino\Star_tracking_main\build\sketch\StarTrackV1.cpp
  C:\Users\Admin\Documents\Arduino\libraries\Adafruit_BusIO/Adafruit_SPIDevice.h \
  C:\Users\Admin\Documents\Arduino\libraries\Adafruit_Unified_Sensor/Adafruit_Sensor.h \
  C:\Users\Admin\Documents\Arduino\libraries\TinyGPSPlus\src/TinyGPS++.h \
- C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/IRremote.h \
  C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/IRremote.hpp \
  C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/IRremoteInt.h \
  C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/IRProtocol.h \
@@ -38,6 +37,22 @@ c:\Users\Admin\Documents\Arduino\Star_tracking_main\build\sketch\StarTrackV1.cpp
  C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/private/IRFeedbackLEDDefs.h \
  C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/IRReceive.hpp \
  C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/IRSend.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_BoseWave.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_Denon.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_DistanceProtocol.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_JVC.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_Kaseikyo.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/LongUnion.h \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_Lego.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_LG.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_MagiQuest.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_NEC.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_RC5_RC6.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_Samsung.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_Sony.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_Whynter.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_Pronto.hpp \
+ C:\Users\Admin\Documents\Arduino\libraries\IRremote\src/ir_Dish.hpp \
  C:\Users\Admin\Documents\Arduino\libraries\Adafruit_HMC5883_Unified/Adafruit_HMC5883_U.h \
  C:\Users\Admin\Documents\Arduino\libraries\SkyMap\src/SkyMap.h \
  C:\Users\Admin\Documents\Arduino\libraries\Mapf\src/Mapf.h \

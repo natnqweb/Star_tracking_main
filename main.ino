@@ -1,15 +1,11 @@
 #include "StarTrackV1.h"
-/**
-All rights reserved by Natan Lisowski
-GIT: @natnqweb 
-Email: natanlisowski@gmail.com 
-
-
-*/
+#pragma region author_note
 /**
  * @author @b Natan @b Lisowski @github: @b @natnqweb   @email: @c pythonboardsbeta@gmail.com
  * 
  * */
+#pragma endregion author_note
+
 void setup()
 {
 
@@ -22,10 +18,6 @@ void setup()
 void loop()
 {
 
-    if (mode == GETTING_STAR_LOCATION || mode == DISPLAY_RESULTS)
-    {
-        decodeIR_remote();
-    }
     switch (mode)
     {
     case CALIBRATE_POSITION:
@@ -66,6 +58,7 @@ void loop()
         display_callback_timer.run(refresh::TFT_refresh_rate);
 
         startup = false;
+        decodeIR_remote();
 
         break;
 

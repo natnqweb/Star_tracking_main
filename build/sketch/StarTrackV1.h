@@ -4,8 +4,8 @@
 
 /**
  * @author @b Natan @b Lisowski @github: @b @natnqweb   @email: @c pythonboardsbeta@gmail.com
- * @brief StarTracker header file it contains function prototypes as well as all includes and definitions
- * @brief this file contains all function descriptions and details 
+ * @brief StarTracker header file it contains function prototypes as well as all declarations
+ * @brief this file contains all details
  */
 #ifndef StarTrackV1_h
 #define StarTrackV1_h
@@ -17,14 +17,13 @@
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <TinyGPS++.h>
-#include <IRremote.h>
+#include <IRremote.hpp>
 #include <Adafruit_HMC5883_U.h>
 #include <SkyMap.h>
 #include <Mapf.h>
 #include <Simpletimer.h>
 #include <uEEPROMLib.h>
 #include <Motor_PID.h>
-
 #pragma endregion includes
 #pragma region definitions
 
@@ -35,8 +34,9 @@
 #define EMPTYSTRING ""
 #define buffersize 30
 #pragma region macros_debg
+
 /**
- * IF DEBUG IS SET TO TRUE IT TURNS ON ALL SERIAL.PRINTLNS AND FUNCTIONS SPECIFIC TO DEBUGING
+ * IF DEBUG IS SET TO TRUE IT TURNS ON ALL SERIAL.PRINTLNS AND FUNCTIONS SPECIFIC FOR DEBUGING
  */
 #define DEBUG false // enable or disable debug messages
 #ifndef DEBUG
@@ -44,8 +44,8 @@
 #endif
 #if DEBUG == true
 
-#define LOG(x) Serial.println(F(x))          //send debug message to serial port
-#define start_debuging(y) Serial.begin(F(y)) //enable serial port with y baud
+#define LOG(x) Serial.println(F(x))       //send debug message to serial port
+#define start_debuging(y) Serial.begin(y) //enable serial port with y baud
 #else
 #define LOG(x)
 #define start_debuging(y)
@@ -78,7 +78,6 @@
 #define no_command 0x00
 #pragma endregion remote_commands
 #pragma endregion definitions
-
 #pragma region enumerations
 
 enum class offset_editing //enumeration for editing offset screen
@@ -288,13 +287,14 @@ namespace constants
 #pragma endregion namespaces
 #pragma region variables
 
-auto offset_edit_mode = offset_editing::NOT_SET;
-auto mode = modes::MAIN;
-unsigned char pilot_commands[] = {plus, minus, play, EQ, zero, one, two, three, four, five, six, seven, eight, nine, no_command};
+offset_editing offset_edit_mode = offset_editing::NOT_SET;
+modes mode = modes::MAIN;
+unsigned char pilot_commands[15] = {plus, minus, play, EQ, zero, one, two, three, four, five, six, seven, eight, nine, no_command};
 float day, month, year, TIME, MIN, HOUR, SEKUNDA; //datetime
 degs pointing_altitude;                           //data from accel
 degs starting_position_az, starting_position_alt; // calibration starting point for encoder so you dont need to level it every time manually
-uint8_t decoded_command = 0x00U;
+uint8_t _no_command_decoded = 0x00;
+
 float accelXsum = 0;
 float accelYsum = 0;
 float accelZsum = 0;
@@ -304,6 +304,7 @@ Simpletimer logtimer;
 #endif
 #pragma region buffers
 //buffers
+
 float previous_azimuth, previous_altitude;
 String input_MAG_DEC;
 String input_RA, input_DEC, input_lat, input_long;
@@ -319,10 +320,10 @@ buffers<String> visibility_buffer, _star_az_buff, _star_alt_buff, _long_buff, _l
 #pragma region booleans
 //booleans and markers
 bool tracking_finished = false;
-bool laser_state;
+
 bool manual_calibration = false;
 bool laser_mode = false;
-bool setmode, confirm;
+
 bool calibration = false;
 bool az_motor_target_reached = false, alt_motor_target_reached = false;
 bool ready_to_move = false;
@@ -330,10 +331,15 @@ bool GPS_status = false;
 bool entering_DEC = false, entering_RA = false, automatic_mode = true;
 bool continous_tracking = false;
 bool startup = true;
-bool print_boot_init_once = true;
-bool automatic_calibration = true;
-#pragma endregion booleans
 
+bool automatic_calibration = true;
+
+#pragma endregion booleans
+#pragma region timers
+Simpletimer::RunOnce print_boot_init_once;
+Simpletimer accel_callback_timer;
+Simpletimer display_callback_timer;
+#pragma endregion timers
 #pragma region sensors
 //sensor events Adafruit_MPU6050 and hmc5883l
 sensors_event_t a, g, temp;
@@ -391,9 +397,12 @@ void boot_init_procedure();
 // when user decide to change offsets and click edit offset he enters input_offsets mode
 void input_offsets();
 void edit_Ra_Dec();
+void switch_laser();
 void edit_dec();
 void edit_ra();
+
 //offset selection screen
+void offset_disp_exit_procedure();
 void offset_select();
 void edit_lat();
 void edit_long();
@@ -437,7 +446,7 @@ void check_gps_accel_compass();
  * @return decoded command type:uint8_t
  * 
  */
-uint8_t decodeIRfun();
+uint8_t *decodeIRfun();
 
 // when value changes refresh display clear previous displayed value and print new one
 template <class T>
@@ -448,7 +457,7 @@ template <class T>
 void clear(T, displayconfig &);
 void compass_init();
 void new_starting_position();
-void safety_motor_position_control();
+
 //memory allocation and access
 /* all eeprom functions and adresses are stored under namespace EEPROM */
 namespace EEPROM
@@ -510,7 +519,7 @@ namespace EEPROM
 */
 void remote_input_handler_str(void_func *, String &, uint8_t *, displayconfig &, size_t);
 /**
- * @brief this function handles exit functions and perfroms exit function when it is matching exit command
+ * @brief this function handles exit functions and performs exit function when it is matching exit command
  * @param void_func* example of input : void_func exit_functions[3]={first_exit_function,second_exit_function,third_exit_function};
  * @param uint8_t* - example of potential input : uint8_t exit_command[3]={one,two,three};
  * @param size_t numbert of commands example: size_t number_of_commands=sizeof(exit_command); its basically number of possible exit functions
@@ -524,7 +533,7 @@ void remote_input_handler_selector(void_func *, uint8_t *, size_t);
 const char *command_decoder(uint8_t);
 bool all_motors_ready_to_move();
 bool reset_ready_to_move_markers();
-bool check_if_pointing_at_north();
+
 void clear_all_buffers();
 
 #if DEBUG

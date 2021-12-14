@@ -56,7 +56,7 @@
   },
   {
     "Sourcefile": "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\build\\sketch\\StarTrackV1.cpp.cpp",
-    "Include": "IRremote.h",
+    "Include": "IRremote.hpp",
     "Includepath": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src"
   },
   {
@@ -166,86 +166,6 @@
   },
   {
     "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\TinyGPSPlus\\src\\TinyGPS++.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_BoseWave.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Denon.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Dish.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_DistanceProtocol.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_JVC.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Kaseikyo.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_LG.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Lego.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_MagiQuest.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_NEC.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Pronto.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_RC5_RC6.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Samsung.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Sony.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Template.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Admin\\Documents\\Arduino\\libraries\\IRremote\\src\\ir_Whynter.cpp",
     "Include": "",
     "Includepath": null
   },
