@@ -25,11 +25,6 @@
 #include <Motor_PID.h>
 #pragma endregion includes
 #pragma region definitions
-
-#define right 1
-#define left -1
-#define up 1
-#define down -1
 #define EMPTYSTRING ""
 #define buffersize 30
 #pragma region macros_debg
@@ -43,7 +38,7 @@
 #endif
 #if DEBUG == true
 
-#define LOG(x) Serial.println(F(x))       //send debug message to serial port
+#define LOG(x) Serial.println(x)          //send debug message to serial port
 #define start_debuging(y) Serial.begin(y) //enable serial port with y baud
 #else
 #define LOG(x)
@@ -101,10 +96,10 @@ enum pins : const uint8_t
     ENCB = 32,  // WHITE from polulu encoder
     ENCA2 = 33, // YELLOW from polulu encoder
     ENCB2 = 34, // WHITE from polulu encoder
-    IN1 = 8,    //A1-A
-    IN2 = 9,    //B1-A
-    IN1_2 = 10, //A2-b
-    IN2_2 = 11  //B2-b
+    IN1 = 4,    //A1-A
+    IN2 = 5,    //B1-A
+    IN1_2 = 6,  //A2-b
+    IN2_2 = 7   //B2-b
 
 };
 enum modes : const uint8_t
@@ -277,11 +272,11 @@ namespace constants
     const float kp2 = 13;
     const float kd2 = 0.1;
     const float ki2 = 0.01;
-    const int motor1_lower_limit = 0;
-    const int motor1_upper_limit = 130;
-    const int motor2_lower_limit = 136;
+    const int motor1_lower_limit = 120;
+    const int motor1_upper_limit = 160;
+    const int motor2_lower_limit = 140;
     const int motor2_upper_limit = 255;
-    const float minimal_deg_diff_to_move = 3;
+    const int minimal_deg_diff_to_move = 2;
 };
 #pragma endregion namespaces
 #pragma region variables
@@ -335,6 +330,7 @@ bool automatic_calibration = true;
 
 #pragma endregion booleans
 #pragma region timers
+
 Simpletimer::RunOnce print_boot_init_once;
 Simpletimer accel_callback_timer;
 Simpletimer display_callback_timer;
@@ -536,13 +532,9 @@ bool reset_ready_to_move_markers();
 void clear_all_buffers();
 
 #if DEBUG
-void print_debug_message(int col = 0, int row = 0, uint8_t size = 1);
-void debug_rtc();
+
 void debug_motors();
-displayconfig debug_motor_display;
-buffers debugbuffer;
-void init_compass_test();
-float read_compass_test();
+
 #endif
 #pragma endregion function_prototypes
 #endif

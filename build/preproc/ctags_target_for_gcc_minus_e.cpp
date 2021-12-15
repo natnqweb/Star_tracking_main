@@ -310,12 +310,10 @@ void calculate_starposition()
         star.altitude = startracker->get_star_Altitude();
         azimuth_target = star.azimuth * constants::motor1_gear_ratio;
         altitude_target = star.altitude * constants::motor2_gear_ratio;
-
-        // float diff1 = abs(star.azimuth - (motor1.get_position() / constants::motor1_gear_ratio));
-        // float diff2 = abs(star.altitude - (motor2.get_position() / constants::motor1_gear_ratio)); //angle diffrence betwen motor and star
         ready_to_move = true;
         if (all_motors_ready_to_move())
         {
+
             motor1.set_target(azimuth_target);
             motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
             motor2.set_target(altitude_target);
@@ -337,18 +335,11 @@ void updateAccel()
     //if (accel_timer.timer(refresh::accel_refresh_rate))
     //{
 
-    for (int i = 0; i < constants::number_of_measurements; i++)
-    {
+    mpu.getEvent(&a, &g, &temp);
 
-        mpu.getEvent(&a, &g, &temp);
-
-        accelXsum += a.orientation.x;
-        accelYsum += a.orientation.y;
-        accelZsum += a.orientation.z;
-    }
-    accelXsum /= constants::number_of_measurements;
-    accelYsum /= constants::number_of_measurements;
-    accelZsum /= constants::number_of_measurements;
+    accelXsum = a.orientation.x;
+    accelYsum = a.orientation.y;
+    accelZsum = a.orientation.z;
 
     // Calculate of roll and pitch in deg
     pointing_altitude = atan2(accelXsum, sqrt(square(accelYsum) + square(accelZsum))) / (constants::pi / 180);
@@ -367,116 +358,116 @@ void clearDisplay()
 
     mainscreen.reset_cursor();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 360 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 351 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 360 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 351 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "dlug."
-# 360 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 351 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 360 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 351 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.set_cursor(2, 0);
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 362 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 353 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 362 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 353 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "szer."
-# 362 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 353 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 362 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 353 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 364 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 355 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 364 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 355 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "sekunda"
-# 364 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 355 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 364 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 355 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 366 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 357 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 366 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 357 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "azymut"
-# 366 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 357 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 366 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 357 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )) /*short from universal azimuth*/, mainscreen);
     mainscreen.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 368 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 359 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 368 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 359 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "wysokosc"
-# 368 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 359 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 368 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 359 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 370 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 361 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 370 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 361 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "rok"
-# 370 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 361 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 370 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 361 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 372 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 363 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 372 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 363 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "miesiac"
-# 372 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 363 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 372 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 363 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 374 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 365 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 374 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 365 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "dzien"
-# 374 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 365 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 374 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 365 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 376 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 367 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 376 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 367 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "czas UTC"
-# 376 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 367 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 376 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 367 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.set_cursor(31, 23);
     if (mode == DISPLAY_RESULTS)
         clear((reinterpret_cast<const __FlashStringHelper *>(
-# 379 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 370 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
              (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 379 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 370 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
              "znaleziono gwiazde"
-# 379 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 370 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
              ); &__c[0];}))
-# 379 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 370 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
              )), mainscreen);
     mainscreen.reset_cursor();
     //other method
     mainscreen.next_column(31);
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 383 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 374 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 383 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 374 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "kat_lasera"
-# 383 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 374 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 383 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 374 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_column(18);
 
@@ -487,13 +478,13 @@ void clearDisplay()
     mainscreen.next_row();
     mainscreen.next_column(31);
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 392 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 383 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 392 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 383 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "azymut"
-# 392 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 383 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 392 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 383 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )) /*short from universal azimuth*/, mainscreen);
     mainscreen.next_column(18);
     clear(az_buff.disp, mainscreen);
@@ -502,13 +493,13 @@ void clearDisplay()
     mainscreen.next_row(4);
     mainscreen.next_column(31);
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 399 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 390 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 399 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 390 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "rektascensja"
-# 399 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 390 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 399 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 390 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_column(18);
     clear(ra_buff.disp, mainscreen);
@@ -517,13 +508,13 @@ void clearDisplay()
     mainscreen.next_row(6);
     mainscreen.next_column(31);
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 406 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 397 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 406 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 397 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "deklinacja"
-# 406 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 397 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 406 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 397 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_column(18);
     clear(dec_buff.disp, mainscreen);
@@ -531,46 +522,46 @@ void clearDisplay()
     mainscreen.reset_cursor();
     mainscreen.next_row(29);
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 412 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 403 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 412 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 403 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "silnik 1"
-# 412 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 403 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 412 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 403 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen); // row 29 column 0
     mainscreen.next_row(); //row 31
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 414 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 405 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 414 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 405 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "kat"
-# 414 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 405 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 414 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 405 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen); // row 31 column 0
     mainscreen.next_column(10); // row 31 column 10
     clear(motor1_ang_buff.disp, mainscreen); // row 31 column 10
     mainscreen.reset_cursor();
     mainscreen.set_cursor(33, 0);
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 419 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 410 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 419 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 410 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "silnik 2"
-# 419 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 410 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 419 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 410 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row(); // row 35 column 0
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 421 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 412 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 421 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 412 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "kat"
-# 421 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 412 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 421 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 412 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen); // row 35 column 0
     mainscreen.next_column(10); //row 35 column 10
     clear(motor2_ang_buff.disp, mainscreen); //row 35 column 10
@@ -578,13 +569,13 @@ void clearDisplay()
     mainscreen.next_row(8);
     mainscreen.next_column(31);
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 427 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 418 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 427 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 418 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "widocznosc gwiazdy:"
-# 427 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 418 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 427 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 418 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
 
@@ -618,13 +609,13 @@ void clearDisplay()
     mainscreen.column = 0;
 
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 459 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 450 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 459 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 450 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "czas lokalny"
-# 459 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 450 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 459 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 450 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.column = previous_column;
     mainscreen.next_column(5);
@@ -649,120 +640,120 @@ void updateDisplay()
       ------------------------------------------------display variable name---------------------------------------------------------------------------
 
     */
-# 481 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 472 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     displayconfig mainscreen;
     mainscreen.reset_cursor();
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 483 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 474 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 483 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 474 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "dlug."
-# 483 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 474 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 483 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 474 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.set_cursor(2, 0);
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 485 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 476 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 485 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 476 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "szer."
-# 485 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 476 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 485 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 476 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 487 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 478 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 487 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 478 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "sekunda"
-# 487 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 478 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 487 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 478 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 489 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 480 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 489 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 480 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "azymut"
-# 489 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 480 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 489 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 480 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )) /*short from universal azimuth*/, mainscreen);
     mainscreen.next_row();
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 491 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 482 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 491 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 482 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "wysokosc"
-# 491 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 482 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 491 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 482 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 493 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 484 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 493 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 484 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "rok"
-# 493 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 484 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 493 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 484 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 495 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 486 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 495 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 486 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "miesiac"
-# 495 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 486 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 495 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 486 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 497 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 488 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 497 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 488 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "dzien"
-# 497 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 488 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 497 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 488 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 499 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 490 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 499 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 490 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "czas UTC"
-# 499 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 490 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 499 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 490 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     /*   
 
       ------------------------------------------------end of display variable name---------------------------------------------------------------------------
 
     */
-# 503 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 494 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------display if star was found or not visible or not ---------------------------------------------------------------------------
 
     */
-# 506 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 497 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.set_cursor(31, 23);
     if (mode == DISPLAY_RESULTS)
         print((reinterpret_cast<const __FlashStringHelper *>(
-# 508 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 499 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
              (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 508 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 499 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
              "znaleziono gwiazde"
-# 508 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 499 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
              ); &__c[0];}))
-# 508 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 499 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
              )), mainscreen);
     mainscreen.reset_cursor();
     /*   
@@ -770,22 +761,22 @@ void updateDisplay()
       ------------------------------------------------ end of display if star was found or not visible or not ---------------------------------------------------------------------------
 
     */
-# 513 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 504 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------print accelerometer information cursor set on column 31 row 0 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 516 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 507 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_column(31);
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 517 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 508 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 517 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 508 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "kat_lasera"
-# 517 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 508 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 517 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 508 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     //go to column 49 row 0
     mainscreen.next_column(18);
@@ -795,24 +786,24 @@ void updateDisplay()
       ------------------------------------------------end of print accelerometer information  -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 524 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 515 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------display  magnetometer information cursor set on column 31, row 2 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 527 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 518 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.reset_cursor();
     mainscreen.next_row();
     mainscreen.next_column(31);
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 530 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 521 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 530 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 521 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "azymut"
-# 530 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 521 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 530 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 521 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )) /*short from universal azimuth*/, mainscreen);
     mainscreen.next_column(18);
     az_buff.disp = String(my_location.azimuth);
@@ -823,7 +814,7 @@ void updateDisplay()
       ------------------------------------------------end of display  magnetometer -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 538 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 529 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     //cursor set to 0,0
     mainscreen.reset_cursor();
     /*   
@@ -831,17 +822,17 @@ void updateDisplay()
       ------------------------------------------------display stars right ascension on row 4 and column 31 and its value on row 4 column 49 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 543 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 534 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row(4);
     mainscreen.next_column(31);
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 545 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 536 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 545 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 536 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "rektascensja"
-# 545 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 536 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 545 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 536 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_column(18);
     ra_buff.disp = star.right_ascension;
@@ -851,24 +842,24 @@ void updateDisplay()
       ------------------------------------------------ end of display stars right ascension  -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 553 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 544 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------display stars declination row 6 column 31 and its value on row 6 column 49 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 556 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 547 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.reset_cursor();
     mainscreen.next_row(6);
     mainscreen.next_column(31);
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 559 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 550 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 559 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 550 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "deklinacja"
-# 559 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 550 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 559 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 550 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_column(18);
     dec_buff.disp = star.declination;
@@ -878,33 +869,33 @@ void updateDisplay()
       ------------------------------------------------end of display stars declination row 6 column 31 and its value on row 6 column 49 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 566 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 557 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.reset_cursor();
     /*   
 
       ------------------------------------------------display motors data row 29 column 0 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 570 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 561 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row(29);
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 571 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 562 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 571 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 562 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "silnik 1"
-# 571 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 562 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 571 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 562 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen); // row 29 column 0
     mainscreen.next_row(); //row 31
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 573 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 564 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 573 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 564 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "kat"
-# 573 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 564 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 573 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 564 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen); // row 31 column 0
     mainscreen.next_column(10); // row 31 column 10
     motor1_ang_buff.disp = (motor1.get_position() / constants::motor1_gear_ratio);
@@ -912,23 +903,23 @@ void updateDisplay()
     mainscreen.reset_cursor();
     mainscreen.set_cursor(33, 0);
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 579 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 570 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 579 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 570 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "silnik 2"
-# 579 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 570 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 579 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 570 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row(); // row 35 column 0
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 581 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 572 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 581 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 572 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "kat"
-# 581 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 572 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 581 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 572 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen); // row 35 column 0
     mainscreen.next_column(10); //row 35 column 10
     motor2_ang_buff.disp = (motor2.get_position() / constants::motor2_gear_ratio);
@@ -938,55 +929,55 @@ void updateDisplay()
       ------------------------------------------------end of display motors data  -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 588 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 579 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.reset_cursor(); //row 0 column 0
                                                 /*   
 
       ------------------------------------------------display if star is visible or not row 8 column 31-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 592 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 583 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row(8);
     mainscreen.next_column(31);
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 594 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 585 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 594 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 585 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "widocznosc gwiazdy:"
-# 594 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 585 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 594 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 585 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     mainscreen.next_row();
     if (GPS_status)
 
         startracker->IsVisible() ? visibility_buffer.disp = (reinterpret_cast<const __FlashStringHelper *>(
-# 598 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 589 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                                            (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 598 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 589 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                                            "widoczna"
-# 598 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 589 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                                            ); &__c[0];}))
-# 598 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 589 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                                            )) : visibility_buffer.disp = (reinterpret_cast<const __FlashStringHelper *>(
-# 598 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 589 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                                                                                  (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 598 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 589 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                                                                                  "nie widoczna"
-# 598 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 589 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                                                                                  ); &__c[0];}))
-# 598 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 589 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                                                                                  ));
 
     else
         visibility_buffer.disp = (reinterpret_cast<const __FlashStringHelper *>(
-# 601 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 592 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                 (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 601 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 592 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                 "brak satelit"
-# 601 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 592 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                 ); &__c[0];}))
-# 601 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 592 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                 ));
 
     dynamic_print(mainscreen, visibility_buffer);
@@ -995,36 +986,36 @@ void updateDisplay()
       ------------------------------------------------ end of display if star is visible or not row 8 column 31-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 607 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 598 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.reset_cursor();
     /*   
 
       ------------------------------------------------display GPS data row 0 column 15-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 611 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 602 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     // if gps location is valid then display location if else display no gps info
     gps.location.isValid() ? _long_buff.disp = String(my_location.longitude) : _long_buff.disp = (reinterpret_cast<const __FlashStringHelper *>(
-# 612 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 603 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                                                                                 (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 612 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 603 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                                                                                 "brak gps"
-# 612 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 603 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                                                                                 ); &__c[0];}))
-# 612 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 603 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                                                                                 ));
     // results
     mainscreen.set_cursor(0, 15);
     dynamic_print(mainscreen, _long_buff);
     mainscreen.next_row();
     gps.location.isValid() ? _lat_buff.disp = String(my_location.latitude) : _lat_buff.disp = (reinterpret_cast<const __FlashStringHelper *>(
-# 617 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 608 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                                                                              (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 617 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 608 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                                                                              "brak gps"
-# 617 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 608 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                                                                              ); &__c[0];}))
-# 617 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 608 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                                                                              ));
     dynamic_print(mainscreen, _lat_buff);
     /*   
@@ -1032,31 +1023,31 @@ void updateDisplay()
       ------------------------------------------------end of display GPS data -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 622 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 613 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------display seconds value on column 15 row 4-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 625 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 616 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     /*   _sec_buff.disp = String(int(SEKUNDA));
 
     dynamic_print(mainscreen, _sec_buff); */
-# 628 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 619 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     EEPROM::dynamic_print_eeprom(mainscreen, (int)SEKUNDA, EEPROM::addresses::second);
     /*   
 
       ------------------------------------------------end of display seconds value on column 15 row 4-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 632 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 623 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------display star.azimuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 635 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 626 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     GPS_status ? _star_az_buff.disp = String(star.azimuth) : _star_az_buff.disp = "...";
     dynamic_print(mainscreen, _star_az_buff);
@@ -1065,13 +1056,13 @@ void updateDisplay()
       ------------------------------------------------end of display star.azimuth value on column 15 row 6-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 641 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 632 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------display star.altitude value on column 15 row 8-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 644 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 635 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     GPS_status ? _star_alt_buff.disp = String(star.altitude) : _star_alt_buff.disp = "...";
     dynamic_print(mainscreen, _star_alt_buff);
@@ -1080,13 +1071,13 @@ void updateDisplay()
       ------------------------------------------------end of display star.altitude value on column 15 row 8-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 650 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 641 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------display year value on column 15 row 10-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 653 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 644 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
 
     print((t.year), mainscreen);
@@ -1095,13 +1086,13 @@ void updateDisplay()
       ------------------------------------------------end of display year value on column 15 row 10-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 659 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 650 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------display month value on column 15 row 12-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 662 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 653 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     print((t.mon), mainscreen);
     /*   
@@ -1109,13 +1100,13 @@ void updateDisplay()
       ------------------------------------------------end of display month value on column 15 row 12-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 667 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 658 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------display day value on column 15 row 14-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 670 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 661 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     print((t.date), mainscreen);
     /*   
@@ -1123,18 +1114,18 @@ void updateDisplay()
       ------------------------------------------------end of display day value on column 15 row 14-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 675 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 666 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------display time_utc value on column 15 row 16-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 678 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 669 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     /*     _time_buff.disp = (String)TIME;
 
     dynamic_print(mainscreen, _time_buff); */
-# 681 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 672 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     EEPROM::dynamic_print_eeprom(mainscreen, TIME, EEPROM::addresses::time_utc);
 
     /*   
@@ -1142,39 +1133,39 @@ void updateDisplay()
       ------------------------------------------------end of display time_utc value on column 15 row 16-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 686 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 677 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------display local time name on column 0 row 18-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 689 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 680 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     // save previous cursor column
     int previous_column = mainscreen.column; //
     mainscreen.next_row();
     mainscreen.column = 0;
 
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 694 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 685 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 694 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 685 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "czas lokalny"
-# 694 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 685 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 694 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 685 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), mainscreen);
     /*   
 
       ------------------------------------------------end of display local time name on column 0 row 18-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 698 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 689 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------display local time value on column 20 row 18-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 701 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 692 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.column = previous_column;
     mainscreen.next_column(5);
 
@@ -1189,31 +1180,31 @@ void updateDisplay()
       ------------------------------------------------end of display local time value on column 20 row 18-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 713 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 704 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     /*   
 
       ------------------------------------------------display if ready to calibrate data on column 0 row 20-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 716 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 707 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     mainscreen.next_row();
     mainscreen.column = 0;
     gps.time.isValid() ? _calibrate_buff.disp = (reinterpret_cast<const __FlashStringHelper *>(
-# 718 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 709 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                                (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 718 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 709 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                                "{1}"
-# 718 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 709 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                                ); &__c[0];}))
-# 718 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 709 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                                )) : _calibrate_buff.disp = (reinterpret_cast<const __FlashStringHelper *>(
-# 718 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 709 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                                                                          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 718 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 709 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                                                                          "{0}"
-# 718 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 709 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                                                                          ); &__c[0];}))
-# 718 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 709 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                                                                          ));
     dynamic_print(mainscreen, _calibrate_buff);
     /*   
@@ -1221,7 +1212,7 @@ void updateDisplay()
       ------------------------------------------------end of display if ready to calibrate data on column 0 row 20-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     */
-# 723 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 714 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
     //
     // set cursor to 0.0
     mainscreen.reset_cursor();
@@ -1271,7 +1262,7 @@ void clear_all_buffers()
 * @return nothing
 
 */
-# 764 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 755 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 template <class T>
 void TFT_dispStr(T message, int column, int row, uint8_t textsize)
 {
@@ -1298,7 +1289,7 @@ void TFT_dispStr(T message, int column, int row, uint8_t textsize)
 * @return nothing
 
 */
-# 782 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 773 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 template <class T>
 void TFT_clear(T message, int column, int row, uint8_t textsize)
 {
@@ -1314,13 +1305,13 @@ void clear_exit_disp()
     displayconfig boot_init_disp;
     boot_init_disp.reset_cursor();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 796 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 787 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 796 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 787 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "instrukcja:"
-# 796 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 787 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 796 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 787 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), boot_init_disp);
     boot_init_disp.next_row();
     clear("EQ-", boot_init_disp);
@@ -1335,13 +1326,13 @@ void clear_exit_disp()
     boot_init_disp.next_row();
     int prev_column = boot_init_disp.column;
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 809 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 800 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 809 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 800 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "ostatnia lokalizacja"
-# 809 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 800 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 809 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 800 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), boot_init_disp);
     boot_init_disp.next_column(34);
     clear((EEPROM::read<float>(EEPROM::addresses::lat)), boot_init_disp);
@@ -1350,13 +1341,13 @@ void clear_exit_disp()
     boot_init_disp.column = prev_column;
     boot_init_disp.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 816 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 807 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 816 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 807 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "ostatnia gwiazda"
-# 816 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 807 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 816 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 807 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), boot_init_disp);
     boot_init_disp.next_column(34);
     clear((EEPROM::read<float>(EEPROM::addresses::ra)), boot_init_disp);
@@ -1366,65 +1357,65 @@ void clear_exit_disp()
     clear("1-", boot_init_disp);
     boot_init_disp.set_cursor(36, 4);
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 824 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 815 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 824 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 815 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "zacznij sledzic gwiazde"
-# 824 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 815 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 824 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 815 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), boot_init_disp);
     boot_init_disp.reset_cursor();
     boot_init_disp.set_cursor(0, 8);
     boot_init_disp.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 828 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 819 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 828 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 819 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "Ustw.mag.deklinacje"
-# 828 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 819 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 828 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 819 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), boot_init_disp);
     boot_init_disp.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 830 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 821 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 830 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 821 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "twoja lok."
-# 830 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 821 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 830 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 821 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), boot_init_disp);
     boot_init_disp.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 832 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 823 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 832 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 823 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "kalibracja pozycji urzadzenia"
-# 832 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 823 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 832 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 823 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), boot_init_disp);
     boot_init_disp.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 834 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 825 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 834 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 825 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "potwierdz/kontynuuj"
-# 834 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 825 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 834 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 825 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), boot_init_disp);
     boot_init_disp.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 836 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 827 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 836 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 827 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "wsp. gwiazdy"
-# 836 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 827 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 836 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 827 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), boot_init_disp);
     boot_init_disp.reset_cursor();
     print_boot_init_once.Reset();
@@ -1438,7 +1429,7 @@ void boot_init_exit_tracking_mode()
 
     new_starting_position();
 
-    continous_tracking = false;
+    continous_tracking = true;
     mode = GETTING_STAR_LOCATION;
 }
 void boot_init_exit_func1()
@@ -1487,13 +1478,13 @@ void boot_init_procedure()
                              {
                                  boot_init_disp.reset_cursor();
                                  print((reinterpret_cast<const __FlashStringHelper *>(
-# 897 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 888 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 897 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 888 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       "instrukcja:"
-# 897 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 888 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       ); &__c[0];}))
-# 897 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 888 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       )), boot_init_disp);
                                  boot_init_disp.next_row();
                                  print("EQ-", boot_init_disp);
@@ -1508,13 +1499,13 @@ void boot_init_procedure()
                                  //display recent search
                                  boot_init_disp.next_row();
                                  print((reinterpret_cast<const __FlashStringHelper *>(
-# 910 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 901 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 910 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 901 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       "ostatnia lokalizacja"
-# 910 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 901 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       ); &__c[0];}))
-# 910 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 901 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       )), boot_init_disp);
                                  int prev_column = boot_init_disp.column;
                                  boot_init_disp.next_column(34);
@@ -1524,13 +1515,13 @@ void boot_init_procedure()
                                  boot_init_disp.column = prev_column;
                                  boot_init_disp.next_row();
                                  print((reinterpret_cast<const __FlashStringHelper *>(
-# 918 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 909 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 918 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 909 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       "ostatnia gwiazda"
-# 918 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 909 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       ); &__c[0];}))
-# 918 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 909 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       )), boot_init_disp);
                                  boot_init_disp.next_column(34);
                                  print((EEPROM::read<float>(EEPROM::addresses::ra)), boot_init_disp);
@@ -1543,65 +1534,65 @@ void boot_init_procedure()
                                  print("1-", boot_init_disp);
                                  boot_init_disp.set_cursor(36, 4);
                                  print((reinterpret_cast<const __FlashStringHelper *>(
-# 929 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 920 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 929 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 920 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       "zacznij sledzic gwiazde"
-# 929 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 920 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       ); &__c[0];}))
-# 929 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 920 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       )), boot_init_disp);
                                  boot_init_disp.reset_cursor();
                                  boot_init_disp.set_cursor(0, 8);
                                  boot_init_disp.next_row();
                                  print((reinterpret_cast<const __FlashStringHelper *>(
-# 933 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 924 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 933 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 924 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       "Ustw.mag.deklinacje"
-# 933 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 924 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       ); &__c[0];}))
-# 933 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 924 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       )), boot_init_disp);
                                  boot_init_disp.next_row();
                                  print((reinterpret_cast<const __FlashStringHelper *>(
-# 935 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 926 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 935 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 926 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       "twoja lok."
-# 935 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 926 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       ); &__c[0];}))
-# 935 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 926 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       )), boot_init_disp);
                                  boot_init_disp.next_row();
                                  print((reinterpret_cast<const __FlashStringHelper *>(
-# 937 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 928 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 937 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 928 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       "kalibracja pozycji urzadzenia"
-# 937 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 928 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       ); &__c[0];}))
-# 937 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 928 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       )), boot_init_disp);
                                  boot_init_disp.next_row();
                                  print((reinterpret_cast<const __FlashStringHelper *>(
-# 939 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 930 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 939 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 930 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       "potwierdz/kontynuuj"
-# 939 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 930 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       ); &__c[0];}))
-# 939 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 930 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       )), boot_init_disp);
                                  boot_init_disp.next_row();
                                  print((reinterpret_cast<const __FlashStringHelper *>(
-# 941 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 932 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 941 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 932 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       "wsp. gwiazdy"
-# 941 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 932 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                       ); &__c[0];}))
-# 941 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 932 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                       )), boot_init_disp);
                                  boot_init_disp.reset_cursor();
                              });
@@ -1659,13 +1650,13 @@ void entering_dec_exit_handle()
 {
     displayconfig boot_disp;
     TFT_clear((reinterpret_cast<const __FlashStringHelper *>(
-# 997 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 988 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
              (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 997 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 988 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
              "wprowadz deklinacje gwiazdy"
-# 997 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 988 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
              ); &__c[0];}))
-# 997 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 988 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
              )), boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.row += 30;
     TFT_clear(input_DEC, boot_disp.column, boot_disp.row, boot_disp.textsize);
@@ -1681,13 +1672,13 @@ void entering_ra_exit_handle()
 {
     displayconfig boot_disp;
     TFT_clear((reinterpret_cast<const __FlashStringHelper *>(
-# 1011 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1002 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
              (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1011 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1002 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
              "wprowadz rektascensje gwiazdy"
-# 1011 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1002 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
              ); &__c[0];}))
-# 1011 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1002 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
              )), boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.row += 30;
     TFT_clear(input_RA, boot_disp.column, boot_disp.row, boot_disp.textsize);
@@ -1705,61 +1696,61 @@ void edit_Ra_Dec() // todo : make interface for entering Ra and Dec after bootin
     boot_disp.reset_cursor();
 
     TFT_dispStr((reinterpret_cast<const __FlashStringHelper *>(
-# 1027 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1018 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1027 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1018 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                "1- RA"
-# 1027 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1018 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                ); &__c[0];}))
-# 1027 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1018 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                )), boot_disp.column, boot_disp.row, boot_disp.textsize);
     TFT_dispStr((reinterpret_cast<const __FlashStringHelper *>(
-# 1028 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1019 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1028 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1019 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                "2- DEC"
-# 1028 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1019 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                ); &__c[0];}))
-# 1028 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1019 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                )), boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
     TFT_dispStr((reinterpret_cast<const __FlashStringHelper *>(
-# 1029 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1020 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1029 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1020 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                "play- zakoncz"
-# 1029 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1020 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                ); &__c[0];}))
-# 1029 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1020 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                )), boot_disp.column, 40, boot_disp.textsize);
 
     if (*decodeIRfun() == 0xC)
     {
         TFT_clear((reinterpret_cast<const __FlashStringHelper *>(
-# 1033 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1024 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                  (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1033 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1024 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                  "1- RA"
-# 1033 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1024 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                  ); &__c[0];}))
-# 1033 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1024 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                  )), boot_disp.column, boot_disp.row, boot_disp.textsize);
         TFT_clear((reinterpret_cast<const __FlashStringHelper *>(
-# 1034 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1025 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                  (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1034 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1025 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                  "2- DEC"
-# 1034 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1025 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                  ); &__c[0];}))
-# 1034 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1025 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                  )), boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
         TFT_clear((reinterpret_cast<const __FlashStringHelper *>(
-# 1035 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1026 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                  (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1035 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1026 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                  "play- zakoncz"
-# 1035 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1026 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                  ); &__c[0];}))
-# 1035 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1026 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                  )), boot_disp.column, boot_disp.row + 40, boot_disp.textsize);
 
         mode = EDIT_RA;
@@ -1767,31 +1758,31 @@ void edit_Ra_Dec() // todo : make interface for entering Ra and Dec after bootin
     else if (*decodeIRfun() == 0x18)
     {
         TFT_clear((reinterpret_cast<const __FlashStringHelper *>(
-# 1041 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1032 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                  (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1041 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1032 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                  "1- RA"
-# 1041 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1032 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                  ); &__c[0];}))
-# 1041 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1032 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                  )), boot_disp.column, boot_disp.row, boot_disp.textsize);
         TFT_clear((reinterpret_cast<const __FlashStringHelper *>(
-# 1042 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1033 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                  (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1042 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1033 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                  "2- DEC"
-# 1042 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1033 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                  ); &__c[0];}))
-# 1042 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1033 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                  )), boot_disp.column, boot_disp.row + 20, boot_disp.textsize);
         TFT_clear((reinterpret_cast<const __FlashStringHelper *>(
-# 1043 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1034 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                  (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1043 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1034 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                  "play- zakoncz"
-# 1043 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1034 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                  ); &__c[0];}))
-# 1043 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1034 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                  )), boot_disp.column, boot_disp.row + 40, boot_disp.textsize);
 
         mode = EDIT_DEC;
@@ -1801,13 +1792,13 @@ void edit_ra()
 {
     displayconfig boot_disp;
     TFT_dispStr((reinterpret_cast<const __FlashStringHelper *>(
-# 1051 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1042 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1051 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1042 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                "wprowadz rektascensje gwiazdy"
-# 1051 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1042 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                ); &__c[0];}))
-# 1051 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1042 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                )), boot_disp.column, boot_disp.row, boot_disp.textsize);
 
     boot_disp.row += 30;
@@ -1823,13 +1814,13 @@ void edit_dec()
 {
     displayconfig boot_disp;
     TFT_dispStr((reinterpret_cast<const __FlashStringHelper *>(
-# 1065 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1056 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1065 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1056 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                "wprowadz deklinacje gwiazdy"
-# 1065 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1056 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                ); &__c[0];}))
-# 1065 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1056 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                )), boot_disp.column, boot_disp.row, boot_disp.textsize);
     boot_disp.row += 30;
     deleteallinput = boot_disp;
@@ -1852,23 +1843,23 @@ void offset_select_remote_exit_play()
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 1086 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1077 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1086 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1077 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "wprowadz offset akcelerometru"
-# 1086 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1077 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 1086 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1077 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), offsets_screen);
     offsets_screen.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 1088 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1079 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1088 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1079 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "wprowadz offset azymutu"
-# 1088 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1079 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 1088 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1079 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), offsets_screen);
     mode = GETTING_STAR_LOCATION;
 }
@@ -1880,23 +1871,23 @@ void offset_select_remote_exit_one()
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 1098 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1089 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1098 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1089 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "wprowadz offset akcelerometru"
-# 1098 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1089 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 1098 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1089 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), offsets_screen);
     offsets_screen.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 1100 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1091 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1100 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1091 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "wprowadz offset azymutu"
-# 1100 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1091 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 1100 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1091 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), offsets_screen);
     mode = OFFSET_EDIT;
     offset_edit_mode = offset_editing::MAGNETIC;
@@ -1909,23 +1900,23 @@ void offset_select_remote_exit_two()
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 1111 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1102 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1111 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1102 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "wprowadz offset akcelerometru"
-# 1111 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1102 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 1111 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1102 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), offsets_screen);
     offsets_screen.next_row();
     clear((reinterpret_cast<const __FlashStringHelper *>(
-# 1113 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1104 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1113 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1104 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "wprowadz offset azymutu"
-# 1113 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1104 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 1113 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1104 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), offsets_screen);
 }
 
@@ -1938,23 +1929,23 @@ void offset_select() // todo: let user enter all offsets independently from this
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 1124 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1115 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1124 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1115 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "wprowadz offset akcelerometru"
-# 1124 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1115 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 1124 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1115 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), offsets_screen);
     offsets_screen.next_row();
     print((reinterpret_cast<const __FlashStringHelper *>(
-# 1126 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1117 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          (__extension__({static const char __c[] __attribute__((__progmem__)) = (
-# 1126 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1117 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          "wprowadz offset azymutu"
-# 1126 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
+# 1117 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
          ); &__c[0];}))
-# 1126 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1117 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
          )), offsets_screen);
     offsets_screen.reset_cursor();
     void_func exit_func[3] = {offset_select_remote_exit_one, offset_select_remote_exit_one, offset_select_remote_exit_play};
@@ -1996,7 +1987,7 @@ void dynamic_print(displayconfig &cnfg, buffers<T> &buffs)
         print(buffs.buff, cnfg);
 
     } */
-# 1162 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1153 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 }
 /* void dynamic_print_eeprom_int(displayconfig &cnfg, int val, unsigned int address)
 
@@ -2059,7 +2050,7 @@ void dynamic_print_eeprom_float(displayconfig &cnfg, float val, unsigned int add
     }
 
 } */
-# 1194 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+# 1185 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 template <class T>
 void EEPROM::dynamic_print_eeprom(displayconfig &cnfg, T val, unsigned int address)
 {
@@ -2082,10 +2073,18 @@ void EEPROM::dynamic_print_eeprom(displayconfig &cnfg, T val, unsigned int addre
 bool all_motors_ready_to_move()
 {
 
-    if ((az_motor_target_reached == false) && (alt_motor_target_reached == false) && (startracker->IsVisible() == true) && (tracking_finished == false))
+    if ((continous_tracking != true) && (az_motor_target_reached == false) && (alt_motor_target_reached == false) && (startracker->IsVisible() == true) && (tracking_finished == false))
     {
         return true;
     }
+    else if (continous_tracking == true)
+    {
+        if (startracker->IsVisible() && (((((azimuth_target - motor1.get_position())>0?(azimuth_target - motor1.get_position()):-(azimuth_target - motor1.get_position())))>=0?(long)((((azimuth_target - motor1.get_position())>0?(azimuth_target - motor1.get_position()):-(azimuth_target - motor1.get_position())))+0.5):(long)((((azimuth_target - motor1.get_position())>0?(azimuth_target - motor1.get_position()):-(azimuth_target - motor1.get_position())))-0.5)) >= constants::minimal_deg_diff_to_move) && (((((altitude_target - motor2.get_position())>0?(altitude_target - motor2.get_position()):-(altitude_target - motor2.get_position())))>=0?(long)((((altitude_target - motor2.get_position())>0?(altitude_target - motor2.get_position()):-(altitude_target - motor2.get_position())))+0.5):(long)((((altitude_target - motor2.get_position())>0?(altitude_target - motor2.get_position()):-(altitude_target - motor2.get_position())))-0.5)) >= constants::minimal_deg_diff_to_move))
+            return true;
+        else
+            return false;
+    }
+
     else
     {
         return false;
@@ -2105,6 +2104,7 @@ bool reset_ready_to_move_markers()
 void Az_engine() //need to be in some standalone function cuz it is not attached to pin interuppt
 {
     az_motor_target_reached = false;
+
     motor1.start();
 
     if (motor1.target_reached())
@@ -3474,14 +3474,17 @@ void manual_calibration_screen()
 }
 void decodeIR_remote()
 {
-    //using lambda to run this code once
+
     static Simpletimer::callback IRremote_exit_functions[4] = {go_to_main, reset_all_go_to_main, switch_laser, turn_on_off_calibration};
     static uint8_t IRremote_exit_commands[4] = {0x15, 0x7, 0x16, 0x18};
 
     remote_input_handler_selector(IRremote_exit_functions, IRremote_exit_commands, (size_t)4);
 }
 #pragma endregion Position_calibration
-# 2107 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+
+#pragma region debugging_mode
+# 2076 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#pragma endregion debugging_mode
 #pragma endregion functions
 # 1 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\main.ino"
 

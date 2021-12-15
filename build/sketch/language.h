@@ -61,10 +61,16 @@
 #define un_if_you_want_to_calibrate_play F("aby kalibrowac wcisnij play")
 #define un_exit_press F("aby wyjsc wcisnij 0")
 #define un_use_compass_to_find_north F("uzyj busoli i wskaz polnoc")
+#define un_continouse_tracking F("tryb ciaglego sledzenia")
+#define un_star_azimuth F("azymut gwiazdy")
+#define un_star_altitude F("wzniesienie gwiazdy")
 #endif
 #pragma endregion polish
 #pragma region english
 #ifdef eng
+#define un_star_azimuth F("star azimuth")
+#define un_star_altitude F("star altitude")
+#define un_continouse_tracking F("continous tracking")
 #define un_azimuth F("azimuth") //short from universal azimuth
 #define un_altitude F("altitude")
 #define un_declination F("declination")

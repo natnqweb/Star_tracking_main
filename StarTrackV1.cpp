@@ -301,12 +301,10 @@ void calculate_starposition()
         star.altitude = startracker->get_star_Altitude();
         azimuth_target = star.azimuth * constants::motor1_gear_ratio;
         altitude_target = star.altitude * constants::motor2_gear_ratio;
-
-        // float diff1 = abs(star.azimuth - (motor1.get_position() / constants::motor1_gear_ratio));
-        // float diff2 = abs(star.altitude - (motor2.get_position() / constants::motor1_gear_ratio)); //angle diffrence betwen motor and star
         ready_to_move = true;
         if (all_motors_ready_to_move())
         {
+
             motor1.set_target(azimuth_target);
             motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
             motor2.set_target(altitude_target);
@@ -328,18 +326,11 @@ void updateAccel()
     //if (accel_timer.timer(refresh::accel_refresh_rate))
     //{
 
-    for (int i = 0; i < constants::number_of_measurements; i++)
-    {
+    mpu.getEvent(&a, &g, &temp);
 
-        mpu.getEvent(&a, &g, &temp);
-
-        accelXsum += a.orientation.x;
-        accelYsum += a.orientation.y;
-        accelZsum += a.orientation.z;
-    }
-    accelXsum /= constants::number_of_measurements;
-    accelYsum /= constants::number_of_measurements;
-    accelZsum /= constants::number_of_measurements;
+    accelXsum = a.orientation.x;
+    accelYsum = a.orientation.y;
+    accelZsum = a.orientation.z;
 
     // Calculate of roll and pitch in deg
     pointing_altitude = atan2(accelXsum, sqrt(square(accelYsum) + square(accelZsum))) / (constants::pi / 180);
@@ -846,7 +837,7 @@ void boot_init_exit_tracking_mode()
 
     new_starting_position();
 
-    continous_tracking = false;
+    continous_tracking = true;
     mode = GETTING_STAR_LOCATION;
 }
 void boot_init_exit_func1()
@@ -1213,10 +1204,18 @@ void EEPROM::dynamic_print_eeprom(displayconfig &cnfg, T val, unsigned int addre
 bool all_motors_ready_to_move()
 {
 
-    if ((az_motor_target_reached == false) && (alt_motor_target_reached == false) && (startracker->IsVisible() == true) && (tracking_finished == false))
+    if ((continous_tracking != true) && (az_motor_target_reached == false) && (alt_motor_target_reached == false) && (startracker->IsVisible() == true) && (tracking_finished == false))
     {
         return true;
     }
+    else if (continous_tracking == true)
+    {
+        if (startracker->IsVisible() && (round(abs(azimuth_target - motor1.get_position())) >= constants::minimal_deg_diff_to_move) && (round(abs(altitude_target - motor2.get_position())) >= constants::minimal_deg_diff_to_move))
+            return true;
+        else
+            return false;
+    }
+
     else
     {
         return false;
@@ -1236,6 +1235,7 @@ bool reset_ready_to_move_markers()
 void Az_engine() //need to be in some standalone function cuz it is not attached to pin interuppt
 {
     az_motor_target_reached = false;
+
     motor1.start();
 
     if (motor1.target_reached())
@@ -2013,17 +2013,13 @@ void manual_calibration_screen()
 }
 void decodeIR_remote()
 {
-    //using lambda to run this code once
+
     static Simpletimer::callback IRremote_exit_functions[4] = {go_to_main, reset_all_go_to_main, switch_laser, turn_on_off_calibration};
     static uint8_t IRremote_exit_commands[4] = {plus, minus, zero, two};
 
     remote_input_handler_selector(IRremote_exit_functions, IRremote_exit_commands, (size_t)4);
 }
 #pragma endregion Position_calibration
-// continous TRACKING_MODE
-#pragma region continous_tracking
-
-#pragma endregion continous_tracking
 
 #pragma region debugging_mode
 #if DEBUG
@@ -2035,7 +2031,7 @@ void debug_motors()
     motor2.limit(120, 255);
     motor2.start(); */
     motor1.set_target(100);
-    motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
+    motor1.limit(200, 255);
     motor1.start();
     if (logtimer.timer(1000))
     {
@@ -2070,42 +2066,9 @@ void debug_motors()
     // debugbuffer.disp = String(motor2.get_position());
     // dynamic_print(debug_motor_display, debugbuffer);
 }
-void debug_rtc()
-{
-    t = rtc.getTime();
-    displayconfig debugrtc;
-    print(String(t.hour), debugrtc);
-    debugrtc.next_row(3);
-    print(String(t.min), debugrtc);
-    debugrtc.next_row(3);
-    print(String(t.sec), debugrtc);
-    debugrtc.next_row(3);
-    print(String(t.year), debugrtc);
-    debugrtc.next_row(3);
-    print(String(t.mon), debugrtc);
-    debugrtc.next_row(3);
-    print(String(t.date), debugrtc);
 
-    debugrtc.reset_cursor();
-}
 #pragma region testing
 //compass new class tests
-
-void init_compass_test()
-{
-    Compass.SetDeclination(offsets::magnetic_declination_hours, offsets::magnetic_declination_minutes, offsets::declination_dir);
-    Compass.SetSamplingMode(COMPASS_SINGLE);
-    Compass.SetScale(COMPASS_SCALE_130);
-    Compass.SetOrientation(COMPASS_HORIZONTAL_Y_NORTH);
-}
-float read_compass_test()
-{
-    float heading_test = Compass.GetHeadingDegrees();
-
-    LOG("Heading:");
-    LOG(heading_test);
-    return heading_test;
-}
 
 //
 #pragma endregion testing

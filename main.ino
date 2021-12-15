@@ -83,7 +83,7 @@ void loop()
 #if DEBUG
         while (DEBUG)
         {
-            read_compass();
+            debug_motors();
         }
 #endif
         mode = INIT_PROCEDURE;
