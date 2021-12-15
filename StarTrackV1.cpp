@@ -3,17 +3,13 @@
  * @author @b Natan @b Lisowski @github: @b @natnqweb   @email: @c pythonboardsbeta@gmail.com
  * 
  * */
-<<<<<<< HEAD
-
-=======
->>>>>>> 720f2df7715c9be7c7b9e9efcc2924ef06955e37
 #pragma region constructor_definitions
 void displayconfig::next_row(int how_many_rows_further, uint8_t pixels)
 {
 
     this->row += (pixels * how_many_rows_further);
 }
-void displayconfig::next_column(int how_many_columns , uint8_t pixels )
+void displayconfig::next_column(int how_many_columns, uint8_t pixels)
 {
     this->column += (pixels * how_many_columns);
 }
@@ -23,7 +19,7 @@ void displayconfig::reset_cursor()
     this->column = 0;
     this->row = 0;
 }
-void displayconfig::set_cursor(int row, int column, uint8_t pixels )
+void displayconfig::set_cursor(int row, int column, uint8_t pixels)
 {
 
     this->row = (pixels * row);
@@ -2024,6 +2020,12 @@ void decodeIR_remote()
     remote_input_handler_selector(IRremote_exit_functions, IRremote_exit_commands, (size_t)4);
 }
 #pragma endregion Position_calibration
+// continous TRACKING_MODE
+#pragma region continous_tracking
+
+#pragma endregion continous_tracking
+
+#pragma region debugging_mode
 #if DEBUG
 
 void debug_motors()
@@ -2108,4 +2110,5 @@ float read_compass_test()
 //
 #pragma endregion testing
 #endif
+#pragma endregion debugging_mode
 #pragma endregion functions
