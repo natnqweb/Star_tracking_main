@@ -5,7 +5,10 @@
  * @author @b Natan @b Lisowski @github: @b @natnqweb   @email: @c pythonboardsbeta@gmail.com
  * 
  * */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 720f2df7715c9be7c7b9e9efcc2924ef06955e37
 #pragma region constructor_definitions
 void displayconfig::next_row(int how_many_rows_further, uint8_t pixels)
 {
@@ -103,139 +106,6 @@ T EEPROM::read(unsigned int address)
 #pragma endregion eeprom
 #pragma region functions
 #pragma region calculations_and_sensors
-#line 104 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void laser(bool on_off);
-#line 109 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void read_compass();
-#line 159 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void RTC_calibration();
-#line 172 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void init_accel();
-#line 191 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void compass_init();
-#line 205 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void initialize_();
-#line 229 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void switch_laser();
-#line 234 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void reset_all_go_to_main();
-#line 242 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void go_to_main();
-#line 249 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void readGPS();
-#line 259 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void calculate_starposition();
-#line 326 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void updateAccel();
-#line 356 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void clearDisplay();
-#line 476 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void updateDisplay();
-#line 731 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void clear_all_buffers();
-#line 764 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-template <class T>void TFT_dispStr(T message, int column, int row, uint8_t textsize);
-#line 782 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-template <class T>void TFT_clear(T message, int column, int row, uint8_t textsize);
-#line 793 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void clear_exit_disp();
-#line 841 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void boot_init_exit_tracking_mode();
-#line 853 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void boot_init_exit_func1();
-#line 858 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void set_true_confirm();
-#line 872 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void boot_init_exit_func2();
-#line 877 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void boot_init_exit_func3();
-#line 882 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void boot_init_exit_func4();
-#line 887 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void boot_init_procedure();
-#line 948 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void new_starting_position();
-#line 966 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-uint8_t* decodeIRfun();
-#line 995 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void entering_dec_exit_handle();
-#line 1009 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void entering_ra_exit_handle();
-#line 1023 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void edit_Ra_Dec();
-#line 1049 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void edit_ra();
-#line 1063 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void edit_dec();
-#line 1080 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void offset_select_remote_exit_play();
-#line 1092 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void offset_select_remote_exit_one();
-#line 1105 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void offset_select_remote_exit_two();
-#line 1117 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void offset_select();
-#line 1136 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-template <class T>void clear(T sentence, displayconfig &cnfg);
-#line 1141 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-template <class T>void print(T sentence, displayconfig &cnfg);
-#line 1146 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-template <class T>void dynamic_print(displayconfig &cnfg, buffers<T> &buffs);
-#line 1214 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-bool all_motors_ready_to_move();
-#line 1226 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-bool reset_ready_to_move_markers();
-#line 1237 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void Az_engine();
-#line 1249 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void Alt_engine();
-#line 1273 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void offset_disp_exit_procedure();
-#line 1288 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void input_offsets();
-#line 1313 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void exit_lat();
-#line 1326 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void exit_long();
-#line 1342 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void edit_lat();
-#line 1356 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void edit_long();
-#line 1371 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-const char * command_decoder(uint8_t command);
-#line 1445 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void remote_input_handler_str(void_func *exitprint, String &result, uint8_t *number, displayconfig &cnfg, size_t size);
-#line 1640 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void remote_input_handler_selector(void_func *exitprint, uint8_t *number, size_t size);
-#line 1873 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void check_gps_accel_compass();
-#line 1880 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void clear_calibration_screen();
-#line 1908 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void position_calibration_exit_func1();
-#line 1916 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void position_calibration_exit_cancel();
-#line 1923 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void turn_on_off_calibration();
-#line 1929 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void position_calibration_exit_manual();
-#line 1937 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void position_calibration_display();
-#line 1975 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void clear_manual_calibration_disp();
-#line 1984 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void manual_calibration_exit_confirm();
-#line 1992 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void manual_calibration_exit_leave();
-#line 2002 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void manual_calibration_screen();
-#line 2015 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void decodeIR_remote();
-#line 9 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\main.ino"
-void setup();
-#line 18 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\main.ino"
-void loop();
-#line 104 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void laser(bool on_off)
 {
     digitalWrite(Laser_pin, on_off);

@@ -3,7 +3,10 @@
  * @author @b Natan @b Lisowski @github: @b @natnqweb   @email: @c pythonboardsbeta@gmail.com
  * 
  * */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 720f2df7715c9be7c7b9e9efcc2924ef06955e37
 #pragma region constructor_definitions
 void displayconfig::next_row(int how_many_rows_further, uint8_t pixels)
 {
