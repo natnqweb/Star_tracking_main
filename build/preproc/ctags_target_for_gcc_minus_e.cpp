@@ -2273,7 +2273,7 @@ void Alt_engine()
             newcursor->column = 0;
             newcursor->next_row();
             clear(startracker->get_star_Azimuth(), *newcursor);
-            newcursor->next_column();
+            newcursor->next_column(15);
             clear(startracker->get_star_Altitude(), *newcursor);
             delay(1000);
             // delete pointer
