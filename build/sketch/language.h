@@ -8,6 +8,8 @@
 //#define eng "english" //uncomment this line and comment line 2 to change language
 #pragma region polish
 #ifdef pl
+#define un_current_mode F("aktualny tryb")
+
 #define un_azimuth F("azymut") //short from universal azimuth
 #define un_altitude F("wysokosc")
 #define un_declination F("deklinacja")
@@ -62,12 +64,15 @@
 #define un_exit_press F("aby wyjsc wcisnij 0")
 #define un_use_compass_to_find_north F("uzyj busoli i wskaz polnoc")
 #define un_continouse_tracking F("tryb ciaglego sledzenia")
+#define un_track_once F("tryb pojedynczy")
 #define un_star_azimuth F("azymut gwiazdy")
 #define un_star_altitude F("wzniesienie gwiazdy")
 #endif
 #pragma endregion polish
 #pragma region english
 #ifdef eng
+#define un_current_mode F("current mode")
+#define un_track_once F("track once mode")
 #define un_star_azimuth F("star azimuth")
 #define un_star_altitude F("star altitude")
 #define un_continouse_tracking F("continous tracking")

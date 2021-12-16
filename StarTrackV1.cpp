@@ -127,7 +127,6 @@ void read_compass()
     if (heading > 2 * PI)
         heading -= 2 * PI;
     // Convert radians to degrees for readability.
-
     degs headingDegrees = heading * 180 / M_PI;
 
     if (headingDegrees >= 1 && headingDegrees < 240)
@@ -302,6 +301,7 @@ void calculate_starposition()
         azimuth_target = star.azimuth * constants::motor1_gear_ratio;
         altitude_target = star.altitude * constants::motor2_gear_ratio;
         ready_to_move = true;
+        //  motor position detection system
         if (all_motors_ready_to_move())
         {
 
@@ -309,7 +309,23 @@ void calculate_starposition()
             motor1.limit(constants::motor1_lower_limit, constants::motor1_upper_limit);
             motor2.set_target(altitude_target);
             motor2.limit(constants::motor2_lower_limit, constants::motor2_upper_limit);
-            mode = MOVEMOTOR1;
+
+            if (continous_tracking)
+            {
+
+                if (az_motor_target_reached || alt_motor_target_reached)
+                {
+
+                    if (az_motor_target_reached)
+                        mode = MOVEMOTOR2;
+                    else
+                        mode = MOVEMOTOR1;
+                }
+                else
+                    mode = MOVEMOTOR1;
+            }
+            else
+                mode = MOVEMOTOR1;
             laser(on);
         }
     }
@@ -365,10 +381,17 @@ void clearDisplay()
     clear(un_day, mainscreen);
     mainscreen.next_row();
     clear(un_time_utc, mainscreen);
+    /*   
+      ------------------------------------------------display current mode ---------------------------------------------------------------------------
+    */
     mainscreen.set_cursor(31, 23);
-    if (mode == DISPLAY_RESULTS)
-        clear(un_star_found, mainscreen);
+    clear(un_current_mode, mainscreen);
+    mainscreen.next_row();
+    continous_tracking ? clear(un_continouse_tracking, mainscreen) : clear(un_track_once, mainscreen);
     mainscreen.reset_cursor();
+    /*   
+      ------------------------------------------------ end of display current mode ---------------------------------------------------------------------------
+    */
     //other method
     mainscreen.next_column(31);
     clear(un_laser_angle, mainscreen);
@@ -492,15 +515,17 @@ void updateDisplay()
       ------------------------------------------------end of display variable name---------------------------------------------------------------------------
     */
     /*   
-      ------------------------------------------------display if star was found or not visible or not ---------------------------------------------------------------------------
+      ------------------------------------------------display current mode ---------------------------------------------------------------------------
     */
     mainscreen.set_cursor(31, 23);
-    if (mode == DISPLAY_RESULTS)
-        print(un_star_found, mainscreen);
+    print(un_current_mode, mainscreen);
+    mainscreen.next_row();
+    continous_tracking ? print(un_continouse_tracking, mainscreen) : print(un_track_once, mainscreen);
     mainscreen.reset_cursor();
     /*   
-      ------------------------------------------------ end of display if star was found or not visible or not ---------------------------------------------------------------------------
+      ------------------------------------------------ end of display current mode ---------------------------------------------------------------------------
     */
+
     /*   
       ------------------------------------------------print accelerometer information cursor set on column 31 row 0 -------------------------------------------------------------------------------------------------------------------------------------------------------------
     */
@@ -1210,8 +1235,14 @@ bool all_motors_ready_to_move()
     }
     else if (continous_tracking == true)
     {
-        if (startracker->IsVisible() && (round(abs(azimuth_target - motor1.get_position())) >= constants::minimal_deg_diff_to_move) && (round(abs(altitude_target - motor2.get_position())) >= constants::minimal_deg_diff_to_move))
+        if (startracker->IsVisible() && ((round(abs(azimuth_target - motor1.get_position())) >= constants::minimal_deg_diff_to_move) || (round(abs(altitude_target - motor2.get_position())) >= constants::minimal_deg_diff_to_move)))
+        {
+            if ((round(abs(azimuth_target - motor1.get_position())) >= constants::minimal_deg_diff_to_move))
+                az_motor_target_reached = false;
+            if ((round(abs(altitude_target - motor2.get_position())) >= constants::minimal_deg_diff_to_move))
+                alt_motor_target_reached = false;
             return true;
+        }
         else
             return false;
     }
@@ -1256,13 +1287,43 @@ void Alt_engine()
         alt_motor_target_reached = true;
 
         az_motor_target_reached ? mode = GETTING_STAR_LOCATION : mode = MOVEMOTOR1;
-        if (mode == GETTING_STAR_LOCATION)
+        if (mode == GETTING_STAR_LOCATION && continous_tracking == false)
         {
+            displayconfig *newcursor = new displayconfig;
             delay(200);
+            //clear main disp
             clearDisplay();
-            delay(200);
             clear_all_buffers();
-            delay(200);
+            delay(100);
+            // print star found sccessfully
+            newcursor->reset_cursor();
+            print(un_star_found, *newcursor);
+            newcursor->next_row(15);
+            print(un_azimuth, *newcursor);
+            newcursor->next_column(15);
+            print(un_altitude, *newcursor);
+            newcursor->column = 0;
+            newcursor->next_row();
+            print(startracker->get_star_Azimuth(), *newcursor);
+            newcursor->next_column(15);
+            print(startracker->get_star_Altitude(), *newcursor);
+
+            delay(5000);
+            //clear message
+            newcursor->reset_cursor();
+            clear(un_star_found, *newcursor);
+            newcursor->next_row(15);
+            clear(un_azimuth, *newcursor);
+            newcursor->next_column(15);
+            clear(un_altitude, *newcursor);
+            newcursor->column = 0;
+            newcursor->next_row();
+            clear(startracker->get_star_Azimuth(), *newcursor);
+            newcursor->next_column();
+            clear(startracker->get_star_Altitude(), *newcursor);
+            delay(1000);
+            // delete pointer
+            delete newcursor;
         }
         tracking_finished = true;
     }

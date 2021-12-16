@@ -24,6 +24,7 @@
 #include <Simpletimer.h>
 #include <uEEPROMLib.h>
 #include <Motor_PID.h>
+
 #pragma endregion includes
 #pragma region definitions
 #define EMPTYSTRING ""
@@ -289,7 +290,7 @@ float day, month, year, TIME, MIN, HOUR, SEKUNDA; //datetime
 degs pointing_altitude;                           //data from accel
 degs starting_position_az, starting_position_alt; // calibration starting point for encoder so you dont need to level it every time manually
 uint8_t _no_command_decoded = 0x00;
-
+//unsigned int tracking_counter = 0;
 float accelXsum = 0;
 float accelYsum = 0;
 float accelZsum = 0;
