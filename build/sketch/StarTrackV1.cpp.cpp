@@ -152,83 +152,101 @@ void boot_init_exit_func3();
 void boot_init_exit_func4();
 #line 902 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void boot_init_procedure();
-#line 963 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 967 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void new_starting_position();
-#line 981 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 985 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 uint8_t* decodeIRfun();
-#line 1010 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1014 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void entering_dec_exit_handle();
-#line 1024 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1028 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void entering_ra_exit_handle();
-#line 1038 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1042 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_Ra_Dec();
-#line 1064 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1068 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_ra();
-#line 1078 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1082 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_dec();
-#line 1095 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1099 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void offset_select_clear_screen();
+#line 1116 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_select_remote_exit_play();
-#line 1107 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1121 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_select_remote_exit_one();
-#line 1120 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-void offset_select_remote_exit_two();
-#line 1132 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1127 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void offset_select_remote_exit_tracking_conditions();
+#line 1135 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_select();
-#line 1151 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1158 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 template <class T>void clear(T sentence, displayconfig &cnfg);
-#line 1156 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1163 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 template <class T>void print(T sentence, displayconfig &cnfg);
-#line 1161 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1168 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 template <class T>void dynamic_print(displayconfig &cnfg, buffers<T> &buffs);
-#line 1229 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1236 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 bool all_motors_ready_to_move();
-#line 1255 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1262 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 bool reset_ready_to_move_markers();
-#line 1266 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1273 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void Az_engine();
-#line 1279 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1286 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void Alt_engine();
-#line 1333 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1340 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void offset_disp_exit_procedure();
-#line 1348 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1357 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void inputscreenclear();
+#line 1382 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void clear_not_selected_screen();
+#line 1413 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void tracking_conditions_confirm();
+#line 1421 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void tracking_conditions_select_azimuth();
+#line 1428 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void tracking_conditions_select_altitude();
+#line 1435 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void exit_conditions();
+#line 1471 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void edit_minimum_Az_deg();
+#line 1487 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+void edit_minimum_Alt_deg();
+#line 1501 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void input_offsets();
-#line 1373 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1559 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void exit_lat();
-#line 1386 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1572 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void exit_long();
-#line 1402 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1588 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_lat();
-#line 1416 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1602 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void edit_long();
-#line 1431 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1617 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 const char * command_decoder(uint8_t command);
-#line 1505 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1691 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void remote_input_handler_str(void_func *exitprint, String &result, uint8_t *number, displayconfig &cnfg, size_t size);
-#line 1700 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 1886 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void remote_input_handler_selector(void_func *exitprint, uint8_t *number, size_t size);
-#line 1933 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 2119 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void check_gps_accel_compass();
-#line 1940 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 2126 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void clear_calibration_screen();
-#line 1968 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 2154 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void position_calibration_exit_func1();
-#line 1976 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 2162 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void position_calibration_exit_cancel();
-#line 1983 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 2169 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void turn_on_off_calibration();
-#line 1989 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 2175 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void position_calibration_exit_manual();
-#line 1997 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 2183 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void position_calibration_display();
-#line 2035 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 2221 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void clear_manual_calibration_disp();
-#line 2044 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 2230 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void manual_calibration_exit_confirm();
-#line 2052 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 2238 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void manual_calibration_exit_leave();
-#line 2062 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 2248 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void manual_calibration_screen();
-#line 2075 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+#line 2261 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
 void decodeIR_remote();
 #line 9 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\main.ino"
 void setup();
@@ -1038,7 +1056,11 @@ void boot_init_procedure()
 {
     displayconfig boot_init_disp;
     boot_init_disp.reset_cursor();
-
+    load_data_from_eeprom.Run([&]()
+                              {
+                                  offsets::minimal_deg_alt_to_move = EEPROM::read<float>(EEPROM::addresses::min_Alt_diff_to_move);
+                                  offsets::minimal_deg_az_to_move = EEPROM::read<float>(EEPROM::addresses::min_Az_diff_to_move);
+                              });
     void_func exit_functions[6] = {set_true_confirm, boot_init_exit_func1, boot_init_exit_func2, boot_init_exit_func3, boot_init_exit_func4, boot_init_exit_tracking_mode};
     uint8_t commands[6] = {play, EQ, zero, plus, minus, one};
     size_t number_of_functions = sizeof(commands);
@@ -1227,41 +1249,40 @@ void edit_dec()
 #pragma endregion editing_ra_dec
 
 #pragma region offset_selectscrn
-void offset_select_remote_exit_play()
+void offset_select_clear_screen()
 {
+    offsets_screen.reset_cursor();
     clear("1-", offsets_screen);
     offsets_screen.next_row();
     clear("2-", offsets_screen);
+    offsets_screen.next_row();
+    clear("3-", offsets_screen);
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
     clear(un_enter_accel_offset, offsets_screen);
     offsets_screen.next_row();
     clear(un_enter_az_offset, offsets_screen);
+    offsets_screen.next_row();
+    clear(un_edit_motor_reaction, offsets_screen);
+    offsets_screen.reset_cursor();
+}
+void offset_select_remote_exit_play()
+{
+    offset_select_clear_screen();
     mode = GETTING_STAR_LOCATION;
 }
 void offset_select_remote_exit_one()
 {
-    clear("1-", offsets_screen);
-    offsets_screen.next_row();
-    clear("2-", offsets_screen);
-    offsets_screen.reset_cursor();
-    offsets_screen.next_column(3);
-    clear(un_enter_accel_offset, offsets_screen);
-    offsets_screen.next_row();
-    clear(un_enter_az_offset, offsets_screen);
+    offset_select_clear_screen();
     mode = OFFSET_EDIT;
     offset_edit_mode = offset_editing::MAGNETIC;
 }
-void offset_select_remote_exit_two()
+void offset_select_remote_exit_tracking_conditions()
 {
-    clear("1-", offsets_screen);
-    offsets_screen.next_row();
-    clear("2-", offsets_screen);
-    offsets_screen.reset_cursor();
-    offsets_screen.next_column(3);
-    clear(un_enter_accel_offset, offsets_screen);
-    offsets_screen.next_row();
-    clear(un_enter_az_offset, offsets_screen);
+    offset_select_clear_screen();
+    mode = OFFSET_EDIT;
+    run_tr_scr_once.Reset();
+    offset_edit_mode = offset_editing::TRACKING_CONDITIONS;
 }
 
 void offset_select() // todo: let user enter all offsets independently from this set in program
@@ -1270,14 +1291,18 @@ void offset_select() // todo: let user enter all offsets independently from this
     print("1-", offsets_screen);
     offsets_screen.next_row();
     print("2-", offsets_screen);
+    offsets_screen.next_row();
+    print("3-", offsets_screen);
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
     print(un_enter_accel_offset, offsets_screen);
     offsets_screen.next_row();
     print(un_enter_az_offset, offsets_screen);
+    offsets_screen.next_row();
+    print(un_edit_motor_reaction, offsets_screen);
     offsets_screen.reset_cursor();
-    void_func exit_func[3] = {offset_select_remote_exit_one, offset_select_remote_exit_one, offset_select_remote_exit_play};
-    uint8_t exit_commands[3] = {one, two, play};
+    void_func exit_func[4] = {offset_select_remote_exit_one, offset_select_remote_exit_one, offset_select_remote_exit_tracking_conditions, offset_select_remote_exit_play};
+    uint8_t exit_commands[4] = {one, two, three, play};
     size_t number_of_functions = sizeof(exit_commands);
     remote_input_handler_selector(exit_func, exit_commands, number_of_functions);
 }
@@ -1370,11 +1395,11 @@ bool all_motors_ready_to_move()
     }
     else if (continous_tracking == true)
     {
-        if (startracker->IsVisible() && ((round(abs(azimuth_target - motor1.get_position())) >= constants::minimal_deg_diff_to_move) || (round(abs(altitude_target - motor2.get_position())) >= constants::minimal_deg_diff_to_move)))
+        if (startracker->IsVisible() && ((round(abs(azimuth_target - motor1.get_position())) >= offsets::minimal_deg_az_to_move) || (round(abs(altitude_target - motor2.get_position())) >= offsets::minimal_deg_alt_to_move)))
         {
-            if ((round(abs(azimuth_target - motor1.get_position())) >= constants::minimal_deg_diff_to_move))
+            if ((round(abs(azimuth_target - motor1.get_position())) >= offsets::minimal_deg_az_to_move))
                 az_motor_target_reached = false;
-            if ((round(abs(altitude_target - motor2.get_position())) >= constants::minimal_deg_diff_to_move))
+            if ((round(abs(altitude_target - motor2.get_position())) >= offsets::minimal_deg_alt_to_move))
                 alt_motor_target_reached = false;
             return true;
         }
@@ -1480,13 +1505,157 @@ void offset_disp_exit_procedure()
 
     automatic_calibration ? mode = GETTING_STAR_LOCATION : mode = MANUAL_CALIBRATION;
 }
+#pragma region exit_procedures_tracking_conditions_screen
+
+void inputscreenclear()
+{
+    if (Az_conditions)
+    {
+        displayconfig tracking_conditions_disp;
+        tracking_conditions_disp.reset_cursor();
+        print(un_enter_minimum_degree_motor_will_react_on, tracking_conditions_disp);
+        tracking_conditions_disp.next_row();
+        clear(un_azimuth, tracking_conditions_disp);
+        tracking_conditions_disp.next_row();
+        clear(stringbufferTC.disp, tracking_conditions_disp);
+        tracking_conditions_disp.reset_cursor();
+    }
+    else if (Alt_conditions)
+    {
+        displayconfig tracking_conditions_disp;
+        tracking_conditions_disp.reset_cursor();
+        clear(un_enter_minimum_degree_motor_will_react_on, tracking_conditions_disp);
+        tracking_conditions_disp.next_row();
+        clear(un_altitude, tracking_conditions_disp);
+        tracking_conditions_disp.next_row();
+        clear(stringbufferTC.disp, tracking_conditions_disp);
+        tracking_conditions_disp.reset_cursor();
+    }
+}
+void clear_not_selected_screen()
+{
+    displayconfig tracking_conditions_disp;
+    tracking_conditions_disp.reset_cursor();
+    clear(un_select_wich_minimum_degree_you_want_to_edit, tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    //option 1 select azimuth press 1
+    clear(un_azimuth, tracking_conditions_disp);
+    int previous_cursorp_col = tracking_conditions_disp.column;
+    int previous_cursorp_row = tracking_conditions_disp.row;
+    tracking_conditions_disp.next_column(10);
+    clear(un_press_1, tracking_conditions_disp);
+    //option 2 select altitude press 2
+    tracking_conditions_disp.set_cursor(previous_cursorp_row, previous_cursorp_col);
+    tracking_conditions_disp.next_row();
+    clear(un_altitude, tracking_conditions_disp);
+    tracking_conditions_disp.next_column(15);
+    clear(un_press_2, tracking_conditions_disp);
+    tracking_conditions_disp.reset_cursor();
+    //display current eeprom memory data
+    tracking_conditions_disp.set_cursor(25, 0);
+    clear(un_azimuth, tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    clear(un_altitude, tracking_conditions_disp);
+    tracking_conditions_disp.set_cursor(25, 15);
+    clear(EEPROM::read<float>(EEPROM::min_Az_diff_to_move), tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    clear(EEPROM::read<float>(EEPROM::min_Alt_diff_to_move), tracking_conditions_disp);
+    tracking_conditions_disp.reset_cursor();
+    run_tr_scr_once.Reset();
+}
+void tracking_conditions_confirm()
+{
+    tracking_not_selected = true;
+    Az_conditions = false;
+    Alt_conditions = false;
+    clear_not_selected_screen();
+    mode = INIT_PROCEDURE;
+}
+void tracking_conditions_select_azimuth()
+{
+    tracking_not_selected = false;
+    Az_conditions = true;
+    Alt_conditions = false;
+    clear_not_selected_screen();
+}
+void tracking_conditions_select_altitude()
+{
+    tracking_not_selected = false;
+    Alt_conditions = true;
+    Az_conditions = false;
+    clear_not_selected_screen();
+}
+void exit_conditions()
+{
+    //transfer input string to int
+    if (Alt_conditions)
+    {
+
+        if ((input_str_tracking_conditions.toFloat() * constants::motor2_gear_ratio) >= 1)
+        {
+            EEPROM::write(EEPROM::addresses::min_Alt_diff_to_move, (input_str_tracking_conditions.toFloat() * constants::motor2_gear_ratio));
+        }
+        else
+        {
+            EEPROM::write(EEPROM::addresses::min_Alt_diff_to_move, (float)1);
+        }
+    }
+    else if (Az_conditions)
+    {
+        if ((input_str_tracking_conditions.toFloat() * constants::motor1_gear_ratio) >= 1)
+        {
+            EEPROM::write(EEPROM::addresses::min_Az_diff_to_move, (input_str_tracking_conditions.toFloat() * constants::motor1_gear_ratio));
+        }
+        else
+        {
+            EEPROM::write(EEPROM::addresses::min_Az_diff_to_move, (float)1);
+        }
+    }
+    //reset all markers and go back to selectionscreen
+    inputscreenclear();
+    tracking_not_selected = true;
+    Az_conditions = false;
+    Alt_conditions = false;
+    stringbufferTC.clear_buffer();
+    load_data_from_eeprom.Reset();
+    input_str_tracking_conditions = EMPTYSTRING;
+}
+#pragma endregion exit_procedures_tracking_conditions_screen
+void edit_minimum_Az_deg()
+{
+
+    //print current az input
+    tracking_conditions_disp.reset_cursor();
+    print(un_enter_minimum_degree_motor_will_react_on, tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    print(un_azimuth, tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    stringbufferTC.disp = input_str_tracking_conditions;
+    dynamic_print(tracking_conditions_disp, stringbufferTC);
+    tracking_conditions_disp.reset_cursor();
+    void_func functions[1] = {exit_conditions};
+    uint8_t commandseletc[1] = {play};
+    remote_input_handler_str(functions, input_str_tracking_conditions, commandseletc, tracking_conditions_disp, 1);
+}
+void edit_minimum_Alt_deg()
+{
+    tracking_conditions_disp.reset_cursor();
+    print(un_enter_minimum_degree_motor_will_react_on, tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    print(un_altitude, tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    stringbufferTC.disp = input_str_tracking_conditions;
+    dynamic_print(tracking_conditions_disp, stringbufferTC);
+    tracking_conditions_disp.reset_cursor();
+    void_func functions[1] = {exit_conditions};
+    uint8_t commandseletc[1] = {play};
+    remote_input_handler_str(functions, input_str_tracking_conditions, commandseletc, tracking_conditions_disp, 1);
+}
 void input_offsets()
 {
 
-    switch (offset_edit_mode)
+    if (offset_edit_mode == offset_editing::MAGNETIC)
     {
-
-    case offset_editing::MAGNETIC:
         displayconfig edit_magnetic_var;
         edit_magnetic_var.reset_cursor();
 
@@ -1500,6 +1669,41 @@ void input_offsets()
         void_func exit_functions[1] = {offset_disp_exit_procedure};
         size_t number_of_functions = sizeof(exit_commands);
         remote_input_handler_str(exit_functions, input_MAG_DEC, exit_commands, deleteallinput, number_of_functions);
+    }
+    else if (offset_edit_mode == offset_editing::TRACKING_CONDITIONS)
+    {
+        run_tr_scr_once.Run([&]()
+                            {
+                                tracking_conditions_disp.reset_cursor();
+                                print(un_select_wich_minimum_degree_you_want_to_edit, tracking_conditions_disp);
+                                tracking_conditions_disp.next_row();
+                                //option 1 select azimuth press 1
+                                print(un_azimuth, tracking_conditions_disp);
+                                int previous_cursorp_col = tracking_conditions_disp.column;
+                                int previous_cursorp_row = tracking_conditions_disp.row;
+                                tracking_conditions_disp.next_column(10);
+                                print(un_press_1, tracking_conditions_disp);
+                                //option 2 select altitude press 2
+                                tracking_conditions_disp.set_cursor(previous_cursorp_row, previous_cursorp_col);
+                                tracking_conditions_disp.next_row();
+                                print(un_altitude, tracking_conditions_disp);
+                                tracking_conditions_disp.next_column(15);
+                                print(un_press_2, tracking_conditions_disp);
+                                tracking_conditions_disp.reset_cursor();
+                                //display current eeprom memory data
+                                tracking_conditions_disp.set_cursor(25, 0);
+                                print(un_azimuth, tracking_conditions_disp);
+                                tracking_conditions_disp.next_row();
+                                print(un_altitude, tracking_conditions_disp);
+                                tracking_conditions_disp.set_cursor(25, 15);
+                                print(EEPROM::read<float>(EEPROM::addresses::min_Az_diff_to_move), tracking_conditions_disp);
+                                tracking_conditions_disp.next_row();
+                                print(EEPROM::read<float>(EEPROM::addresses::min_Alt_diff_to_move), tracking_conditions_disp);
+                                tracking_conditions_disp.reset_cursor();
+                                                        });
+        void_func options[3] = {tracking_conditions_select_azimuth, tracking_conditions_select_altitude, tracking_conditions_confirm};
+        uint8_t command_select[3] = {one, two, play};
+        remote_input_handler_selector(options, command_select, 3);
     }
 }
 
@@ -2348,7 +2552,13 @@ void loop()
         offset_select();
         break;
     case OFFSET_EDIT:
+
         input_offsets();
+        while (Alt_conditions)
+            edit_minimum_Alt_deg();
+        while (Az_conditions)
+            edit_minimum_Az_deg();
+
         break;
     case MANUAL_CALIBRATION:
         manual_calibration_screen();

@@ -73,7 +73,13 @@ void loop()
         offset_select();
         break;
     case OFFSET_EDIT:
+
         input_offsets();
+        while (Alt_conditions)
+            edit_minimum_Alt_deg();
+        while (Az_conditions)
+            edit_minimum_Az_deg();
+
         break;
     case MANUAL_CALIBRATION:
         manual_calibration_screen();

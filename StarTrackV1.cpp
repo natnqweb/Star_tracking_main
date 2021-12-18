@@ -903,7 +903,11 @@ void boot_init_procedure()
 {
     displayconfig boot_init_disp;
     boot_init_disp.reset_cursor();
-
+    load_data_from_eeprom.Run([&]()
+                              {
+                                  offsets::minimal_deg_alt_to_move = EEPROM::read<float>(EEPROM::addresses::min_Alt_diff_to_move);
+                                  offsets::minimal_deg_az_to_move = EEPROM::read<float>(EEPROM::addresses::min_Az_diff_to_move);
+                              });
     void_func exit_functions[6] = {set_true_confirm, boot_init_exit_func1, boot_init_exit_func2, boot_init_exit_func3, boot_init_exit_func4, boot_init_exit_tracking_mode};
     uint8_t commands[6] = {play, EQ, zero, plus, minus, one};
     size_t number_of_functions = sizeof(commands);
@@ -1092,41 +1096,40 @@ void edit_dec()
 #pragma endregion editing_ra_dec
 
 #pragma region offset_selectscrn
-void offset_select_remote_exit_play()
+void offset_select_clear_screen()
 {
+    offsets_screen.reset_cursor();
     clear("1-", offsets_screen);
     offsets_screen.next_row();
     clear("2-", offsets_screen);
+    offsets_screen.next_row();
+    clear("3-", offsets_screen);
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
     clear(un_enter_accel_offset, offsets_screen);
     offsets_screen.next_row();
     clear(un_enter_az_offset, offsets_screen);
+    offsets_screen.next_row();
+    clear(un_edit_motor_reaction, offsets_screen);
+    offsets_screen.reset_cursor();
+}
+void offset_select_remote_exit_play()
+{
+    offset_select_clear_screen();
     mode = GETTING_STAR_LOCATION;
 }
 void offset_select_remote_exit_one()
 {
-    clear("1-", offsets_screen);
-    offsets_screen.next_row();
-    clear("2-", offsets_screen);
-    offsets_screen.reset_cursor();
-    offsets_screen.next_column(3);
-    clear(un_enter_accel_offset, offsets_screen);
-    offsets_screen.next_row();
-    clear(un_enter_az_offset, offsets_screen);
+    offset_select_clear_screen();
     mode = OFFSET_EDIT;
     offset_edit_mode = offset_editing::MAGNETIC;
 }
-void offset_select_remote_exit_two()
+void offset_select_remote_exit_tracking_conditions()
 {
-    clear("1-", offsets_screen);
-    offsets_screen.next_row();
-    clear("2-", offsets_screen);
-    offsets_screen.reset_cursor();
-    offsets_screen.next_column(3);
-    clear(un_enter_accel_offset, offsets_screen);
-    offsets_screen.next_row();
-    clear(un_enter_az_offset, offsets_screen);
+    offset_select_clear_screen();
+    mode = OFFSET_EDIT;
+    run_tr_scr_once.Reset();
+    offset_edit_mode = offset_editing::TRACKING_CONDITIONS;
 }
 
 void offset_select() // todo: let user enter all offsets independently from this set in program
@@ -1135,14 +1138,18 @@ void offset_select() // todo: let user enter all offsets independently from this
     print("1-", offsets_screen);
     offsets_screen.next_row();
     print("2-", offsets_screen);
+    offsets_screen.next_row();
+    print("3-", offsets_screen);
     offsets_screen.reset_cursor();
     offsets_screen.next_column(3);
     print(un_enter_accel_offset, offsets_screen);
     offsets_screen.next_row();
     print(un_enter_az_offset, offsets_screen);
+    offsets_screen.next_row();
+    print(un_edit_motor_reaction, offsets_screen);
     offsets_screen.reset_cursor();
-    void_func exit_func[3] = {offset_select_remote_exit_one, offset_select_remote_exit_one, offset_select_remote_exit_play};
-    uint8_t exit_commands[3] = {one, two, play};
+    void_func exit_func[4] = {offset_select_remote_exit_one, offset_select_remote_exit_one, offset_select_remote_exit_tracking_conditions, offset_select_remote_exit_play};
+    uint8_t exit_commands[4] = {one, two, three, play};
     size_t number_of_functions = sizeof(exit_commands);
     remote_input_handler_selector(exit_func, exit_commands, number_of_functions);
 }
@@ -1235,11 +1242,11 @@ bool all_motors_ready_to_move()
     }
     else if (continous_tracking == true)
     {
-        if (startracker->IsVisible() && ((round(abs(azimuth_target - motor1.get_position())) >= constants::minimal_deg_diff_to_move) || (round(abs(altitude_target - motor2.get_position())) >= constants::minimal_deg_diff_to_move)))
+        if (startracker->IsVisible() && ((round(abs(azimuth_target - motor1.get_position())) >= offsets::minimal_deg_az_to_move) || (round(abs(altitude_target - motor2.get_position())) >= offsets::minimal_deg_alt_to_move)))
         {
-            if ((round(abs(azimuth_target - motor1.get_position())) >= constants::minimal_deg_diff_to_move))
+            if ((round(abs(azimuth_target - motor1.get_position())) >= offsets::minimal_deg_az_to_move))
                 az_motor_target_reached = false;
-            if ((round(abs(altitude_target - motor2.get_position())) >= constants::minimal_deg_diff_to_move))
+            if ((round(abs(altitude_target - motor2.get_position())) >= offsets::minimal_deg_alt_to_move))
                 alt_motor_target_reached = false;
             return true;
         }
@@ -1345,13 +1352,157 @@ void offset_disp_exit_procedure()
 
     automatic_calibration ? mode = GETTING_STAR_LOCATION : mode = MANUAL_CALIBRATION;
 }
+#pragma region exit_procedures_tracking_conditions_screen
+
+void inputscreenclear()
+{
+    if (Az_conditions)
+    {
+        displayconfig tracking_conditions_disp;
+        tracking_conditions_disp.reset_cursor();
+        print(un_enter_minimum_degree_motor_will_react_on, tracking_conditions_disp);
+        tracking_conditions_disp.next_row();
+        clear(un_azimuth, tracking_conditions_disp);
+        tracking_conditions_disp.next_row();
+        clear(stringbufferTC.disp, tracking_conditions_disp);
+        tracking_conditions_disp.reset_cursor();
+    }
+    else if (Alt_conditions)
+    {
+        displayconfig tracking_conditions_disp;
+        tracking_conditions_disp.reset_cursor();
+        clear(un_enter_minimum_degree_motor_will_react_on, tracking_conditions_disp);
+        tracking_conditions_disp.next_row();
+        clear(un_altitude, tracking_conditions_disp);
+        tracking_conditions_disp.next_row();
+        clear(stringbufferTC.disp, tracking_conditions_disp);
+        tracking_conditions_disp.reset_cursor();
+    }
+}
+void clear_not_selected_screen()
+{
+    displayconfig tracking_conditions_disp;
+    tracking_conditions_disp.reset_cursor();
+    clear(un_select_wich_minimum_degree_you_want_to_edit, tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    //option 1 select azimuth press 1
+    clear(un_azimuth, tracking_conditions_disp);
+    int previous_cursorp_col = tracking_conditions_disp.column;
+    int previous_cursorp_row = tracking_conditions_disp.row;
+    tracking_conditions_disp.next_column(10);
+    clear(un_press_1, tracking_conditions_disp);
+    //option 2 select altitude press 2
+    tracking_conditions_disp.set_cursor(previous_cursorp_row, previous_cursorp_col);
+    tracking_conditions_disp.next_row();
+    clear(un_altitude, tracking_conditions_disp);
+    tracking_conditions_disp.next_column(15);
+    clear(un_press_2, tracking_conditions_disp);
+    tracking_conditions_disp.reset_cursor();
+    //display current eeprom memory data
+    tracking_conditions_disp.set_cursor(25, 0);
+    clear(un_azimuth, tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    clear(un_altitude, tracking_conditions_disp);
+    tracking_conditions_disp.set_cursor(25, 15);
+    clear(EEPROM::read<float>(EEPROM::min_Az_diff_to_move), tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    clear(EEPROM::read<float>(EEPROM::min_Alt_diff_to_move), tracking_conditions_disp);
+    tracking_conditions_disp.reset_cursor();
+    run_tr_scr_once.Reset();
+}
+void tracking_conditions_confirm()
+{
+    tracking_not_selected = true;
+    Az_conditions = false;
+    Alt_conditions = false;
+    clear_not_selected_screen();
+    mode = INIT_PROCEDURE;
+}
+void tracking_conditions_select_azimuth()
+{
+    tracking_not_selected = false;
+    Az_conditions = true;
+    Alt_conditions = false;
+    clear_not_selected_screen();
+}
+void tracking_conditions_select_altitude()
+{
+    tracking_not_selected = false;
+    Alt_conditions = true;
+    Az_conditions = false;
+    clear_not_selected_screen();
+}
+void exit_conditions()
+{
+    //transfer input string to int
+    if (Alt_conditions)
+    {
+
+        if ((input_str_tracking_conditions.toFloat() * constants::motor2_gear_ratio) >= 1)
+        {
+            EEPROM::write(EEPROM::addresses::min_Alt_diff_to_move, (input_str_tracking_conditions.toFloat() * constants::motor2_gear_ratio));
+        }
+        else
+        {
+            EEPROM::write(EEPROM::addresses::min_Alt_diff_to_move, (float)1);
+        }
+    }
+    else if (Az_conditions)
+    {
+        if ((input_str_tracking_conditions.toFloat() * constants::motor1_gear_ratio) >= 1)
+        {
+            EEPROM::write(EEPROM::addresses::min_Az_diff_to_move, (input_str_tracking_conditions.toFloat() * constants::motor1_gear_ratio));
+        }
+        else
+        {
+            EEPROM::write(EEPROM::addresses::min_Az_diff_to_move, (float)1);
+        }
+    }
+    //reset all markers and go back to selectionscreen
+    inputscreenclear();
+    tracking_not_selected = true;
+    Az_conditions = false;
+    Alt_conditions = false;
+    stringbufferTC.clear_buffer();
+    load_data_from_eeprom.Reset();
+    input_str_tracking_conditions = EMPTYSTRING;
+}
+#pragma endregion exit_procedures_tracking_conditions_screen
+void edit_minimum_Az_deg()
+{
+
+    //print current az input
+    tracking_conditions_disp.reset_cursor();
+    print(un_enter_minimum_degree_motor_will_react_on, tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    print(un_azimuth, tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    stringbufferTC.disp = input_str_tracking_conditions;
+    dynamic_print(tracking_conditions_disp, stringbufferTC);
+    tracking_conditions_disp.reset_cursor();
+    void_func functions[1] = {exit_conditions};
+    uint8_t commandseletc[1] = {play};
+    remote_input_handler_str(functions, input_str_tracking_conditions, commandseletc, tracking_conditions_disp, 1);
+}
+void edit_minimum_Alt_deg()
+{
+    tracking_conditions_disp.reset_cursor();
+    print(un_enter_minimum_degree_motor_will_react_on, tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    print(un_altitude, tracking_conditions_disp);
+    tracking_conditions_disp.next_row();
+    stringbufferTC.disp = input_str_tracking_conditions;
+    dynamic_print(tracking_conditions_disp, stringbufferTC);
+    tracking_conditions_disp.reset_cursor();
+    void_func functions[1] = {exit_conditions};
+    uint8_t commandseletc[1] = {play};
+    remote_input_handler_str(functions, input_str_tracking_conditions, commandseletc, tracking_conditions_disp, 1);
+}
 void input_offsets()
 {
 
-    switch (offset_edit_mode)
+    if (offset_edit_mode == offset_editing::MAGNETIC)
     {
-
-    case offset_editing::MAGNETIC:
         displayconfig edit_magnetic_var;
         edit_magnetic_var.reset_cursor();
 
@@ -1365,6 +1516,41 @@ void input_offsets()
         void_func exit_functions[1] = {offset_disp_exit_procedure};
         size_t number_of_functions = sizeof(exit_commands);
         remote_input_handler_str(exit_functions, input_MAG_DEC, exit_commands, deleteallinput, number_of_functions);
+    }
+    else if (offset_edit_mode == offset_editing::TRACKING_CONDITIONS)
+    {
+        run_tr_scr_once.Run([&]()
+                            {
+                                tracking_conditions_disp.reset_cursor();
+                                print(un_select_wich_minimum_degree_you_want_to_edit, tracking_conditions_disp);
+                                tracking_conditions_disp.next_row();
+                                //option 1 select azimuth press 1
+                                print(un_azimuth, tracking_conditions_disp);
+                                int previous_cursorp_col = tracking_conditions_disp.column;
+                                int previous_cursorp_row = tracking_conditions_disp.row;
+                                tracking_conditions_disp.next_column(10);
+                                print(un_press_1, tracking_conditions_disp);
+                                //option 2 select altitude press 2
+                                tracking_conditions_disp.set_cursor(previous_cursorp_row, previous_cursorp_col);
+                                tracking_conditions_disp.next_row();
+                                print(un_altitude, tracking_conditions_disp);
+                                tracking_conditions_disp.next_column(15);
+                                print(un_press_2, tracking_conditions_disp);
+                                tracking_conditions_disp.reset_cursor();
+                                //display current eeprom memory data
+                                tracking_conditions_disp.set_cursor(25, 0);
+                                print(un_azimuth, tracking_conditions_disp);
+                                tracking_conditions_disp.next_row();
+                                print(un_altitude, tracking_conditions_disp);
+                                tracking_conditions_disp.set_cursor(25, 15);
+                                print(EEPROM::read<float>(EEPROM::addresses::min_Az_diff_to_move), tracking_conditions_disp);
+                                tracking_conditions_disp.next_row();
+                                print(EEPROM::read<float>(EEPROM::addresses::min_Alt_diff_to_move), tracking_conditions_disp);
+                                tracking_conditions_disp.reset_cursor();
+                                                        });
+        void_func options[3] = {tracking_conditions_select_azimuth, tracking_conditions_select_altitude, tracking_conditions_confirm};
+        uint8_t command_select[3] = {one, two, play};
+        remote_input_handler_selector(options, command_select, 3);
     }
 }
 

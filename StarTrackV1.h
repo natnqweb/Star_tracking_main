@@ -77,11 +77,12 @@
 
 enum class offset_editing //enumeration for editing offset screen
 {
-    NOT_SET = 0,
-    MAGNETIC = 1,
-    ACCELEROMETER = 2,
-    TIME = 3,
-    LOCATION = 4
+    NOT_SET,
+    MAGNETIC,
+    ACCELEROMETER,
+    TIME,
+    LOCATION,
+    TRACKING_CONDITIONS
 
 };
 
@@ -245,6 +246,8 @@ namespace offsets
     hrs timezone_offset = 1;        //UTC +2
     degs magnetic_variation = -6.5; // 7 degrees due to magnetic declination
     degs magnetic_declination = 6.1;
+    float minimal_deg_alt_to_move = 2;
+    float minimal_deg_az_to_move = 2;
 
 };
 // all timer refresh rates here
@@ -303,6 +306,8 @@ Simpletimer logtimer;
 float previous_azimuth, previous_altitude;
 String input_MAG_DEC;
 String input_RA, input_DEC, input_lat, input_long;
+String input_minimum_az_to_move;
+String input_str_tracking_conditions;
 float azimuth_target = 0, altitude_target = 0;
 // char printout1[30]; //uint buffer 240bits 30 bytes
 
@@ -310,12 +315,15 @@ buffers<float> ra_buff, dec_buff, motor1_ang_buff, motor2_ang_buff;
 
 buffers<String> visibility_buffer, _star_az_buff, _star_alt_buff, _long_buff, _lat_buff, _calibrate_buff, az_buff, _local_time_buff;
 
+buffers<String> stringbufferTC;
 //string buffer
 #pragma endregion buffers
 #pragma region booleans
 //booleans and markers
 bool tracking_finished = false;
-
+bool tracking_not_selected = true;
+bool Az_conditions = false;
+bool Alt_conditions = false;
 bool manual_calibration = false;
 bool laser_mode = false;
 
@@ -331,8 +339,9 @@ bool automatic_calibration = true;
 
 #pragma endregion booleans
 #pragma region timers
-
+Simpletimer::RunOnce run_tr_scr_once;
 Simpletimer::RunOnce print_boot_init_once;
+Simpletimer::RunOnce load_data_from_eeprom;
 Simpletimer accel_callback_timer;
 Simpletimer display_callback_timer;
 #pragma endregion timers
@@ -346,7 +355,7 @@ sensor_t compass_hmcl;
 //displayconfiguration structure it contains information about cursor position
 
 displayconfig offsets_screen;
-
+displayconfig tracking_conditions_disp;
 displayconfig deleteallinput;
 displayconfig star_visibility_disp;
 displayconfig calibration_disp;
@@ -400,6 +409,9 @@ void edit_ra();
 //offset selection screen
 void offset_disp_exit_procedure();
 void offset_select();
+void edit_minimum_Az_deg();
+
+void edit_minimum_Alt_deg();
 void edit_lat();
 void edit_long();
 // position calibration screen you need to confirm when you are facing north to set calibration data
@@ -466,7 +478,9 @@ namespace EEPROM
         dec = 25,
         second = 30,
         laser_angle = 34,
-        time_utc = 39
+        time_utc = 39,
+        min_Az_diff_to_move = 45,
+        min_Alt_diff_to_move = 50
 
     };
     /**
