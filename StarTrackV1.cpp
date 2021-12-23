@@ -43,6 +43,12 @@ void buffers<const char *>::clear_buffer()
 
     buff = EMPTYSTRING;
 }
+template <>
+void buffers<int>::clear_buffer()
+{
+
+    buff = 0;
+}
 
 Myposition::Myposition(degs latitude, degs longitude, degs azimuth)
 {
@@ -398,7 +404,7 @@ void clearDisplay()
     mainscreen.next_column(18);
 
     //clear(laser_angle_buff.disp, mainscreen);
-    clear((EEPROM::read<float>(EEPROM::addresses::laser_angle)), mainscreen);
+    clear(laser_ang_buff.disp, mainscreen);
 
     mainscreen.reset_cursor();
     mainscreen.next_row();
@@ -449,8 +455,8 @@ void clearDisplay()
     mainscreen.next_row();
     clear(_lat_buff.disp, mainscreen);
     mainscreen.next_row();
-    //clear(_sec_buff.disp, mainscreen);
-    clear((EEPROM::read<int>(EEPROM::addresses::second)), mainscreen);
+    clear(seconds_buff.disp, mainscreen);
+    //clear((EEPROM::read<int>(EEPROM::addresses::second)), mainscreen);
     mainscreen.next_row();
 
     clear(_star_az_buff.disp, mainscreen);
@@ -464,7 +470,7 @@ void clearDisplay()
     mainscreen.next_row();
     clear((t.date), mainscreen);
     mainscreen.next_row();
-    clear((EEPROM::read<float>(EEPROM::addresses::time_utc)), mainscreen);
+    clear(UTC_time_buffer.disp, mainscreen);
     // dodanaj wyświetlanie czasu
     int previous_column = mainscreen.column; //
     mainscreen.next_row();
@@ -533,7 +539,9 @@ void updateDisplay()
     print(un_laser_angle, mainscreen);
     //go to column 49 row 0
     mainscreen.next_column(18);
-    EEPROM::dynamic_print_eeprom(mainscreen, pointing_altitude, EEPROM::addresses::laser_angle);
+    laser_ang_buff.disp = pointing_altitude;
+    dynamic_print(mainscreen, laser_ang_buff);
+    //EEPROM::dynamic_print_eeprom(mainscreen, pointing_altitude, EEPROM::addresses::laser_angle);
     /*   
       ------------------------------------------------end of print accelerometer information  -------------------------------------------------------------------------------------------------------------------------------------------------------------
     */
@@ -641,7 +649,9 @@ void updateDisplay()
     mainscreen.next_row();
     /*   _sec_buff.disp = String(int(SEKUNDA));
     dynamic_print(mainscreen, _sec_buff); */
-    EEPROM::dynamic_print_eeprom(mainscreen, (int)SEKUNDA, EEPROM::addresses::second);
+    seconds_buff.disp = int(SEKUNDA);
+    dynamic_print(mainscreen, seconds_buff);
+    //EEPROM::dynamic_print_eeprom(mainscreen, (int)SEKUNDA, EEPROM::addresses::second);
     /*   
       ------------------------------------------------end of display seconds value on column 15 row 4-------------------------------------------------------------------------------------------------------------------------------------------------------------
     */
@@ -694,7 +704,9 @@ void updateDisplay()
     mainscreen.next_row();
     /*     _time_buff.disp = (String)TIME;
     dynamic_print(mainscreen, _time_buff); */
-    EEPROM::dynamic_print_eeprom(mainscreen, TIME, EEPROM::addresses::time_utc);
+    UTC_time_buffer.disp = TIME;
+    dynamic_print(mainscreen, UTC_time_buffer);
+    //EEPROM::dynamic_print_eeprom(mainscreen, TIME, EEPROM::addresses::time_utc);
 
     /*   
       ------------------------------------------------end of display time_utc value on column 15 row 16-------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -763,6 +775,8 @@ void clear_all_buffers()
     // _sec_buff.clear_buffer();
     _calibrate_buff.clear_buffer();
     // dodanaj wyświetlanie czasu
+    seconds_buff.clear_buffer();
+    UTC_time_buffer.clear_buffer();
 
     _local_time_buff.clear_buffer();
 
@@ -1547,7 +1561,7 @@ void input_offsets()
                                 tracking_conditions_disp.next_row();
                                 print(EEPROM::read<float>(EEPROM::addresses::min_Alt_diff_to_move), tracking_conditions_disp);
                                 tracking_conditions_disp.reset_cursor();
-                                                        });
+                            });
         void_func options[3] = {tracking_conditions_select_azimuth, tracking_conditions_select_altitude, tracking_conditions_confirm};
         uint8_t command_select[3] = {one, two, play};
         remote_input_handler_selector(options, command_select, 3);
@@ -2189,8 +2203,9 @@ void position_calibration_display()
     calibration_disp.set_cursor(4, 0);
     print(un_laser_angle, calibration_disp);
     calibration_disp.set_cursor(6, 0);
-
-    EEPROM::dynamic_print_eeprom(calibration_disp, pointing_altitude, EEPROM::addresses::laser_angle);
+    laser_ang_buff.disp = pointing_altitude;
+    dynamic_print(calibration_disp, laser_ang_buff);
+    // EEPROM::dynamic_print_eeprom(calibration_disp, pointing_altitude, EEPROM::addresses::laser_angle);
     calibration_disp.set_cursor(8, 0);
     print(un_azimuth, calibration_disp);
     calibration_disp.set_cursor(10, 0);

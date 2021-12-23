@@ -305,16 +305,17 @@ Simpletimer logtimer;
 
 float previous_azimuth, previous_altitude;
 String input_MAG_DEC;
+
 String input_RA, input_DEC, input_lat, input_long;
 String input_minimum_az_to_move;
 String input_str_tracking_conditions;
 float azimuth_target = 0, altitude_target = 0;
 // char printout1[30]; //uint buffer 240bits 30 bytes
 
-buffers<float> ra_buff, dec_buff, motor1_ang_buff, motor2_ang_buff;
+buffers<float> ra_buff, dec_buff, motor1_ang_buff, motor2_ang_buff, laser_ang_buff,UTC_time_buffer;
 
 buffers<String> visibility_buffer, _star_az_buff, _star_alt_buff, _long_buff, _lat_buff, _calibrate_buff, az_buff, _local_time_buff;
-
+buffers<int> seconds_buff;
 buffers<String> stringbufferTC;
 //string buffer
 #pragma endregion buffers
