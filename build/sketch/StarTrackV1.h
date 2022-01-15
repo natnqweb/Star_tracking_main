@@ -86,7 +86,11 @@ enum class offset_editing //enumeration for editing offset screen
     TRACKING_CONDITIONS
 
 };
-
+enum print_options : uint8_t
+{
+    vertical,
+    horizontal
+};
 enum pins : const uint8_t
 {
 
@@ -313,7 +317,7 @@ String input_str_tracking_conditions;
 float azimuth_target = 0, altitude_target = 0;
 // char printout1[30]; //uint buffer 240bits 30 bytes
 
-buffers<float> ra_buff, dec_buff, motor1_ang_buff, motor2_ang_buff, laser_ang_buff,UTC_time_buffer;
+buffers<float> ra_buff, dec_buff, motor1_ang_buff, motor2_ang_buff, laser_ang_buff, UTC_time_buffer;
 
 buffers<String> visibility_buffer, _star_az_buff, _star_alt_buff, _long_buff, _lat_buff, _calibrate_buff, az_buff, _local_time_buff;
 buffers<int> seconds_buff;
@@ -547,6 +551,7 @@ bool all_motors_ready_to_move();
 bool reset_ready_to_move_markers();
 
 void clear_all_buffers();
+
 
 #if DEBUG
 

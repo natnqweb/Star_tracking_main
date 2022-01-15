@@ -105,6 +105,7 @@ T EEPROM::read(unsigned int address)
 
 #pragma endregion eeprom
 #pragma region functions
+
 #pragma region calculations_and_sensors
 void laser(bool on_off)
 {
@@ -2145,7 +2146,7 @@ void clear_calibration_screen()
     clear(un_laser_angle, calibration_disp);
     calibration_disp.set_cursor(6, 0);
 
-    clear((EEPROM::read<float>(EEPROM::addresses::laser_angle)), calibration_disp);
+    clear(laser_ang_buff.disp, calibration_disp);
 
     calibration_disp.set_cursor(8, 0);
     clear(un_azimuth, calibration_disp);
