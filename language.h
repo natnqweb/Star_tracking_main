@@ -54,7 +54,7 @@
 #define un_start_tracking_continously F("zacznij sledzic gwiazde")
 #define un_star_found F("znaleziono gwiazde")
 #define un_no_gps F("brak gps")
-#define un_no_satelites F("brak satelit")
+#define un_no_satelites F("brak satelity")
 #define un_local_time F("czas lokalny")
 #define un_time_from_gps F("czas gps")
 #define un_can_calibrate F("{1}")

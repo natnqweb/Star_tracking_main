@@ -87,7 +87,7 @@ IRrecv *IR = new IRrecv(IR_RECEIVE_PIN);
 //location for Tarnów 50.03 longitude 21.01 latitude
 Myposition my_location(50.03, 21.01);
 //Sirius ra and dec at start
-Star star(0, 0, 101.52, -16.7424);
+Star star(0, 0, 101.5333, -16.7478);
 
 #pragma endregion constructors
 #pragma region eeprom
@@ -288,7 +288,7 @@ void read_compass()
         heading -= 2 * PI;
     // Convert radians to degrees for readability.
     degs headingDegrees = heading * 180 / M_PI;
-
+    /* 
     if (headingDegrees >= 1 && headingDegrees < 240)
     {
         headingDegrees = mapf(headingDegrees, 0, 239, 0, 179);
@@ -308,8 +308,8 @@ void read_compass()
         smoothHeadingDegrees = 0;
     }
 
-    previousDegree = smoothHeadingDegrees;
-
+    previousDegree = smoothHeadingDegrees; */
+    smoothHeadingDegrees = headingDegrees;
     LOG("Heading (degrees): ");
     LOG(headingDegrees);
     my_location.azimuth = headingDegrees;

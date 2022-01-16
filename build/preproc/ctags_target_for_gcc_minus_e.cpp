@@ -90,7 +90,7 @@ IRrecv *IR = new IRrecv(IR_RECEIVE_PIN);
 //location for Tarnów 50.03 longitude 21.01 latitude
 Myposition my_location(50.03, 21.01);
 //Sirius ra and dec at start
-Star star(0, 0, 101.52, -16.7424);
+Star star(0, 0, 101.5333, -16.7478);
 
 #pragma endregion constructors
 #pragma region eeprom
@@ -144,28 +144,49 @@ void read_compass()
                                          3.14159265358979323846 /* pi */
 # 137 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
                                              ;
+    /* 
 
     if (headingDegrees >= 1 && headingDegrees < 240)
+
     {
+
         headingDegrees = mapf(headingDegrees, 0, 239, 0, 179);
+
     }
+
     else if (headingDegrees >= 240)
+
     {
+
         headingDegrees = mapf(headingDegrees, 240, 360, 180, 360);
+
     }
-    smoothHeadingDegrees = ((headingDegrees)>=0?(long)((headingDegrees)+0.5):(long)((headingDegrees)-0.5));
+
+    smoothHeadingDegrees = round(headingDegrees);
+
+
 
     if (smoothHeadingDegrees < (previousDegree + 2) && smoothHeadingDegrees > (previousDegree - 2))
+
     {
+
         smoothHeadingDegrees = previousDegree;
+
     }
+
     if (smoothHeadingDegrees <= 2 || smoothHeadingDegrees >= 358)
+
     {
+
         smoothHeadingDegrees = 0;
+
     }
 
-    previousDegree = smoothHeadingDegrees;
 
+
+    previousDegree = smoothHeadingDegrees; */
+# 159 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
+    smoothHeadingDegrees = headingDegrees;
     ;
     ;
     my_location.azimuth = headingDegrees;
@@ -1045,7 +1066,7 @@ void updateDisplay()
 # 626 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                 (__extension__({static const char __c[] __attribute__((__progmem__)) = (
 # 626 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
-                                "brak satelit"
+                                "brak satelity"
 # 626 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp" 3
                                 ); &__c[0];}))
 # 626 "c:\\Users\\Admin\\Documents\\Arduino\\Star_tracking_main\\StarTrackV1.cpp"
