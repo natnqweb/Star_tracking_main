@@ -44,7 +44,7 @@
 #define un_enter_az_offset F("wprowadz offset azymutu")
 #define un_star_visibility F("widocznosc gwiazdy:")
 #define un_visible F("widoczna")
-#define un_unvisible F("nie widoczna")
+#define un_unvisible F("niewidoczna")
 #define un_motor1 F("silnik 1")
 #define un_motor2 F("silnik 2")
 #define un_degree F("kat")
