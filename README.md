@@ -1,2 +1,1 @@
-Very important information: 
-Library IRremote v3.5 at least required!
+Star tracking device build on Arduino Mega 2560 Rev3
