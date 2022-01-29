@@ -1,3 +1,14 @@
+### Introduction
+Continuous technological progress means that devices that were once unavailable to the average consumer are becoming cheaper and more common.
+Such devices are microcontrollers, also known as microcomputers. Microcontrollers have become so common that it is hard to find a device that does not have even a single chip. The number of different versions of microcontrollers simplifies the selection for a specific need.
+ There are chips that differ in architecture, number of cores, computing power, word size (8, 16, 32-bit), clock speed, memory size, number of I / O ports. They can be equipped with circuits such as comparators and converters
+A / C and C / A, RTC systems, PWM systems, RTC systems, Watchdog, or transmission controllers (UART, SPI, I2C, USB, CAN, etc.).
+Today, thanks to, among others, a company such as Arduino, they are available to every hobbyist at an affordable price.
+Arduino is an open-source platform , thanks to which members of the community can constantly improve various aspects related to the functioning of this environment.
+The use of the Arduino platform for activities related to astronomy is a kind of demonstration of some of the possibilities that lie dormant in open-source software and using popular sensors dedicated to it, you can create devices for various purposes.
+On the Internet you can come across a multitude of projects, from 3D printers to projects related to the control of LED strips. However, the subject of astronomy is not often brought up in the developer and developer community, and the number of projects available is small.
+Therefore, it was decided to use Arduino. As part of this work, it was undertaken to build a device to facilitate the search for stars in the sky.
+
 ### Objective of the work
 The aim of this work is to design and program a device capable of calculating the position of a star in the sky and then facing it. The platform chosen to control the device and its functions is Arduino.
 The basic function of the device will be to indicate in the sky a place suitable for observation of the star entered by the user. 
